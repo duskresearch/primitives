@@ -24,7 +24,7 @@ const newTab = { target: '_blank', rel: 'noopener' };
         <span class="notify-row">
           <input id="notify-email" class="field" type="email" name="email" placeholder="euclid@elements.gr" autocomplete="email" data-autosize />
           <input class="visually-hidden" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
-          <button type="submit">{site.emailButton}</button>
+          <button type="submit"><span>{site.emailButton}</span></button>
         </span>
       </form>
     )
@@ -107,7 +107,7 @@ const newTab = { target: '_blank', rel: 'noopener' };
   }
   .notify {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 10px;
     font-family: var(--sans);
     font-size: 13px;
@@ -118,7 +118,7 @@ const newTab = { target: '_blank', rel: 'noopener' };
      width so the centered footer line does not shift as the field grows. */
   .notify-row {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 10px;
     min-width: calc(var(--email-input) + 70px);
   }
@@ -129,6 +129,7 @@ const newTab = { target: '_blank', rel: 'noopener' };
     max-width: var(--email-input);
     padding: 5px 0;
     font-size: 13px;
+    line-height: 1.25;
   }
   .notify button {
     flex: none;
@@ -139,10 +140,21 @@ const newTab = { target: '_blank', rel: 'noopener' };
     padding: 0;
     font-size: 13px;
     color: var(--ink);
-    text-decoration: underline;
-    text-underline-offset: 3px;
+  }
+  /* Underlined the way the field is (same line height, padding and rule), so the two lines
+     sit level in any font, the fallbacks included. */
+  .notify button span {
+    display: block;
+    padding-bottom: 5px;
+    border-bottom: 1px solid currentColor;
+    line-height: 1.25;
   }
   @media (pointer: coarse) {
+    /* Natural height, so the underline and the focus ring hug the address. On a phone the
+       label sits flush above and focuses the field too; together they clear 44px. */
+    .notify .field {
+      min-height: 0;
+    }
     .notify button,
     .footer a {
       min-height: var(--min-hit);
@@ -152,12 +164,9 @@ const newTab = { target: '_blank', rel: 'noopener' };
       justify-content: center;
     }
   }
-  @media (max-width: 719px) {
-    .footer {
-      padding: 16px var(--page-x) 22px;
-      font-size: 11px;
-    }
-    /* Phone: the email line, then any status message, then the maker and the site links. */
+  /* Under 900px the three columns no longer fit beside the email line: it takes its own
+     row, then any status message, then the maker and the site links. */
+  @media (max-width: 899px) {
     .full {
       display: flex;
       flex-wrap: wrap;
@@ -169,9 +178,6 @@ const newTab = { target: '_blank', rel: 'noopener' };
     .full .notify {
       order: -2;
       width: 100%;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 4px;
     }
     .full .status {
       order: -1;
@@ -182,6 +188,21 @@ const newTab = { target: '_blank', rel: 'noopener' };
     }
     .full .site-links {
       margin-left: auto;
+    }
+  }
+  @media (max-width: 719px) {
+    .footer {
+      padding: 16px var(--page-x) 22px;
+      font-size: 11px;
+    }
+    /* Phone: the label above the field. */
+    .full .notify {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+    .full .notify label {
+      padding-bottom: 4px;
     }
     .notify-row {
       min-width: 0;
