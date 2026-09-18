@@ -5,13 +5,17 @@
   "compatibility_date": "2026-09-01",
   "observability": { "enabled": true },
 
+  // The site answers on primitiv.es only; www is redirected by workers/www-redirect.
+  "routes": [{ "pattern": "primitiv.es", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false,
+
   // Suggestions, votes, request log, subscribers and rate-limit counters (migrations/).
-  // database_id is replaced with the real one when the database is created for production.
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "primitives",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "a2f50db2-ba1a-4296-9d35-7af8bfa4eda4",
       "migrations_dir": "migrations"
     }
   ]
