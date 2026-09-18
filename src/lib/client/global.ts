@@ -62,4 +62,18 @@ document.addEventListener('submit', async (e) => {
   }
 });
 
+// Inputs marked data-autosize grow with their text. CSS field-sizing does it where supported;
+// elsewhere, measure the text (or the placeholder while empty) and set the width.
+if (!CSS.supports('field-sizing', 'content')) {
+  const ctx = document.createElement('canvas').getContext('2d')!;
+  const fit = (input: HTMLInputElement) => {
+    ctx.font = getComputedStyle(input).font;
+    input.style.width = `${Math.ceil(ctx.measureText(input.value || input.placeholder).width) + 2}px`;
+  };
+  document.addEventListener('input', (e) => {
+    if (e.target instanceof HTMLInputElement && 'autosize' in e.target.dataset) fit(e.target);
+  });
+  document.addEventListener('astro:page-load', () => document.querySelectorAll<HTMLInputElement>('input[data-autosize]').forEach(fit));
+}
+
 document.addEventListener('astro:page-load', onPageLoad);
