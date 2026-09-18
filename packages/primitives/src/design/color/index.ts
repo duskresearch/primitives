@@ -94,15 +94,36 @@ export function fixText(a: Lch, b: Lch, target = 4.5, step = 0.02): Fix | null {
   return null;
 }
 
-/** Any CSS color: hex (the # is optional), rgb(), hsl(), oklch() or a named color. */
+/**
+ * Any CSS color: hex (the # optional, any case), rgb() or rgba(), hsl(), oklch(), any other
+ * CSS color function, or a name. Also three bare 0 to 255 numbers, as design tools show RGB:
+ * "197, 54, 55" or "197 54 55". Alpha is read and dropped: these are solid colors.
+ */
 export type ColorInput = string;
+
+const bareRgb = /^(\d{1,3})[\s,]+(\d{1,3})[\s,]+(\d{1,3})$/;
 
 export function parseColor(input: ColorInput): Lch {
   const text = typeof input === 'string' ? input.trim() : '';
-  const parsed = parseCss(/^[0-9a-f]{3,8}$/i.test(text) ? `#${text}` : text);
+  const triple = bareRgb.exec(text);
+  const css = triple && triple.slice(1).every((v) => Number(v) <= 255) ? `rgb(${triple.slice(1).join(' ')})` : /^[0-9a-f]{3,8}$/i.test(text) ? `#${text}` : text;
+  const parsed = parseCss(css);
   if (!parsed) throw new InputError(`Not a color: "${input}". Use hex, rgb(), hsl(), oklch() or a CSS color name.`);
   const o = toOklch(parsed);
   return { l: o.l, c: o.c ?? 0, h: o.h ?? 0 };
+}
+
+/** The formats people write colors in, in order of how often. */
+export const CSS_FORMATS = ['hex', 'rgb', 'hsl', 'oklch'] as const;
+export type CssFormat = (typeof CSS_FORMATS)[number];
+
+/** The format a typed color was written in, so a field can answer in the same one. */
+export function formatOf(input: string): CssFormat {
+  const text = input.trim().toLowerCase();
+  if (text.startsWith('rgb') || bareRgb.test(text)) return 'rgb';
+  if (text.startsWith('hsl')) return 'hsl';
+  if (/^(oklch|oklab|lab|lch|color)\(/.test(text)) return 'oklch';
+  return 'hex';
 }
 
 /** A color as operations return it: the sRGB hex that is shown, and its OKLCH. */
@@ -118,10 +139,14 @@ const out = (c: Lch): ColorOut => ({ hex: hex(c), oklch: { l: round(c.l, 4), c: 
 /** Where a color can be shown as chosen: inside sRGB, inside Display P3 only, or beyond both. */
 export type Gamut = 'srgb' | 'p3' | 'wider';
 
-/** The sRGB channels when sRGB can show the color as chosen, otherwise null. For drawing its edge. */
+/**
+ * The sRGB channels when sRGB can show the color as chosen, otherwise null. For drawing the
+ * gamut's edge, so it holds to a tighter tolerance than reading colors does: near black, where
+ * channels are tiny, the looser one would paint a sliver of colors that are not really there.
+ */
 export const inSrgb = (c: Lch): Rgb | null => {
   const rgb = toRgb(ok(c));
-  return within(rgb) ? snapped(rgb) : null;
+  return [rgb.r, rgb.g, rgb.b].every((v) => v >= -1e-6 && v <= 1 + 1e-6) ? snapped(rgb) : null;
 };
 
 /**
@@ -178,10 +203,20 @@ export interface Formats {
  * (all three agree to the 8-bit channel); oklch(), oklab() and the P3 value describe the
  * color as chosen, mapped into P3 only when it lies beyond it.
  */
+/** The color written in one format: hex, rgb() and hsl() as sRGB shows it, oklch() as chosen. */
+export function formatAs(c: Lch, format: CssFormat): string {
+  if (format === 'oklch') return cssOklch(c);
+  const shown = formatHex(displayed(c));
+  if (format === 'hex') return shown;
+  const rgb8 = parseHex(shown)!;
+  if (format === 'rgb') return `rgb(${[rgb8.r, rgb8.g, rgb8.b].map((v) => Math.round(v * 255)).join(' ')})`;
+  const hsl = toHsl(rgb8);
+  return `hsl(${angle(hsl.h ?? 0)} ${num((hsl.s ?? 0) * 100, 1)}% ${num(hsl.l * 100, 1)}%)`;
+}
+
 export function formats(c: Lch): Formats {
   const shown = formatHex(displayed(c));
   const rgb8 = parseHex(shown)!;
-  const hsl = toHsl(rgb8);
   const lab = toOklab(ok(c));
   const inP3 = toP3(ok(c));
   const p3 = within(inP3) ? snapped(inP3) : toP3(mapToP3(ok(c)));
@@ -189,8 +224,8 @@ export function formats(c: Lch): Formats {
   const near = nearestNamed(rgb8)[0];
   return {
     hex: shown,
-    rgb: `rgb(${[rgb8.r, rgb8.g, rgb8.b].map((v) => Math.round(v * 255)).join(' ')})`,
-    hsl: `hsl(${angle(hsl.h ?? 0)} ${num((hsl.s ?? 0) * 100, 1)}% ${num(hsl.l * 100, 1)}%)`,
+    rgb: formatAs(c, 'rgb'),
+    hsl: formatAs(c, 'hsl'),
     oklch: cssOklch(c),
     oklab: `oklab(${num(lab.l, 3)} ${num(lab.a, 3)} ${num(lab.b, 3)})`,
     p3: `color(display-p3 ${p3Channel(p3.r)} ${p3Channel(p3.g)} ${p3Channel(p3.b)})`,

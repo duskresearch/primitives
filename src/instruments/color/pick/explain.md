@@ -1,19 +1,21 @@
 ---
-title: OKLCH color picker, by lightness, chroma and hue
-description: Pick a color in OKLCH, see where the sRGB gamut ends at its hue, and copy it as oklch() or hex.
+title: Color picker with hex, RGB, HSL and OKLCH
+description: Pick a color by lightness, chroma and hue, or type the one you have as hex, rgb(), hsl() or a name, and copy it in the same format.
 ---
 
 ## What it measures
 
-A color picker that works in OKLCH, the color space CSS Color 4 added for choosing colors the way eyes see them. You set three numbers: lightness (L, from 0 for black to 1 for white), chroma (C, how strong the color is, from 0 for gray upward) and hue (H, the angle around the color wheel, in degrees).
+A color picker. Type the color you already have, as hex, rgb(), hsl(), oklch() or a name, or set it with three sliders: lightness (L, from black to white), chroma (C, how strong the color is, from gray upward) and hue (H, the angle around the color wheel, in degrees).
 
-The plane shows lightness against chroma at the current hue. The painted area is every color an ordinary sRGB screen can show at that hue. The clear area beyond it holds colors that only wide-gamut screens can show, or none can. Where the edge falls changes a great deal with hue: yellow reaches high chroma only when it is light, blue only when it is dark.
+The field answers in the format you typed. Paste a hex and you get a hex back; paste rgb() and it stays rgb() as you move the sliders. The surface shows the color with that value, and oklch() beside it for CSS you will adjust later.
 
-The surface paints the color as chosen. You get it as oklch(), ready to paste into CSS, and as the hex an sRGB screen shows.
+The plane shows lightness against chroma at the current hue. The painted area is every color an ordinary screen can show at that hue, in sRGB. The marker stops at its edge, so every color you pick looks the same on every screen. Where the edge falls changes a great deal with hue: yellow reaches high chroma only when it is light, blue only when it is dark.
 
 ## How it is computed
 
-OKLCH is the polar form of Oklab, a color space published by Björn Ottosson in 2020. Oklab was fitted so that equal distances look like equal differences, which is why a step of 0.05 in L looks about the same anywhere on the scale. HSL's lightness makes no such promise.
+Hex, rgb() and hsl() are three ways of writing the same sRGB channels, so any of them can be read and written back without a change.
+
+The sliders work in OKLCH, the polar form of Oklab, a color space published by Björn Ottosson in 2020 and added to CSS in Color Level 4. Oklab was fitted so that equal distances look like equal differences, which is why a step of 0.05 in L looks about the same anywhere on the scale. HSL's lightness makes no such promise.
 
 To show a color, chroma and hue become Oklab's two color axes, then two fixed matrices with a cube between them lead to linear sRGB, which is gamma-encoded for the screen:
 
@@ -22,15 +24,15 @@ a = C × cos(H)
 b = C × sin(H)
 ```
 
-A color is inside sRGB when all three channels land between 0 and 1. When it is not, its hex comes from the gamut mapping algorithm in CSS Color 4: chroma is lowered, keeping lightness and hue, until clipping the rest changes the color by less than a just noticeable difference.
+A color is inside sRGB when all three channels land between 0 and 1. The plane paints exactly those, and past the edge chroma is held at the most sRGB allows for that lightness and hue.
 
 ## When to use it
 
-When you need a color and would otherwise take a hex code from somewhere. Start from the hue, set lightness for the role the color plays (high for backgrounds, low for text), then chroma for how loud it should be.
+When you need a color, or need to adjust one you were given. Start from the hue, set lightness for the role the color plays (high for backgrounds, low for text), then chroma for how loud it should be.
 
-Pick in OKLCH when you will build more colors from this one. Steps of lightness stay even, and two colors with the same L look equally light. HSL cannot promise that: it calls a yellow and a blue equally light at 50% when the yellow looks far lighter.
+The sliders are in OKLCH because steps of lightness stay even there, and two colors with the same L look equally light. HSL cannot promise that: it calls a yellow and a blue equally light at 50% when the yellow looks far lighter. You do not need to know OKLCH to use them; the field gives the result back as hex or whatever you typed.
 
-Use the plane to see how much chroma a hue can hold before sRGB screens clip it. For a brand color that must look the same everywhere, stay inside the painted area. Every current browser supports oklch(); on wide-gamut screens a color beyond sRGB shows as chosen, and elsewhere the browser maps it in.
+Use the plane to see how much chroma a hue can hold. A strong color near the edge is as vivid as ordinary screens go; pulling it back a little leaves room for hover and pressed states to go further.
 
 ## Related
 

@@ -3,7 +3,7 @@
 // formulas of W3C Compositing and Blending Level 1.
 import { describe, expect, it } from 'vitest';
 import { InputError } from '../../operation';
-import { blend, blendChannel, convert, harmony, parseColor, pick, scale, SCALE_STEP } from '.';
+import { blend, blendChannel, convert, formatAs, formatOf, harmony, hex, parseColor, pick, scale, SCALE_STEP } from '.';
 
 describe('convert', () => {
   it('writes red the way CSS Color 4 does', () => {
@@ -186,5 +186,30 @@ describe('blend', () => {
   it('takes and returns plain JSON', () => {
     const result = blend({ top: '#c53637', bottom: '#e0f1ff', mode: 'overlay', amount: 0.6 });
     expect(JSON.parse(JSON.stringify(result))).toEqual(result);
+  });
+});
+
+describe('input, the way people have it', () => {
+  it('reads every common way of writing one color', () => {
+    const forms = ['#c53637', '#C53637', 'c53637', 'rgb(197 54 55)', 'rgb(197, 54, 55)', 'rgba(197, 54, 55, 0.5)', '197, 54, 55', '197 54 55', 'hsl(359.6 57% 49.2%)', 'oklch(0.55 0.18 25)'];
+    for (const form of forms) expect(hex(parseColor(form)), form).toBe('#c53637');
+  });
+
+  it('does not take three numbers above 255 for rgb', () => {
+    expect(() => parseColor('300, 54, 55')).toThrow(/Not a color/);
+  });
+
+  it('answers in the format the color was typed in', () => {
+    expect(formatOf('#c53637')).toBe('hex');
+    expect(formatOf('tomato')).toBe('hex');
+    expect(formatOf('rgba(197, 54, 55, 1)')).toBe('rgb');
+    expect(formatOf('197, 54, 55')).toBe('rgb');
+    expect(formatOf('HSL(0 50% 50%)')).toBe('hsl');
+    expect(formatOf('color(display-p3 1 0 0)')).toBe('oklch');
+    const c = parseColor('#c53637');
+    expect(formatAs(c, 'hex')).toBe('#c53637');
+    expect(formatAs(c, 'rgb')).toBe('rgb(197 54 55)');
+    expect(formatAs(c, 'hsl')).toBe('hsl(359.6 57% 49.2%)');
+    expect(formatAs(c, 'oklch')).toBe('oklch(0.55 0.18 25)');
   });
 });

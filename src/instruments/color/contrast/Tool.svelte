@@ -1,9 +1,9 @@
 <script lang="ts">
   import Copy from '@/components/tool/Copy.svelte';
-  import Slider from '@/components/tool/Slider.svelte';
   import { setQuery } from '@/lib/client/harness';
   import { fixText, grade, hex, ratio, ratioText, type Lch } from '@duskresearch/primitives/design/color';
   import { serialize, type ColorState } from '../state';
+  import ColorControls from '../ColorControls.svelte';
 
   let { initial }: { initial: ColorState } = $props();
 
@@ -26,10 +26,6 @@
     if (loaded) setQuery(query);
     loaded = true;
   });
-
-  const L = (v: number) => v.toFixed(2);
-  const C = (v: number) => v.toFixed(3);
-  const H = (v: number) => `${Math.round(v)}°`;
 </script>
 
 <div class="surface" style:background-color={bHex} style:color={aHex}>
@@ -56,19 +52,8 @@
 </div>
 
 <div class="panel">
-  {#snippet side(name: string, key: string, color: Lch, value: string)}
-    <div class="side" role="group" aria-label={`${name} color`}>
-      <div class="side-head mono">
-        <span>{name} · {key}</span>
-        <Copy {value} label="hex" class="ink">{value}</Copy>
-      </div>
-      <Slider group={name} label="L" bind:value={color.l} min={0} max={1} step={0.005} format={L} />
-      <Slider group={name} label="C" bind:value={color.c} min={0} max={0.33} step={0.001} format={C} />
-      <Slider group={name} label="H" bind:value={color.h} min={0} max={360} step={1} format={H} />
-    </div>
-  {/snippet}
-  {@render side('Text', 'A', a, aHex)}
-  {@render side('Background', 'B', b, bHex)}
+  <ColorControls name="Text" key="A" bind:color={a} />
+  <ColorControls name="Background" key="B" bind:color={b} />
 
   <div class="checks mono">
     <div class="check">
@@ -133,21 +118,6 @@
     display: none;
   }
 
-  .side {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .side-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 11px;
-    color: var(--ink-2);
-  }
-  .side-head :global(.ink) {
-    color: var(--ink);
-  }
   .checks {
     margin-top: auto;
     display: flex;

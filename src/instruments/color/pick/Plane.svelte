@@ -1,8 +1,8 @@
 <script lang="ts">
   // Lightness against chroma at the current hue. Painted where sRGB can show the color and
   // left clear beyond it, so the edge of what screens show is the picture. Drag to set
-  // lightness and chroma; the sliders below do the same from the keyboard.
-  import { inSrgb, type Lch } from '@duskresearch/primitives/design/color';
+  // lightness and chroma; the marker stops at the edge. The sliders do the same by keyboard.
+  import { fitSrgb, inSrgb, type Lch } from '@duskresearch/primitives/design/color';
   import { textOn } from '../ui';
 
   let { color = $bindable(), cmax }: { color: Lch; cmax: number } = $props();
@@ -37,8 +37,10 @@
     const r = canvas!.getBoundingClientRect();
     const x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
     const y = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
-    color.c = Math.round(x * cmax * 1000) / 1000;
-    color.l = Math.round((1 - y) * 200) / 200;
+    // The marker stays on the painted area: past the edge, chroma stops at the edge.
+    const l = Math.round((1 - y) * 200) / 200;
+    color.l = l;
+    color.c = fitSrgb({ l, c: Math.round(x * cmax * 1000) / 1000, h: color.h }).c;
   }
 
   function down(e: PointerEvent) {

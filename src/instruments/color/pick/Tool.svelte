@@ -1,7 +1,7 @@
 <script lang="ts">
   import Copy from '@/components/tool/Copy.svelte';
   import { setQuery } from '@/lib/client/harness';
-  import { cssOklch, gamutOf, hex, type Lch } from '@duskresearch/primitives/design/color';
+  import { cssOklch, fitSrgb, formatAs, type CssFormat, type Lch } from '@duskresearch/primitives/design/color';
   import { serialize, type ColorState } from '../state';
   import { textOn } from '../ui';
   import ColorControls from '../ColorControls.svelte';
@@ -14,12 +14,17 @@
   let a = $state<Lch>({ ...initial.a });
   // svelte-ignore state_referenced_locally
   const b = initial.b;
-  const CMAX = 0.37;
+  let format = $state<CssFormat>('hex');
+  const CMAX = 0.33;
 
-  const css = $derived(cssOklch(a));
-  const shown = $derived(hex(a));
-  const gamut = $derived(gamutOf(a));
-  const where = { srgb: 'Inside sRGB', p3: 'Display P3 only', wider: 'Beyond Display P3' };
+  // Pick keeps to colors every screen can show: past the edge of sRGB, chroma stops at the edge.
+  $effect(() => {
+    const fitted = fitSrgb(a);
+    if (fitted.c < a.c) a.c = fitted.c;
+  });
+
+  const value = $derived(formatAs(a, format));
+  const oklch = $derived(cssOklch(a));
 
   let loaded = false;
   $effect(() => {
@@ -29,18 +34,16 @@
   });
 </script>
 
-<!-- The surface paints oklch() itself, so a wide-gamut screen shows the color as chosen. -->
-<div class="surface" style:background-color={css} style:color={textOn(a)}>
+<div class="surface" style:background-color={oklch} style:color={textOn(a)}>
   <div class="labels mono">
-    <Copy value={shown} label="hex">{gamut === 'srgb' ? shown : `sRGB shows ${shown}`}</Copy>
-    <span>{where[gamut]}</span>
+    <Copy value={oklch} label="oklch">{oklch}</Copy>
   </div>
-  <Copy value={css} label="oklch" primary class="big">{css}</Copy>
+  <Copy {value} label={format} primary class="big">{value}</Copy>
 </div>
 
 <div class="panel">
   <Plane bind:color={a} cmax={CMAX} />
-  <ColorControls name="Color" key="A" bind:color={a} cmax={CMAX} />
+  <ColorControls name="Color" key="A" bind:color={a} bind:format cmax={CMAX} />
 </div>
 
 <style>
