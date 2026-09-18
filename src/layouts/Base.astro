@@ -4,6 +4,7 @@ import { ClientRouter } from 'astro:transitions';
 import { Font } from 'astro:assets';
 import Spotlight from '@/components/Spotlight.svelte';
 import { searchIndex, site } from '@/lib/catalogue';
+import og from '@/generated/og.json';
 import '@/styles/tokens.css';
 import '@/styles/global.css';
 
@@ -16,6 +17,10 @@ interface Props {
 
 const { title, description, jsonLd = [] } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
+// One OG image per page (never per state), versioned by its content so shares refresh.
+const ogPages: Record<string, string> = og;
+const ogPath = Astro.url.pathname in ogPages ? Astro.url.pathname : '/';
+const ogImage = new URL(`/og${ogPath === '/' ? '/index' : ogPath}.png?v=${ogPages[ogPath]}`, Astro.site).href;
 const graph = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -33,16 +38,25 @@ const graph = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#f4f1ea" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
     <meta name="twitter:card" content="summary_large_image" />
-    <Font cssVariable="--font-hanken" preload />
-    <Font cssVariable="--font-geist" preload={[{ weight: 400 }]} />
+    <meta name="twitter:image" content={ogImage} />
+    <!-- Preload only the weights of the largest text (display 300, body 400). -->
+    <Font cssVariable="--font-hanken" preload={[{ weight: 300 }, { weight: 400 }]} />
+    <Font cssVariable="--font-geist" />
     <ClientRouter />
     <script type="application/ld+json" set:html={JSON.stringify(graph)} />
   </head>

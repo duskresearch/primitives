@@ -26,7 +26,8 @@ const devCache = {
 export default defineConfig({
   site: 'https://primitiv.es',
   trailingSlash: 'never',
-  build: { format: 'file' },
+  // Inline CSS: one fewer render-blocking request; the whole stylesheet is small.
+  build: { format: 'file', inlineStylesheets: 'always' },
   // No sessions: the URL is the only state.
   session: false,
   adapter: cloudflare({ imageService: 'passthrough' }),

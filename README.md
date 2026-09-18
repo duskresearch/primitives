@@ -9,6 +9,7 @@ npm install
 npm run dev       # http://localhost:4321, runs in the Workers runtime (workerd)
 npm test          # unit tests (color math, URL state)
 npm run check     # type check
+npm run assets    # favicons, app icons, OG images (also run by dev and build)
 npm run build     # static pages + the Worker for on-demand instrument pages
 npm run preview   # serve the production build locally
 ```
@@ -18,12 +19,15 @@ Stack: Astro with Svelte islands, deployed to Cloudflare Workers with static ass
 ## Layout
 
 ```
-design/                     the design brief (README.md) and the approved reference
+design/                     the design brief (README.md), the mark (MARK.md), the approved reference,
+                            and brand/ avatars for social profiles
 src/data/tokens.json        every design value; scripts/build-tokens.mjs writes src/styles/tokens.css
 src/data/catalogue.json     every primitive and instrument, shipped and planned, with copy
 src/instruments/<p>/<i>/    one folder per instrument: meta.ts, Tool.svelte, explain.md
 src/pages/<p>/<i>.astro     the instrument's route: parses URL state, renders the harness
 src/layouts/Instrument.astro   the harness: breadcrumb, stateful address, tool chrome, explanation, related
+src/lib/logo.ts             the Primitives mark, the one source for header, favicons, icons and OG
+scripts/build-assets.mjs    renders icons and OG images (Satori + resvg) into public/, gitignored
 ```
 
 ## Adding an instrument

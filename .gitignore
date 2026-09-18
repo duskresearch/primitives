@@ -8,3 +8,11 @@ dist/
 
 # Generated from src/data/tokens.json by npm run tokens
 src/styles/tokens.css
+
+# Generated from the mark and the catalogue by npm run assets
+public/favicon.svg
+public/favicon.ico
+public/apple-touch-icon.png
+public/icon-*.png
+public/og/
+src/generated/

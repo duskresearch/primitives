@@ -1,0 +1,14 @@
+---
+// The Primitives mark, drawn inline so it takes the surrounding text color.
+import { logoSvg } from '@/lib/logo';
+
+interface Props {
+  size: number;
+  class?: string;
+}
+
+const { size, class: className } = Astro.props;
+const svg = logoSvg({ size, attrs: `aria-hidden="true" focusable="false"${className ? ` class="${className}"` : ''}` });
+---
+
+<Fragment set:html={svg} />

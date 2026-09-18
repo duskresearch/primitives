@@ -1,5 +1,6 @@
 ---
 // Site header. Landing: name, counts, domain. Elsewhere: a breadcrumb and the canonical URL.
+import Logo from './Logo.astro';
 import { counts, site } from '@/lib/catalogue';
 
 export interface Crumb {
@@ -27,6 +28,7 @@ const { crumbs, address, stateful } = Astro.props;
         <ol class="crumbs">
           <li>
             <a href="/" class="home">
+              <Logo size={16} />
               {site.name}
             </a>
           </li>
@@ -48,6 +50,7 @@ const { crumbs, address, stateful } = Astro.props;
     ) : (
       <>
         <a href="/" class="home" aria-current="page">
+          <Logo size={16} />
           {site.name}
         </a>
         <span class="counts mono">
@@ -93,6 +96,13 @@ const { crumbs, address, stateful } = Astro.props;
   .home {
     font-weight: 500;
     letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+  /* Lockup: 16px mark, 10px gap, centered on the cap height so the header keeps its baseline. */
+  .home :global(svg) {
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: -0.2em;
   }
   .crumbs {
     display: flex;

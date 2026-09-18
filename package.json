@@ -5,10 +5,11 @@
   "private": true,
   "scripts": {
     "tokens": "node scripts/build-tokens.mjs",
-    "dev": "npm run tokens && astro dev",
-    "build": "npm run tokens && astro build",
+    "assets": "node scripts/build-assets.mjs",
+    "dev": "npm run tokens && npm run assets && astro dev",
+    "build": "npm run tokens && npm run assets && astro build",
     "preview": "astro preview",
-    "check": "npm run tokens && astro check",
+    "check": "npm run tokens && npm run assets && astro check",
     "test": "vitest run"
   },
   "dependencies": {
@@ -20,7 +21,11 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@fontsource/geist-mono": "^5.3.0",
+    "@fontsource/hanken-grotesk": "^5.3.0",
+    "@resvg/resvg-js": "^2.6.2",
     "@types/culori": "^4.0.1",
+    "satori": "^0.33.4",
     "typescript": "^6.0.3",
     "vitest": "^4.1.11",
     "wrangler": "^4.134.0"
