@@ -15,6 +15,7 @@
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.2",
     "@astrojs/svelte": "^9.0.1",
+    "@duskresearch/primitives": "*",
     "astro": "^7.3.3",
     "culori": "^4.0.2",
     "svelte": "^5.57.0"
@@ -29,5 +30,8 @@
     "typescript": "^6.0.3",
     "vitest": "^4.1.11",
     "wrangler": "^4.134.0"
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }

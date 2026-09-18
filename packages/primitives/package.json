@@ -1,0 +1,18 @@
+{
+  "name": "@duskresearch/primitives",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The logic behind the primitiv.es instruments: plain functions, one JSON object in and one out.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./color": "./src/color/index.ts",
+    "./type": "./src/type/index.ts",
+    "./grid": "./src/grid/index.ts",
+    "./shape": "./src/shape/index.ts",
+    "./motion": "./src/motion/index.ts"
+  },
+  "dependencies": {
+    "culori": "^4.0.2"
+  }
+}

@@ -21,6 +21,8 @@ Stack: Astro with Svelte islands, deployed to Cloudflare Workers with static ass
 ```
 design/                     the design brief (README.md), the mark (MARK.md), the approved reference,
                             and brand/ avatars for social profiles
+packages/primitives/        the instruments' logic, one module per primitive: JSON in, JSON out
+                            (future endpoints and npm package; see its README)
 src/data/tokens.json        every design value; scripts/build-tokens.mjs writes src/styles/tokens.css
 src/data/catalogue.json     every primitive and instrument, shipped and planned, with copy
 src/instruments/<p>/<i>/    one folder per instrument: meta.ts, Tool.svelte, explain.md
@@ -32,11 +34,12 @@ scripts/build-assets.mjs    renders icons and OG images (Satori + resvg) into pu
 
 ## Adding an instrument
 
-1. Its entry already exists in `src/data/catalogue.json` (name, number, does, pain, keywords, primary value). Keep copy there.
-2. Create `src/instruments/<primitive>/<slug>/`:
+1. Put its logic in `packages/primitives/src/<primitive>/` as an operation keyed by the instrument's slug, with tests. The tool imports it from `@duskresearch/primitives/<primitive>`.
+2. Its entry already exists in `src/data/catalogue.json` (name, number, does, pain, keywords, primary value). Keep copy there.
+3. Create `src/instruments/<primitive>/<slug>/`:
    - `meta.ts`: `purpose` (one sentence shown above the tool), `primaryLabel` (what `C` copies), `related` slugs.
    - `Tool.svelte`: renders `.surface` and `.panel` as top-level elements. Reads state from its `initial` prop, reports changes with `setQuery(serialize(state))`, marks copyable values with `Copy` (and the primary one with `primary`).
    - `explain.md`: front matter `title` and `description`, then exactly four `##` sections: What it measures, How it is computed, When to use it, Related. 120 to 220 words each.
-3. Add `src/pages/<primitive>/<slug>.astro`, copying `src/pages/color/contrast.astro`.
+4. Add `src/pages/<primitive>/<slug>.astro`, copying `src/pages/color/contrast.astro`.
 
 The instrument goes live everywhere (index, spotlight, related lists, sitemap, llms.txt) once `meta.ts` exists. The definition of done is in `design/README.md`.

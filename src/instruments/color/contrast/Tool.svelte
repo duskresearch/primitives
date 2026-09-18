@@ -2,7 +2,7 @@
   import Copy from '@/components/tool/Copy.svelte';
   import Slider from '@/components/tool/Slider.svelte';
   import { setQuery } from '@/lib/client/harness';
-  import { fixText, grade, hex, ratio, ratioText, type Lch } from '../math';
+  import { fixText, grade, hex, ratio, ratioText, type Lch } from '@duskresearch/primitives/color';
   import { serialize, type ColorState } from '../state';
 
   let { initial }: { initial: ColorState } = $props();
@@ -79,7 +79,7 @@
     {#if fix}
       <button type="button" class="fix" onclick={() => (a.l = fix.color.l)}>
         <span class="swatch" style:background-color={fix.hex}></span>
-        <span>{fix.verb} text to {fix.hex} → {ratioText(fix.ratio)} : 1</span>
+        <span>{fix.direction === 'darken' ? 'Darken' : 'Lighten'} text to {fix.hex} → {ratioText(fix.ratio)} : 1</span>
         <span class="apply">Apply</span>
       </button>
     {/if}

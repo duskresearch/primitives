@@ -2,7 +2,7 @@
 // instrument in the URL. Hex where it stands for the color, an l,c,h triple where
 // the color lies well outside sRGB.
 // Client-safe: defaults and parsing from the catalogue live in ./defaults.ts (server side).
-import { fromHex, hex, hexSafe, round, type Lch } from './math';
+import { fromHex, hex, hexSafe, round, type Lch } from '@duskresearch/primitives/color';
 
 export interface ColorState {
   a: Lch;
