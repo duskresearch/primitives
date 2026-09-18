@@ -59,9 +59,23 @@ export function logoPixelSvg(size: number, color = INK): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" shape-rendering="crispEdges" fill="${color}">${rects.map(([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}"/>`).join('')}</svg>`;
 }
 
-/** The browser-tab favicon: ink on light chrome, paper on dark chrome. */
+/** Favicons sit on a white rounded tile so the mark reads on any browser chrome, light or dark. */
+export const FAVICON_TILE = '#ffffff';
+const FAVICON_RADIUS = 14 / 64; // the app icon's corner, scaled
+const FAVICON_MARK = 0.75; // larger than the app icon's 50%: it has to read at 16 px
+
+/** The browser-tab favicon as SVG: the exact mark on a white tile. */
 export function faviconSvg(): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW} ${VIEW}" ${strokeAttrs(INK)}><style>@media (prefers-color-scheme: dark){svg{stroke:${PAPER}}}</style>${logoShapes(16)}</svg>`;
+  const inset = ((1 - FAVICON_MARK) / 2) * VIEW;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW} ${VIEW}"><rect width="${VIEW}" height="${VIEW}" rx="${FAVICON_RADIUS * VIEW}" fill="${FAVICON_TILE}"/>${logoGroup(inset, inset, VIEW * FAVICON_MARK, INK)}</svg>`;
+}
+
+/** A favicon.ico size: the white tile with the pixel-hinted mark centered on whole pixels. */
+export function faviconPixelSvg(size: number): string {
+  const mark = Math.round(size * FAVICON_MARK);
+  const at = Math.floor((size - mark) / 2);
+  const inner = logoPixelSvg(mark).replace(/^<svg[^>]*>|<\/svg>$/g, '');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}"><rect width="${size}" height="${size}" rx="${FAVICON_RADIUS * size}" fill="${FAVICON_TILE}"/><g transform="translate(${at} ${at})" shape-rendering="crispEdges" fill="${INK}">${inner}</g></svg>`;
 }
 
 interface TileOptions {

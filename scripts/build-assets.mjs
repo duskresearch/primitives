@@ -59,7 +59,7 @@ const appRadius = 14 / 64; // the reference app icon: 14 px on a 64 px tile
 await write('public/favicon.svg', logo.faviconSvg());
 await write(
   'public/favicon.ico',
-  ico([16, 32, 48].map((size) => ({ size, data: png(logo.logoPixelSvg(size)) }))),
+  ico([16, 32, 48].map((size) => ({ size, data: png(logo.faviconPixelSvg(size)) }))),
 );
 // iOS masks the touch icon itself and fills transparent corners with black, so it is full bleed.
 await write('public/apple-touch-icon.png', png(logo.tileSvg({ size: 180, background: TILE, color: logo.INK })));
@@ -124,10 +124,10 @@ async function emit(path, image) {
   og[path] = createHash('sha256').update(image).digest('hex').slice(0, 10);
 }
 
-// Landing: the mark at 96, a row of the shipped primitive marks at 200 with the Primitives
-// mark in the middle slot, the name, the domain and the maker along the bottom.
+// Landing: a row of the shipped primitive marks at 200 with the Primitives mark in the
+// middle slot (the only mark on this image), the name, the domain and the maker along the bottom.
 {
-  const overlays = [logo.logoGroup(INSET, INSET, 96, logo.INK)];
+  const overlays = [];
   const children = [];
   const shipped = primitives.filter((p) => p.shipped);
   const middle = Math.floor(shipped.length / 2);
