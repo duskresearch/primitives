@@ -11,6 +11,18 @@ const stack = (s) => s.split(',').map((/** @type {string} */ f) => f.trim().repl
 const [sans, ...sansFallbacks] = stack(tokens.font.sans);
 const [mono, ...monoFallbacks] = stack(tokens.font.mono);
 
+// `astro dev` gets its own Vite cache. Builds, checks and previews share node_modules/.vite
+// and re-optimize its dependencies, which deletes files a running dev server still uses.
+/** @type {import('astro').AstroIntegration} */
+const devCache = {
+  name: 'dev-cache',
+  hooks: {
+    'astro:config:setup': ({ command, updateConfig }) => {
+      if (command === 'dev') updateConfig({ vite: { cacheDir: 'node_modules/.vite-dev' } });
+    },
+  },
+};
+
 export default defineConfig({
   site: 'https://primitiv.es',
   trailingSlash: 'never',
@@ -18,7 +30,7 @@ export default defineConfig({
   // No sessions: the URL is the only state.
   session: false,
   adapter: cloudflare({ imageService: 'passthrough' }),
-  integrations: [svelte()],
+  integrations: [svelte(), devCache],
   prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
   markdown: { syntaxHighlight: false },
   devToolbar: { enabled: false },
