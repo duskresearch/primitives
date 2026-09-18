@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "tokens": "node scripts/build-tokens.mjs",
     "assets": "node scripts/build-assets.mjs",

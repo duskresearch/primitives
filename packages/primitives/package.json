@@ -2,6 +2,7 @@
   "name": "@duskresearch/primitives",
   "version": "0.0.0",
   "private": true,
+  "license": "MIT",
   "description": "The logic behind the primitiv.es instruments: plain functions, one JSON object in and one out.",
   "type": "module",
   "exports": {
