@@ -1,6 +1,6 @@
 # @duskresearch/primitives
 
-The logic behind the [primitiv.es](https://primitiv.es) instruments, one module per primitive: `color`, `type`, `grid`, `shape`, `motion`. The site's islands use it today. The same functions are meant to become JSON endpoints (`/api/<primitive>/<instrument>`) and a published npm package, so agents and coding assistants can call Primitives instead of guessing. Neither exists yet; the package is private.
+The logic behind the [primitiv.es](https://primitiv.es) instruments, namespaced by field and then one module per primitive: `design/color`, `design/type`, `design/grid`, `design/shape`, `design/motion`. Design is the only field so far; a second one gets its own namespace beside it. The site's islands use it today. The same functions are meant to become JSON endpoints (`/api/<primitive>/<instrument>`) and a published npm package, so agents and coding assistants can call Primitives instead of guessing. Neither exists yet; the package is private.
 
 ## The contract
 
@@ -13,7 +13,7 @@ Every operation (see `src/operation.ts`):
 Each primitive module exports `operations`, keyed by instrument slug, so an endpoint can dispatch generically: `operations[instrument](input)`. Building blocks (conversions, ratios) are exported beside them for the site's own tools.
 
 ```ts
-import { contrast } from '@duskresearch/primitives/color';
+import { contrast } from '@duskresearch/primitives/design/color';
 
 contrast({ text: '#999', background: 'white' });
 // { text: { hex: '#999999', oklch: {…} }, background: {…}, ratio: 2.84, grade: 'Fails',
@@ -23,7 +23,7 @@ contrast({ text: '#999', background: 'white' });
 
 ## Adding an instrument's logic
 
-Put it in its primitive's module, add the operation to `operations` under the instrument's slug, and test it next to the module (`*.test.ts`, run by `npm test` at the repo root). Keep UI copy out: return data (`direction: 'darken'`), let the tool word it.
+Put it in its primitive's module (`src/<field>/<primitive>/`), add the operation to `operations` under the instrument's slug, and test it next to the module (`*.test.ts`, run by `npm test` at the repo root). Keep UI copy out: return data (`direction: 'darken'`), let the tool word it.
 
 ## Before publishing
 

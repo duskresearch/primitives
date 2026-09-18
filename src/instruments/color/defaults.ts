@@ -1,6 +1,6 @@
 import catalogue from '@/data/catalogue.json';
 import { decode, type ColorState } from './state';
-import type { Lch } from '@duskresearch/primitives/color';
+import type { Lch } from '@duskresearch/primitives/design/color';
 
 const triple = (s: string): Lch => {
   const [l, c, h] = s.match(/[\d.]+/g)!.map(Number);

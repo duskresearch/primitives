@@ -6,7 +6,7 @@ import {
   formatHex, parseHex, parse as parseCss, toGamut, differenceEuclidean, wcagContrast, wcagLuminance,
   type Oklch, type Rgb,
 } from 'culori/fn';
-import { InputError, type Operation } from '../operation';
+import { InputError, type Operation } from '../../operation';
 
 const toOklch = useMode(modeOklch);
 useMode(modeOklab);

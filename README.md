@@ -59,7 +59,7 @@ Something missing? Suggest it on the [requests board](https://primitiv.es/reques
 Every instrument's logic lives in [`packages/primitives`](packages/primitives): pure functions, one plain object in and one out, no DOM and no I/O. The site imports them today. The same operations will be served as JSON endpoints and published as a package, so an agent can ask the questions a person does. Neither exists yet.
 
 ```ts
-import { operations } from '@duskresearch/primitives/color';
+import { operations } from '@duskresearch/primitives/design/color';
 
 operations.contrast({ text: '#9a9a9a', background: '#ffffff' });
 // {
@@ -97,7 +97,7 @@ Local development uses a local D1 database and `.dev.vars` for `VOTE_SALT`; prod
 
 ## Add an instrument
 
-1. Put its logic in `packages/primitives/src/<primitive>/` as an operation keyed by the instrument's slug, with tests. The tool imports it from `@duskresearch/primitives/<primitive>`.
+1. Put its logic in `packages/primitives/src/<field>/<primitive>/` as an operation keyed by the instrument's slug, with tests. The tool imports it from `@duskresearch/primitives/<field>/<primitive>`.
 2. Its entry already exists in `src/data/catalogue.json` (name, number, does, pain, keywords, primary value). Keep copy there.
 3. Create `src/instruments/<primitive>/<slug>/`:
    - `meta.ts`: `purpose` (one sentence shown above the tool), `primaryLabel` (what `C` copies), `related` slugs.
@@ -110,7 +110,7 @@ The instrument goes live everywhere (index, search, related lists, sitemap, llms
 ## Where things are
 
 ```
-packages/primitives/          the instruments' logic, one module per primitive: JSON in, JSON out
+packages/primitives/          the instruments' logic, by field and primitive: JSON in, JSON out
 src/data/tokens.json          every design value; scripts/build-tokens.mjs writes src/styles/tokens.css
 src/data/catalogue.json       every primitive and instrument, shipped and planned, with copy
 src/instruments/<p>/<i>/      one folder per instrument: meta.ts, Tool.svelte, explain.md

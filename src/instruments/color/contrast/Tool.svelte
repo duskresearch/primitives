@@ -2,7 +2,7 @@
   import Copy from '@/components/tool/Copy.svelte';
   import Slider from '@/components/tool/Slider.svelte';
   import { setQuery } from '@/lib/client/harness';
-  import { fixText, grade, hex, ratio, ratioText, type Lch } from '@duskresearch/primitives/color';
+  import { fixText, grade, hex, ratio, ratioText, type Lch } from '@duskresearch/primitives/design/color';
   import { serialize, type ColorState } from '../state';
 
   let { initial }: { initial: ColorState } = $props();

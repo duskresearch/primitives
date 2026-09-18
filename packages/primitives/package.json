@@ -7,11 +7,12 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./color": "./src/color/index.ts",
-    "./type": "./src/type/index.ts",
-    "./grid": "./src/grid/index.ts",
-    "./shape": "./src/shape/index.ts",
-    "./motion": "./src/motion/index.ts"
+    "./design": "./src/design/index.ts",
+    "./design/color": "./src/design/color/index.ts",
+    "./design/type": "./src/design/type/index.ts",
+    "./design/grid": "./src/design/grid/index.ts",
+    "./design/shape": "./src/design/shape/index.ts",
+    "./design/motion": "./src/design/motion/index.ts"
   },
   "dependencies": {
     "culori": "^4.0.2"

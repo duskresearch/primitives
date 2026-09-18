@@ -3,7 +3,7 @@
 import { ClientRouter } from 'astro:transitions';
 import { Font } from 'astro:assets';
 import Spotlight from '@/components/Spotlight.svelte';
-import { searchIndex, site } from '@/lib/catalogue';
+import { field, searchIndex, site } from '@/lib/catalogue';
 import icons from '@/generated/icons.json';
 import og from '@/generated/og.json';
 import { OG } from '@/lib/og';
@@ -22,7 +22,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
 // One OG image per page (never per state), versioned by its content so shares refresh.
 const ogPages: Record<string, string> = og;
 const ogPath = Astro.url.pathname in ogPages ? Astro.url.pathname : '/';
-const ogImage = new URL(`/og${ogPath === '/' ? '/index' : ogPath}.png?v=${ogPages[ogPath]}`, Astro.site).href;
+const ogImage = new URL(`/og/${field}${ogPath === '/' ? '/index' : ogPath}.png?v=${ogPages[ogPath]}`, Astro.site).href;
 const graph = {
   '@context': 'https://schema.org',
   '@graph': [

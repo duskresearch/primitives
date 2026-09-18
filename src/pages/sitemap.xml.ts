@@ -1,11 +1,10 @@
 import type { APIRoute } from 'astro';
-import { pages, primitives } from '@/lib/catalogue';
+import { field } from '@/lib/catalogue';
 
-// Site pages, every primitive index, and every live instrument (state-free URLs only).
-export const GET: APIRoute = ({ site }) => {
-  const paths = [...pages.map((pg) => pg.href), ...primitives.flatMap((p) => [p.href, ...p.instruments.filter((i) => i.live).map((i) => i.href)])];
-  const urls = paths.map((path) => `  <url><loc>${new URL(path, site)}</loc></url>`).join('\n');
-  return new Response(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`, {
-    headers: { 'content-type': 'application/xml; charset=utf-8' },
-  });
-};
+// A sitemap index with one sitemap per field, so a second field adds a line here rather than
+// changing the URL search engines already know.
+export const GET: APIRoute = ({ site }) =>
+  new Response(
+    `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <sitemap><loc>${new URL(`/sitemap-${field}.xml`, site)}</loc></sitemap>\n</sitemapindex>\n`,
+    { headers: { 'content-type': 'application/xml; charset=utf-8' } },
+  );

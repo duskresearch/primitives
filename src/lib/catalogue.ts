@@ -54,6 +54,7 @@ const metaFor = (primitive: string, slug: string) => metas[`/src/instruments/${p
 type RawInstrument = { n?: string; name: string; slug?: string; does: string; pain?: string; primaryValue?: string; keywords?: string[] };
 type RawPrimitive = (typeof data.primitives)[number] & { intro?: string[]; letter?: string; accent?: string; instruments: RawInstrument[] };
 
+export { field } from './fields';
 export const site = data.site;
 export const explanationHeadings = data.explanationHeadings;
 

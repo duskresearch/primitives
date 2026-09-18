@@ -1,5 +1,12 @@
 // Server bindings (wrangler.jsonc), declared by hand: `wrangler types` would also declare the
 // Workers runtime's own globals (Element, Response…), which clash with DOM types in client code.
+declare namespace App {
+  interface Locals {
+    /** The field this request is for, from its host (src/middleware.ts). */
+    field: import('./lib/fields').Field;
+  }
+}
+
 declare module 'cloudflare:workers' {
   export const env: {
     DB: D1Database;

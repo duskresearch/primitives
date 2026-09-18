@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { pages, primitives, site } from '@/lib/catalogue';
+import { field, pages, primitives, site } from '@/lib/catalogue';
 
 // A plain index for language models: what each instrument does and the problem it answers.
 export const GET: APIRoute = ({ site: origin }) => {
@@ -11,6 +11,8 @@ export const GET: APIRoute = ({ site: origin }) => {
     `# ${site.name}`,
     '',
     `> ${site.headline} ${site.subline} Made by ${site.maker}. Every result is a link: instrument state lives in the URL query.`,
+    '',
+    `Field: ${field}. Everything below is the ${field} catalogue.`,
     '',
     ...shipped.flatMap((p) => [
       `## ${p.name}`,

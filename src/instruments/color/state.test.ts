@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hex } from '@duskresearch/primitives/color';
+import { hex } from '@duskresearch/primitives/design/color';
 import { serialize } from './state';
 import { defaults, parse } from './defaults';
 

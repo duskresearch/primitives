@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { InputError } from '../operation';
+import { InputError } from '../../operation';
 import { contrast, fixText, fromHex, grade, parseColor, ratio, ratioText } from '.';
 
 describe('contrast', () => {

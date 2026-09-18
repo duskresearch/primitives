@@ -1,13 +1,13 @@
 // Generates every image derived from the Primitives mark and the catalogue:
 //   public/favicon.svg, favicon.ico (16/32/48), apple-touch-icon.png (180),
-//   icon-192.png, icon-512.png, icon-maskable-512.png, public/og/**.png,
+//   icon-192.png, icon-512.png, icon-maskable-512.png, public/og/<field>/**.png,
 //   src/generated/og.json and icons.json (cache-busting hashes), and the social avatars (see below).
 // Sources: src/lib/logo.ts (the mark), src/lib/mark-svg.ts (primitive marks),
 // src/lib/catalogue.ts (content). Layout follows the private brief and mark spec
 // (explorations: primitives-design/README.md and MARK.md).
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Resvg } from '@resvg/resvg-js';
@@ -19,7 +19,7 @@ const at = (p) => `${root}${p}`;
 const config = { configFile: false, root, logLevel: 'error', resolve: { alias: { '@': at('src') } } };
 const load = async (id) => (await runnerImport(id, config)).module;
 
-const { primitives, site } = await load('/src/lib/catalogue.ts');
+const { field, primitives, site } = await load('/src/lib/catalogue.ts');
 const logo = await load('/src/lib/logo.ts');
 const { markSvg } = await load('/src/lib/mark-svg.ts');
 const { OG } = await load('/src/lib/og.ts');
@@ -127,8 +127,11 @@ async function render(children, overlays) {
 }
 
 const og = {};
+// Start clean: images from renamed pages or an older layout must not ship.
+await rm(at('public/og'), { recursive: true, force: true });
+// Namespaced by field, so fields can later share one app and one set of static files.
 async function emit(path, image) {
-  const file = path === '/' ? 'og/index.png' : `og${path}.png`;
+  const file = `og/${field}${path === '/' ? '/index' : path}.png`;
   await write(`public/${file}`, image);
   og[path] = createHash('sha256').update(image).digest('hex').slice(0, 10);
 }

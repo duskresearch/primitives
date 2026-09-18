@@ -1,0 +1,9 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "primitives-design",
+  "main": "index.js",
+  "compatibility_date": "2026-09-01",
+  "routes": [{ "pattern": "design.primitiv.es", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false
+}

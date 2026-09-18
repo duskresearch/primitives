@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { site } from '@/lib/catalogue';
+import { field, site } from '@/lib/catalogue';
 import tokens from '@/data/tokens.json';
 
 // Icons are generated from the mark by scripts/build-assets.mjs.
@@ -9,6 +9,7 @@ export const GET: APIRoute = () =>
       name: site.name,
       short_name: site.name,
       description: site.subline,
+      categories: [field],
       start_url: '/',
       display: 'browser',
       background_color: tokens.color.paper,
