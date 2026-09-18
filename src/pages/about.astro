@@ -1,0 +1,158 @@
+---
+import Base from '@/layouts/Base.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { site } from '@/lib/catalogue';
+import { links } from '@/lib/links';
+
+const newTab = { target: '_blank', rel: 'noopener' };
+const description =
+  'What Primitives is, who makes it, why its color instruments use OKLCH, why every result lives in the URL, and how to contribute.';
+---
+
+<Base
+  title={`About · ${site.name}`}
+  description={description}
+  jsonLd={[
+    {
+      '@type': 'AboutPage',
+      url: new URL('/about', Astro.site).href,
+      name: `About ${site.name}`,
+      about: { '@type': 'WebSite', name: site.name, url: Astro.site?.href },
+    },
+    {
+      '@type': 'Organization',
+      name: site.maker,
+      url: 'https://duskresearch.com',
+      sameAs: [links.github.replace(/\/primitives$/, ''), links.twitter],
+    },
+  ]}
+>
+  <div class="page">
+    <Header crumbs={[{ label: 'About', current: true }]} address={`${site.domain}/about`} />
+    <main>
+      <div class="title-row">
+        <h1>About</h1>
+        <p>
+          Primitives is a set of small instruments for the basic elements of digital work: color, type, grid, shape and motion, with more on
+          the way. Each one does a single job on a single screen, and every result is a link you can share. It is free, needs no account and
+          is open source.
+        </p>
+      </div>
+
+      <div class="parts">
+        <section aria-labelledby="who">
+          <h2 id="who">Who makes it</h2>
+          <p>
+            Primitives is made by <a href={links.maker} {...newTab}>Dusk Research<span class="visually-hidden"> (opens in a new tab)</span></a>, a
+            software lab that builds tools that should exist and makes them open to everyone. Every project keeps its own name and stands on its
+            own. If an instrument you need is missing, the request line on the <a href="/">home page</a> reaches us.
+          </p>
+        </section>
+
+        <section aria-labelledby="oklch">
+          <h2 id="oklch">Why OKLCH</h2>
+          <p>
+            The color instruments work in OKLCH, a color model built so that equal steps look equal to the eye. Change lightness and only
+            lightness changes; the hue stays where it was. HSL cannot promise that: its yellow looks far brighter than its blue at the same
+            lightness, which is why scales made in it look uneven. Hex values are always there too, for code that expects them.
+          </p>
+        </section>
+
+        <section aria-labelledby="url">
+          <h2 id="url">Why the URL holds everything</h2>
+          <p>
+            Nothing you do in an instrument is saved on our side, and nothing asks for an account. Each instrument keeps its settings in the
+            address, so any result is
+            a link: send it, bookmark it or paste it into a ticket, and whoever opens it sees exactly what you saw. The back button returns to
+            the page you came from, not through every slider move.
+          </p>
+        </section>
+
+        <section aria-labelledby="contribute">
+          <h2 id="contribute">How to contribute</h2>
+          <p>
+            The code and the explanations are on <a href={links.github} {...newTab}>GitHub<span class="visually-hidden"> (opens in a new tab)</span></a>.
+            Report a bug, correct an explanation or propose an instrument there. A new instrument ships when it can name, in one sentence, a
+            problem people run into again and again.
+          </p>
+        </section>
+      </div>
+    </main>
+    <Footer variant="full" />
+  </div>
+</Base>
+
+<style>
+  .title-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: end;
+    padding: 48px var(--page-x) 0;
+  }
+  h1 {
+    font-size: 56px;
+    line-height: 1;
+    font-weight: 300;
+    letter-spacing: -0.035em;
+  }
+  .title-row p {
+    justify-self: end;
+    max-width: 460px;
+    font-size: 17px;
+    line-height: 1.45;
+    color: var(--ink-1);
+  }
+  .parts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 64px;
+    padding: 48px var(--page-x) 40px;
+  }
+  section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 460px;
+  }
+  h2 {
+    font-size: 22px;
+    line-height: 1.2;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  section p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--ink-1);
+  }
+  section a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  @media (max-width: 719px) {
+    .title-row {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding-top: 44px;
+    }
+    h1 {
+      font-size: 34px;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+    .title-row p {
+      justify-self: start;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    .parts {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 28px;
+      padding-top: 40px;
+    }
+  }
+</style>

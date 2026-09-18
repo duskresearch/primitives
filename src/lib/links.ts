@@ -1,8 +1,8 @@
 import { site } from './catalogue';
 
-// Outbound links. Until set, the maker renders as plain text and X is left out.
-export const links: { maker?: string; github: string; x?: string } = {
-  maker: undefined,
+// Outbound links. The maker link carries the source, as other Dusk projects do.
+export const links = {
+  maker: `https://duskresearch.com/?ref=${site.domain}`,
   github: site.repo,
-  x: undefined,
+  twitter: 'https://x.com/duskresearch',
 };

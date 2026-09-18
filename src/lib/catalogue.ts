@@ -137,6 +137,7 @@ export function related(i: Instrument): Instrument[] {
 /** Site pages outside the primitive tree. Static pages add themselves here as they ship. */
 export const pages: { name: string; does: string; href: string; keywords?: string[] }[] = [
   { name: 'Home', does: 'Every primitive, and the request line', href: '/', keywords: ['landing', 'all', 'index', 'request'] },
+  { name: 'About', does: 'What Primitives is, who makes it, and why OKLCH and the URL', href: '/about', keywords: ['dusk research', 'contribute', 'github', 'open source'] },
 ];
 
 /**

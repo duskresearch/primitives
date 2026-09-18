@@ -1,24 +1,28 @@
 ---
-// Footer. Every variant has the status slot: the only place feedback appears.
+// Footer. Every variant has the maker link and the status slot, the only place feedback
+// appears. `full` (landing, about) adds the email line and the site links.
 import { site, type Primitive } from '@/lib/catalogue';
 import { links } from '@/lib/links';
 
 interface Props {
-  variant: 'landing' | 'index' | 'instrument';
+  variant: 'full' | 'index' | 'instrument';
   next?: Primitive;
 }
 
 const { variant, next } = Astro.props;
+const newTab = { target: '_blank', rel: 'noopener' };
 ---
 
 <footer class:list={['footer', variant]}>
-  {links.maker ? <a href={links.maker}>{site.maker}</a> : <span>{site.maker}</span>}
+  <a class="maker" href={links.maker} {...newTab}>
+    {site.maker}<span class="visually-hidden"> (opens in a new tab)</span>
+  </a>
   {
-    variant === 'landing' && (
+    variant === 'full' && (
       <form class="notify" method="post" action="/api/subscribe" novalidate data-form data-astro-reload data-confirm={site.emailConfirm} data-error={site.errorLine}>
         <label for="notify-email">{site.emailLine}</label>
         <span class="notify-row">
-          <input id="notify-email" class="field" type="email" name="email" placeholder="you@…" autocomplete="email" />
+          <input id="notify-email" class="field" type="email" name="email" placeholder="euclid@elements.gr" autocomplete="email" />
           <input class="visually-hidden" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <button type="submit">{site.emailButton}</button>
         </span>
@@ -28,17 +32,21 @@ const { variant, next } = Astro.props;
   <span class="end">
     <span class="status" data-status role="status" aria-live="polite"></span>
     {
-      variant === 'landing' && (
-        <>
-          <a class="out" href={links.github}>GitHub</a>
-          {links.x && <a class="out" href={links.x}>X</a>}
-          <span class="domain">{site.domain}</span>
-        </>
+      variant === 'full' && (
+        <nav class="site-links" aria-label="Site">
+          <a href="/about" data-astro-prefetch>About</a>
+          <a href={links.github} {...newTab}>
+            GitHub<span class="visually-hidden"> (opens in a new tab)</span>
+          </a>
+          <a href={links.twitter} {...newTab}>
+            Twitter<span class="visually-hidden"> (opens in a new tab)</span>
+          </a>
+        </nav>
       )
     }
     {
       variant === 'index' && next && (
-        <a class="out" href={next.href} data-astro-prefetch>
+        <a class="next" href={next.href} data-astro-prefetch>
           {next.name} {next.n} →
         </a>
       )
@@ -62,9 +70,12 @@ const { variant, next } = Astro.props;
   .instrument {
     margin-top: 56px;
   }
-  .landing {
+  .full {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
+  }
+  .maker {
+    justify-self: start;
   }
   .end {
     display: flex;
@@ -79,14 +90,20 @@ const { variant, next } = Astro.props;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .out {
+  .site-links {
+    display: flex;
+    gap: 20px;
+  }
+  .site-links a {
     color: var(--ink);
   }
-  .index .out {
-    color: var(--ink-2);
+  .footer a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
   }
-  .domain {
-    display: none;
+  .next {
+    color: var(--ink-2);
   }
   .notify {
     display: flex;
@@ -117,10 +134,12 @@ const { variant, next } = Astro.props;
   }
   @media (pointer: coarse) {
     .notify button,
-    .out {
+    .footer a {
       min-height: var(--min-hit);
+      min-width: var(--min-hit);
       display: inline-flex;
       align-items: center;
+      justify-content: center;
     }
   }
   @media (max-width: 719px) {
@@ -128,30 +147,35 @@ const { variant, next } = Astro.props;
       padding: 16px var(--page-x) 22px;
       font-size: 11px;
     }
-    .landing {
+    /* Phone: the email line, then any status message, then the maker and the site links. */
+    .full {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px 24px;
+      gap: 12px 20px;
     }
-    .landing .notify {
-      order: -1;
+    .full .end {
+      display: contents;
+    }
+    .full .notify {
+      order: -2;
       width: 100%;
       flex-direction: column;
       align-items: stretch;
       gap: 4px;
     }
+    .full .status {
+      order: -1;
+      width: 100%;
+    }
+    .full .status:empty {
+      display: none;
+    }
+    .full .site-links {
+      margin-left: auto;
+    }
     .notify .field {
       flex: 1;
       width: auto;
-    }
-    .landing .out {
-      display: none;
-    }
-    .landing .domain {
-      display: inline;
-    }
-    .landing .status:not(:empty) ~ .domain {
-      display: none;
     }
   }
 </style>

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { primitives, site } from '@/lib/catalogue';
+import { pages, primitives, site } from '@/lib/catalogue';
 
 // A plain index for language models: what each instrument does and the problem it answers.
 export const GET: APIRoute = ({ site: origin }) => {
@@ -18,6 +18,10 @@ export const GET: APIRoute = ({ site: origin }) => {
       ...p.instruments.filter((i) => i.live).map((i) => `- [${i.name}](${url(i.href)}): ${i.does}, for when ${lower(i.pain)}.`),
       '',
     ]),
+    '## Pages',
+    '',
+    ...pages.filter((pg) => pg.href !== '/').map((pg) => `- [${pg.name}](${url(pg.href)}): ${pg.does}`),
+    '',
     '## In preparation',
     '',
     ...planned.map((p) => `- [${p.name}](${url(p.href)}): ${p.list}`),
