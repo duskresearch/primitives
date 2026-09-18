@@ -15,9 +15,9 @@ const v = (name, value) => vars.push(`  --${name}: ${value};`);
 for (const [k, val] of Object.entries(t.color)) v(kebab(k), val);
 
 // Font stacks: the first family is served by the Astro Fonts API (see astro.config.mjs),
-// which defines --font-hanken / --font-geist with metric-matched fallbacks.
+// which defines --font-hanken / --font-departure with metric-matched fallbacks.
 v('sans', 'var(--font-hanken)');
-v('mono', 'var(--font-geist)');
+v('mono', 'var(--font-departure)');
 
 for (const [k, hue] of Object.entries(t.accent.hue)) {
   v(`accent-${k}`, hue === null ? 'var(--ink)' : t.accent.formula.replace('H', hue));

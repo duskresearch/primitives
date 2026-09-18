@@ -79,13 +79,14 @@ const INSET = 48;
 const font = (file) => readFile(at(`node_modules/@fontsource/${file}`));
 const fonts = [
   ...[300, 400, 500].map(async (weight) => ({ name: 'Hanken Grotesk', weight, style: 'normal', data: await font(`hanken-grotesk/files/hanken-grotesk-latin-${weight}-normal.woff`) })),
-  (async () => ({ name: 'Geist Mono', weight: 400, style: 'normal', data: await font('geist-mono/files/geist-mono-latin-400-normal.woff') }))(),
+  (async () => ({ name: 'Departure Mono', weight: 400, style: 'normal', data: await readFile(at('src/assets/fonts/DepartureMono-Regular.woff')) }))(),
 ];
 const loadedFonts = await Promise.all(fonts);
 
 /** Minimal element builder for satori (no React needed). */
 const el = (style, ...children) => ({ type: 'div', props: { style: { display: 'flex', ...style }, children: children.flat() } });
-const mono = (text, style = {}) => el({ fontFamily: 'Geist Mono', fontSize: 20, color: c.ink2, ...style }, text);
+// Departure Mono sits on an 11 px grid: 22 px (2x) keeps its pixels whole.
+const mono = (text, style = {}) => el({ fontFamily: 'Departure Mono', fontSize: 22, color: c.ink2, ...style }, text);
 
 /**
  * A primitive mark: SVG layers injected after layout, the letter (Type) laid out as text.
@@ -163,7 +164,7 @@ for (const p of primitives) {
   children.push(
     el(
       { position: 'absolute', left: 512, right: INSET, top: 0, bottom: 0, flexDirection: 'column', justifyContent: 'center' },
-      el({ fontFamily: 'Geist Mono', fontSize: 24, color: c.ink2 }, p.shipped ? p.n : `${p.n} · In preparation`),
+      el({ fontFamily: 'Departure Mono', fontSize: 22, color: c.ink2 }, p.shipped ? p.n : `${p.n} · In preparation`),
       el({ marginTop: 16, fontSize: 96, fontWeight: 300, lineHeight: 1, letterSpacing: -3.84, color: p.shipped ? c.ink : c.ink2 }, p.name),
       el({ marginTop: 24, fontSize: 28, lineHeight: 1.35, color: c.ink2, lineClamp: 2 }, p.list),
     ),

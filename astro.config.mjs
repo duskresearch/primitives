@@ -46,13 +46,15 @@ export default defineConfig({
       fallbacks: sansFallbacks,
     },
     {
-      provider: fontProviders.fontsource(),
+      // Departure Mono (Helena Zhang, SIL OFL 1.1), self-hosted from the repo. A pixel font on
+      // an 11 px grid: set it at 11 or 22 px so its pixels land on whole screen pixels.
+      provider: fontProviders.local(),
       name: mono,
-      cssVariable: '--font-geist',
-      weights: [400, 500],
-      styles: ['normal'],
-      subsets: ['latin'],
+      cssVariable: '--font-departure',
       fallbacks: monoFallbacks,
+      options: {
+        variants: [{ src: ['./src/assets/fonts/DepartureMono-Regular.woff2'], weight: 400, style: 'normal' }],
+      },
     },
   ],
 });

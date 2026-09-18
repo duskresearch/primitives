@@ -95,7 +95,7 @@
     gap: 16px;
   }
   .labels {
-    font-size: 12px;
+    font-size: 11px;
   }
   .sample {
     display: flex;
@@ -127,7 +127,7 @@
     letter-spacing: 0;
   }
   .grade {
-    font-size: 13px;
+    font-size: 11px;
   }
   .narrow {
     display: none;
@@ -142,7 +142,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--ink-2);
   }
   .side-head :global(.ink) {
@@ -153,7 +153,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    font-size: 12px;
+    font-size: 11px;
   }
   .check {
     display: grid;

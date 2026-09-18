@@ -50,7 +50,7 @@
     gap: 10px;
     align-items: center;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 11px;
     color: var(--ink-2);
   }
   input {

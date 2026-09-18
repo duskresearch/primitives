@@ -16,7 +16,7 @@ npm run build     # static pages + the Worker for on-demand instrument pages
 npm run preview   # serve the production build locally
 ```
 
-Stack: Astro with Svelte islands, deployed to Cloudflare Workers with static assets and D1 (suggestions, votes, the email list). Local development uses a local D1 and `.dev.vars` for `VOTE_SALT`; production needs `wrangler secret put VOTE_SALT`. Fonts are Hanken Grotesk and Geist Mono, self-hosted by the Astro Fonts API. Color math uses [culori](https://culorijs.org).
+Stack: Astro with Svelte islands, deployed to Cloudflare Workers with static assets and D1 (suggestions, votes, the email list). Local development uses a local D1 and `.dev.vars` for `VOTE_SALT`; production needs `wrangler secret put VOTE_SALT`. Fonts are Hanken Grotesk and Departure Mono (SIL OFL, in src/assets/fonts), self-hosted by the Astro Fonts API. Color math uses [culori](https://culorijs.org).
 
 ## Layout
 

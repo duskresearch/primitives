@@ -57,7 +57,7 @@ const graph = {
     <meta name="twitter:image" content={ogImage} />
     <!-- Preload only the weights of the largest text (display 300, body 400). -->
     <Font cssVariable="--font-hanken" preload={[{ weight: 300 }, { weight: 400 }]} />
-    <Font cssVariable="--font-geist" />
+    <Font cssVariable="--font-departure" preload />
     <ClientRouter />
     <script type="application/ld+json" set:html={JSON.stringify(graph)} />
   </head>
