@@ -5,6 +5,7 @@ import { Font } from 'astro:assets';
 import Spotlight from '@/components/Spotlight.svelte';
 import { searchIndex, site } from '@/lib/catalogue';
 import og from '@/generated/og.json';
+import { OG } from '@/lib/og';
 import '@/styles/tokens.css';
 import '@/styles/global.css';
 
@@ -49,8 +50,8 @@ const graph = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image:width" content={String(OG.width * OG.scale)} />
+    <meta property="og:image:height" content={String(OG.height * OG.scale)} />
     <meta property="og:image:alt" content={title} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={ogImage} />

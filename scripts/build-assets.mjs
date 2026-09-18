@@ -20,6 +20,7 @@ const load = async (id) => (await runnerImport(id, config)).module;
 const { primitives, site } = await load('/src/lib/catalogue.ts');
 const logo = await load('/src/lib/logo.ts');
 const { markSvg } = await load('/src/lib/mark-svg.ts');
+const { OG } = await load('/src/lib/og.ts');
 const tokens = JSON.parse(await readFile(at('src/data/tokens.json'), 'utf8'));
 const c = tokens.color;
 
@@ -51,7 +52,8 @@ function ico(images) {
   return Buffer.concat([header, ...images.map((im) => im.data)]);
 }
 
-const WHITE = '#ffffff';
+// Tiles use the app's own paper and ink, like the wordmark: never pure white.
+const TILE = logo.PAPER;
 const appRadius = 14 / 64; // the reference app icon: 14 px on a 64 px tile
 
 await write('public/favicon.svg', logo.faviconSvg());
@@ -60,18 +62,19 @@ await write(
   ico([16, 32, 48].map((size) => ({ size, data: png(logo.logoPixelSvg(size)) }))),
 );
 // iOS masks the touch icon itself and fills transparent corners with black, so it is full bleed.
-await write('public/apple-touch-icon.png', png(logo.tileSvg({ size: 180, background: WHITE, color: logo.INK })));
+await write('public/apple-touch-icon.png', png(logo.tileSvg({ size: 180, background: TILE, color: logo.INK })));
 for (const size of [192, 512]) {
-  await write(`public/icon-${size}.png`, png(logo.tileSvg({ size, background: WHITE, color: logo.INK, radius: appRadius })));
+  await write(`public/icon-${size}.png`, png(logo.tileSvg({ size, background: TILE, color: logo.INK, radius: appRadius })));
 }
-await write('public/icon-maskable-512.png', png(logo.tileSvg({ size: 512, background: WHITE, color: logo.INK })));
-await write('design/brand/avatar.png', png(logo.tileSvg({ size: 400, background: WHITE, color: logo.INK })));
+await write('public/icon-maskable-512.png', png(logo.tileSvg({ size: 512, background: TILE, color: logo.INK })));
+await write('design/brand/avatar.png', png(logo.tileSvg({ size: 400, background: TILE, color: logo.INK })));
 await write('design/brand/avatar-ink.png', png(logo.tileSvg({ size: 400, background: logo.INK, color: logo.PAPER })));
 
 // ── OG images ────────────────────────────────────────────────────────────────────────
 
-const W = 1200;
-const H = 630;
+// Satori turns text into paths, so rasterizing at OG.scale upsamples nothing.
+const W = OG.width;
+const H = OG.height;
 const INSET = 48;
 const font = (file) => readFile(at(`node_modules/@fontsource/${file}`));
 const fonts = [
@@ -110,7 +113,7 @@ async function render(children, overlays) {
   const tree = el({ position: 'relative', width: W, height: H, background: c.paper, fontFamily: 'Hanken Grotesk', color: c.ink }, children);
   const svg = await satori(tree, { width: W, height: H, fonts: loadedFonts });
   // Marks go on top of the laid-out page, drawn from the same geometry as the site.
-  return png(svg.replace(/<\/svg>\s*$/, `${overlays.join('')}</svg>`));
+  return png(svg.replace(/<\/svg>\s*$/, `${overlays.join('')}</svg>`), W * OG.scale);
 }
 
 const og = {};
@@ -120,13 +123,17 @@ async function emit(path, image) {
   og[path] = createHash('sha256').update(image).digest('hex').slice(0, 10);
 }
 
-// Landing: the mark at 96, the five shipped primitive marks at 200 in a row, the name,
-// the domain and the maker along the bottom.
+// Landing: the mark at 96, a row of the shipped primitive marks at 200 with the Primitives
+// mark in the middle slot, the name, the domain and the maker along the bottom.
 {
   const overlays = [logo.logoGroup(INSET, INSET, 96, logo.INK)];
   const children = [];
   const shipped = primitives.filter((p) => p.shipped);
+  const middle = Math.floor(shipped.length / 2);
   const size = 200;
+  // The mark's square fills its whole box; at 0.9 of the slot it matches the height of the
+  // primitive marks around it (Grid's bars, the mark it replaces, are 0.9em).
+  const markSize = size * 0.9;
   const gap = 20; // with Color's and Motion's overhang, the drawn row spans exactly inset to inset
   const rowY = 175;
   // Space the boxes evenly, then center the row on what the marks actually cover.
@@ -134,7 +141,11 @@ async function emit(path, image) {
   const last = markSvg(shipped.at(-1), size).bounds;
   const span = (shipped.length - 1) * (size + gap) + last.x1 - first.x0;
   const rowX = (W - span) / 2 - first.x0;
-  shipped.forEach((p, i) => placeMark(p, rowX + i * (size + gap), rowY, size, overlays, children));
+  shipped.forEach((p, i) => {
+    const x = rowX + i * (size + gap);
+    if (i === middle) overlays.push(logo.logoGroup(x + (size - markSize) / 2, rowY + (size - markSize) / 2, markSize, logo.INK));
+    else placeMark(p, x, rowY, size, overlays, children);
+  });
   children.push(
     el({ position: 'absolute', left: 0, top: rowY + size + 40, width: W, justifyContent: 'center', fontSize: 40, fontWeight: 500, letterSpacing: -0.8 }, site.name),
     el({ position: 'absolute', left: INSET, right: INSET, bottom: INSET, justifyContent: 'space-between' }, mono(site.domain), mono(site.maker)),
