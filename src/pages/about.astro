@@ -2,12 +2,27 @@
 import Base from '@/layouts/Base.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
-import { site } from '@/lib/catalogue';
+import Mark from '@/components/Mark.astro';
+import Logo from '@/components/Logo.astro';
+import { counts, getPrimitive, primitives, site } from '@/lib/catalogue';
 import { links } from '@/lib/links';
 
 const newTab = { target: '_blank', rel: 'noopener' };
 const description =
-  'What Primitives is, who makes it, why its color instruments use OKLCH, why every result lives in the URL, and how to contribute.';
+  'What Primitives is: small instruments for the basic elements of digital work, one job per screen, every result a link. Made by Dusk Research.';
+
+// The still life, composed on a 470 px wide panel and scaled with it (container units).
+const at = (px: number) => `${((px / 470) * 100).toFixed(3)}cqw`;
+const stillLife = [
+  { slug: 'color', x: 40, y: 40, size: 190 },
+  { slug: 'motion', x: 282, y: 24, size: 150 },
+  { slug: 'shape', x: 232, y: 176, size: 220 },
+  { slug: 'grid', x: 56, y: 262, size: 170 },
+  { slug: 'type', x: 330, y: 396, size: 110 },
+];
+const shipped = primitives.filter((p) => p.shipped);
+const planned = primitives.filter((p) => !p.shipped);
+const strip = primitives.map((p) => `oklch(${p.shipped ? '0.86 0.08' : '0.92 0.012'} ${p.hue})`);
 ---
 
 <Base
@@ -30,51 +45,75 @@ const description =
 >
   <div class="page">
     <Header crumbs={[{ label: 'About', current: true }]} address={`${site.domain}/about`} />
-    <main>
-      <div class="title-row">
+    <main class="about">
+      <div class="intro">
         <h1>About</h1>
         <p>
-          Primitives is a set of small instruments for the basic elements of digital work: color, type, grid, shape and motion, with more on
-          the way. Each one does a single job on a single screen, and every result is a link you can share. It is free, needs no account and
-          is open source.
+          Primitives is a set of small instruments for the basic elements of digital work. Each one does a single job on a single screen. It is
+          free, needs no account and is open source.
         </p>
       </div>
 
-      <div class="parts">
-        <section aria-labelledby="who">
-          <h2 id="who">Who makes it</h2>
+      <div class="still-life" aria-hidden="true">
+        {
+          stillLife.map(({ slug, x, y, size }) => (
+            <span class="piece" style={`left:${at(x)};top:${at(y)}`}>
+              <Mark primitive={getPrimitive(slug)} size={at(size)} />
+            </span>
+          ))
+        }
+        <span class="piece mark-piece" style={`left:${at(196)};top:${at(392)};font-size:${at(84)}`}><Logo size={84} /></span>
+        <span class="caption mono">{shipped.map((p) => p.name.toLowerCase()).join(', ')}. more on the way.</span>
+      </div>
+
+      <div class="cells">
+        <section class="cell" aria-labelledby="one-job">
+          <div class="figure" aria-hidden="true">
+            <span class="wireframe"><i></i><i></i><b><span></span><span></span></b></span>
+          </div>
+          <h2 id="one-job">One job, one screen</h2>
           <p>
-            Primitives is made by <a href={links.maker} {...newTab}>Dusk Research<span class="visually-hidden"> (opens in a new tab)</span></a>, a
-            software lab that builds tools that should exist and makes them open to everyone. Every project keeps its own name and stands on its
-            own. If an instrument you need is missing, the request line on the <a href="/">home page</a> reaches us.
+            Every instrument answers one question you keep running into. The tool comes first, a plain explanation sits underneath, and there are
+            no tabs or settings to learn.
           </p>
         </section>
 
-        <section aria-labelledby="oklch">
-          <h2 id="oklch">Why OKLCH</h2>
+        <section class="cell" aria-labelledby="a-link">
+          <div class="figure" aria-hidden="true">
+            <span class="address mono"
+              >{site.domain}/<u data-label="element">primitive</u>/<u data-label="tool">instrument</u>?<u data-label="what you set"
+                >state</u
+              ></span
+            >
+          </div>
+          <h2 id="a-link">Every result is a link</h2>
+          <p>What you set lives in the address. Send it, bookmark it or paste it into a ticket, and whoever opens it sees exactly what you saw.</p>
+        </section>
+
+        <section class="cell" aria-labelledby="maker">
+          <div class="figure">
+            <span class="figure-mark" aria-hidden="true"><Logo size={56} /></span>
+            <span class="mono note">one square,<br />divided once</span>
+          </div>
+          <h2 id="maker">Made by Dusk Research</h2>
           <p>
-            The color instruments work in OKLCH, a color model built so that equal steps look equal to the eye. Change lightness and only
-            lightness changes; the hue stays where it was. HSL cannot promise that: its yellow looks far brighter than its blue at the same
-            lightness, which is why scales made in it look uneven. Hex values are always there too, for code that expects them.
+            <a href={links.maker} {...newTab}>Dusk Research<span class="visually-hidden"> (opens in a new tab)</span></a> is a software lab that
+            builds tools that should exist and makes them open to everyone. Each project keeps its own name.
           </p>
         </section>
 
-        <section aria-labelledby="url">
-          <h2 id="url">Why the URL holds everything</h2>
+        <section class="cell" aria-labelledby="growing">
+          <div class="figure stack">
+            <span class="strip" aria-hidden="true">
+              {strip.map((bg) => <i style={`background:${bg}`} />)}
+              <i class="missing" />
+            </span>
+            <span class="mono note">{shipped.length} shipped · {planned.length} planned · 1 missing</span>
+          </div>
+          <h2 id="growing">One primitive at a time</h2>
           <p>
-            Nothing you do in an instrument is saved on our side, and nothing asks for an account. Each instrument keeps its settings in the
-            address, so any result is
-            a link: send it, bookmark it or paste it into a ticket, and whoever opens it sees exactly what you saw. The back button returns to
-            the page you came from, not through every slider move.
-          </p>
-        </section>
-
-        <section aria-labelledby="contribute">
-          <h2 id="contribute">How to contribute</h2>
-          <p>
-            The code and the explanations are on <a href={links.github} {...newTab}>GitHub<span class="visually-hidden"> (opens in a new tab)</span></a>.
-            Report a bug, correct an explanation or propose an instrument there. A new instrument ships when it can name, in one sentence, a
-            problem people run into again and again.
+            {counts.primitives} primitives, {counts.instruments} instruments. Tell us which one is missing from the <a href="/">home page</a>, or fix
+            and propose things on <a href={links.github} {...newTab}>GitHub<span class="visually-hidden"> (opens in a new tab)</span></a>.
           </p>
         </section>
       </div>
@@ -84,12 +123,47 @@ const description =
 </Base>
 
 <style>
-  .title-row {
+  .about {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    align-items: end;
-    padding: 48px var(--page-x) 0;
+    grid-template-columns: 470px minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    gap: 20px 40px;
+    padding: 28px var(--page-x) 24px;
+  }
+  .still-life {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    position: relative;
+    container-type: inline-size;
+    aspect-ratio: 470 / 624;
+    overflow: hidden;
+    background: var(--paper-2);
+    border: 1px solid var(--line-2);
+  }
+  .piece {
+    position: absolute;
+    display: flex;
+  }
+  .mark-piece {
+    color: var(--ink);
+  }
+  .mark-piece :global(svg) {
+    width: 1em;
+    height: 1em;
+  }
+  .caption {
+    position: absolute;
+    left: 18px;
+    bottom: 14px;
+    font-size: 11px;
+    color: var(--ink-2);
+  }
+
+  .intro {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
   h1 {
     font-size: 56px;
@@ -97,62 +171,171 @@ const description =
     font-weight: 300;
     letter-spacing: -0.035em;
   }
-  .title-row p {
-    justify-self: end;
-    max-width: 460px;
+  .intro p {
+    max-width: 600px;
     font-size: 17px;
     line-height: 1.45;
     color: var(--ink-1);
   }
-  .parts {
+
+  .cells {
+    grid-column: 2;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 32px 64px;
-    padding: 48px var(--page-x) 40px;
+    gap: 8px;
   }
-  section {
+  .cell {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-width: 460px;
+    padding: 16px 18px;
+    background: var(--paper-2);
+    border: 1px solid var(--line-2);
+  }
+  .figure {
+    height: 74px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .figure.stack {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 8px;
   }
   h2 {
-    font-size: 22px;
+    font-size: 18px;
     line-height: 1.2;
-    font-weight: 400;
-    letter-spacing: -0.02em;
+    font-weight: 500;
+    letter-spacing: -0.01em;
   }
-  section p {
-    font-size: 16px;
-    line-height: 1.5;
+  .cell p {
+    font-size: 14px;
+    line-height: 1.45;
     color: var(--ink-1);
   }
-  section a {
+  .cell a {
     color: var(--ink);
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 3px;
   }
+  .note {
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--ink-2);
+  }
+
+  /* One job, one screen: the instrument page in miniature. */
+  .wireframe {
+    width: 150px;
+    height: 70px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    grid-template-rows: 44px 1fr;
+    gap: 3px;
+  }
+  .wireframe i {
+    background: var(--line-2);
+  }
+  .wireframe i:first-child {
+    background: oklch(0.94 0.03 250);
+  }
+  .wireframe b {
+    grid-column: 1 / 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+  .wireframe b span {
+    height: 3px;
+    background: var(--line-1);
+  }
+  .wireframe b span:last-child {
+    width: 60%;
+  }
+
+  /* Every result is a link: each underline belongs to its own word; the labels hang
+     below without taking width, so the address stays one unbroken line. */
+  .address {
+    padding-bottom: 20px;
+    font-size: 11px;
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+  .address u {
+    position: relative;
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 5px;
+  }
+  .address u::after {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    top: calc(100% + 10px);
+    font-size: 10px;
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+
+  .figure-mark {
+    display: flex;
+    color: var(--ink);
+  }
+
+  /* One primitive at a time: the catalogue as a strip, the missing one dashed. */
+  .strip {
+    display: grid;
+    grid-template-columns: repeat(14, 18px);
+    gap: 3px;
+  }
+  .strip i {
+    height: 18px;
+  }
+  .strip .missing {
+    border: 1px dashed var(--line-3);
+  }
+
+  @media (max-width: 1099px) {
+    .about {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+    }
+    /* The cells stack taller than the still life: keep it in view while they scroll. */
+    .still-life {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+    }
+    .cells {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
   @media (max-width: 719px) {
-    .title-row {
-      grid-template-columns: 1fr;
-      gap: 20px;
-      padding-top: 44px;
+    .still-life {
+      position: relative;
+      top: auto;
+      align-self: stretch;
+    }
+    .about {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding-top: 32px;
     }
     h1 {
       font-size: 34px;
       line-height: 1.05;
       letter-spacing: -0.03em;
     }
-    .title-row p {
-      justify-self: start;
+    .intro p {
       font-size: 15px;
       line-height: 1.4;
-    }
-    .parts {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 28px;
-      padding-top: 40px;
     }
   }
 </style>

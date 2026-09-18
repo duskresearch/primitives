@@ -144,15 +144,12 @@ const { crumbs, address, stateful } = Astro.props;
   .short {
     display: none;
   }
+  /* Touch: 44px hit areas from padding cancelled by margin, so the crumbs keep one baseline. */
   @media (pointer: coarse) {
     .crumbs a,
     .home {
-      min-height: var(--min-hit);
-      display: inline-flex;
-      align-items: center;
-    }
-    .header {
-      align-items: center;
+      padding-block: 12px;
+      margin-block: -12px;
     }
   }
   @media (max-width: 719px) {
