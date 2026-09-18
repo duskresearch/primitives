@@ -4,6 +4,7 @@
 import data from '@/data/catalogue.json';
 import tokens from '@/data/tokens.json';
 import type { InstrumentMeta } from './instrument';
+import type { SearchItem } from './search';
 
 export interface MarkLayer {
   w?: string;
@@ -133,27 +134,60 @@ export function related(i: Instrument): Instrument[] {
     });
 }
 
-export interface SearchItem {
-  primitive: string;
-  primitiveName: string;
-  name: string;
-  does: string;
-  href: string;
-  terms: string;
-}
+/** Site pages outside the primitive tree. Static pages add themselves here as they ship. */
+export const pages: { name: string; does: string; href: string; keywords?: string[] }[] = [
+  { name: 'Home', does: 'Every primitive, and the request line', href: '/', keywords: ['landing', 'all', 'index', 'request'] },
+];
 
-/** Every live instrument, in catalogue order: the spotlight's index and site map. */
+/**
+ * Everything the spotlight can find, in browse order: instruments grouped by primitive,
+ * then the primitives themselves, then pages. Instruments not built yet are found by
+ * search but not listed when browsing; they open their primitive's index.
+ */
 export function searchIndex(): SearchItem[] {
-  return primitives.flatMap((p) =>
-    p.instruments
-      .filter((i) => i.live)
-      .map((i) => ({
+  const terms = (...parts: (string | undefined)[]) => parts.filter(Boolean).join(' ').toLowerCase();
+  const instruments = primitives.flatMap((p) =>
+    p.instruments.map(
+      (i): SearchItem => ({
+        kind: 'instrument',
+        group: p.name,
         primitive: p.slug,
-        primitiveName: p.name,
         name: i.name,
         does: i.does,
-        href: i.href,
-        terms: [i.name, p.name, i.does, ...i.keywords].join(' ').toLowerCase(),
-      })),
+        href: i.live ? i.href : p.href,
+        address: i.live ? i.href : 'In preparation',
+        muted: !i.live,
+        browse: i.live,
+        terms: terms(i.name, p.name, i.does, ...i.keywords),
+      }),
+    ),
   );
+  const prims = primitives.map(
+    (p): SearchItem => ({
+      kind: 'primitive',
+      group: 'Primitives',
+      primitive: p.slug,
+      name: p.name,
+      does: p.list,
+      href: p.href,
+      address: p.href,
+      muted: !p.shipped,
+      browse: true,
+      terms: terms(p.name, p.list),
+    }),
+  );
+  const pageItems = pages.map(
+    (pg): SearchItem => ({
+      kind: 'page',
+      group: 'Pages',
+      name: pg.name,
+      does: pg.does,
+      href: pg.href,
+      address: pg.href,
+      muted: false,
+      browse: true,
+      terms: terms(pg.name, pg.does, ...(pg.keywords ?? [])),
+    }),
+  );
+  return [...instruments, ...prims, ...pageItems];
 }

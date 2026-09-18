@@ -1,9 +1,10 @@
 <script lang="ts">
-  // Spotlight: find any live instrument. Opens from ⌘K / Ctrl+K anywhere, `/` when no
-  // input is focused, or the landing search field. Persisted across navigations.
+  // Spotlight: find anything on the site (instruments, primitives, pages). Opens from
+  // ⌘K / Ctrl+K anywhere, `/` when no input is focused, or the landing search field.
+  // Persisted across navigations.
   import { onMount, tick } from 'svelte';
   import { navigate } from 'astro:transitions/client';
-  import type { SearchItem } from '@/lib/catalogue';
+  import { search, type SearchItem } from '@/lib/search';
   import { stateHref } from '@/lib/client/harness';
 
   let { items }: { items: SearchItem[] } = $props();
@@ -17,19 +18,9 @@
   let returnTo: HTMLElement | null = null;
   let ignoreTriggerFocus = false;
 
-  const hits = $derived.by(() => {
-    const term = q.trim().toLowerCase();
-    return term ? items.filter((i) => i.terms.includes(term)) : items;
-  });
-
-  const groups = $derived.by(() => {
-    const byPrimitive = new Map<string, { slug: string; name: string; rows: { item: SearchItem; index: number }[] }>();
-    hits.forEach((item, index) => {
-      if (!byPrimitive.has(item.primitive)) byPrimitive.set(item.primitive, { slug: item.primitive, name: item.primitiveName, rows: [] });
-      byPrimitive.get(item.primitive)!.rows.push({ item, index });
-    });
-    return [...byPrimitive.values()];
-  });
+  const results = $derived(search(items, q));
+  const hits = $derived(results.hits);
+  const groups = $derived(results.groups);
 
   async function show(initial = '') {
     if (open) return;
@@ -116,7 +107,7 @@
 
   function syncPage() {
     const term = open ? q.trim() : '';
-    const matched = new Set(hits.map((h) => h.primitive));
+    const matched = new Set(hits.map((h) => h.primitive).filter(Boolean));
     document.querySelectorAll<HTMLInputElement>('[data-spotlight-trigger]').forEach((el) => (el.value = open ? q : ''));
     document.querySelectorAll<HTMLElement>('[data-tile]').forEach((tile) => {
       tile.classList.toggle('dim', Boolean(term) && !matched.has(tile.dataset.tile!));
@@ -178,11 +169,11 @@
         <span class="count mono" aria-live="polite">{hits.length} {hits.length === 1 ? 'result' : 'results'}</span>
         <button type="button" class="badge" tabindex="-1" onclick={() => hide()}>esc</button>
       </div>
-      <div class="results" id="spotlight-results" role="listbox" aria-label="Instruments" bind:this={list}>
-        {#each groups as group (group.slug)}
-          <div role="group" aria-labelledby={`spot-group-${group.slug}`}>
-            <div class="group t-mono-label" id={`spot-group-${group.slug}`}>{group.name}</div>
-            {#each group.rows as { item, index } (item.href)}
+      <div class="results" id="spotlight-results" role="listbox" aria-label="Results" bind:this={list}>
+        {#each groups as group, g (group.label)}
+          <div role="group" aria-labelledby={`spot-group-${g}`}>
+            <div class="group t-mono-label" id={`spot-group-${g}`}>{group.label}</div>
+            {#each group.rows as { item, index } (`${item.kind}:${item.group}:${item.name}`)}
               <a
                 id={`spot-${index}`}
                 href={item.href}
@@ -190,6 +181,7 @@
                 aria-selected={index === sel}
                 tabindex="-1"
                 class:on={index === sel}
+                class:muted={item.muted}
                 onmousemove={() => (sel = index)}
                 onclick={(e) => {
                   if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
@@ -199,13 +191,13 @@
               >
                 <span class="name">{item.name}</span>
                 <span class="does">{item.does}</span>
-                <span class="slug mono">{item.href}</span>
+                <span class="slug mono">{item.address}</span>
               </a>
             {/each}
           </div>
         {/each}
         {#if !hits.length}
-          <p class="none">No instrument for “{q.trim()}” yet.</p>
+          <p class="none">Nothing for “{q.trim()}” yet.</p>
         {/if}
       </div>
       <div class="foot mono">
@@ -288,6 +280,9 @@
   .name {
     font-size: 17px;
     letter-spacing: -0.01em;
+  }
+  .muted .name {
+    color: var(--ink-2);
   }
   .does {
     font-size: 14px;
