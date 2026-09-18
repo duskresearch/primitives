@@ -59,18 +59,19 @@ export function logoPixelSvg(size: number, color = INK): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" shape-rendering="crispEdges" fill="${color}">${rects.map(([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}"/>`).join('')}</svg>`;
 }
 
-/** Favicons sit on a white rounded tile so the mark reads on any browser chrome, light or dark. */
-export const FAVICON_TILE = '#ffffff';
+/** Favicons sit on a rounded paper tile (the design system's white, never pure white) so the
+ * ink mark reads on any browser chrome, light or dark. */
+export const FAVICON_TILE = PAPER;
 const FAVICON_RADIUS = 14 / 64; // the app icon's corner, scaled
 const FAVICON_MARK = 0.75; // larger than the app icon's 50%: it has to read at 16 px
 
-/** The browser-tab favicon as SVG: the exact mark on a white tile. */
+/** The browser-tab favicon as SVG: the exact mark on a paper tile. */
 export function faviconSvg(): string {
   const inset = ((1 - FAVICON_MARK) / 2) * VIEW;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW} ${VIEW}"><rect width="${VIEW}" height="${VIEW}" rx="${FAVICON_RADIUS * VIEW}" fill="${FAVICON_TILE}"/>${logoGroup(inset, inset, VIEW * FAVICON_MARK, INK)}</svg>`;
 }
 
-/** A favicon.ico size: the white tile with the pixel-hinted mark centered on whole pixels. */
+/** A favicon.ico size: the paper tile with the pixel-hinted mark centered on whole pixels. */
 export function faviconPixelSvg(size: number): string {
   const mark = Math.round(size * FAVICON_MARK);
   const at = Math.floor((size - mark) / 2);
@@ -81,7 +82,7 @@ export function faviconPixelSvg(size: number): string {
 interface TileOptions {
   /** Tile size in px. */
   size: number;
-  /** Tile color. MARK.md: white tile, or ink tile with a paper mark. */
+  /** Tile color. MARK.md: a paper tile, or an ink tile with a paper mark. */
   background: string;
   color: string;
   /** Corner radius as a fraction of the tile (the reference app icon is 14 px on 64). */

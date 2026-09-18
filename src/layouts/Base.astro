@@ -4,6 +4,7 @@ import { ClientRouter } from 'astro:transitions';
 import { Font } from 'astro:assets';
 import Spotlight from '@/components/Spotlight.svelte';
 import { searchIndex, site } from '@/lib/catalogue';
+import icons from '@/generated/icons.json';
 import og from '@/generated/og.json';
 import { OG } from '@/lib/og';
 import '@/styles/tokens.css';
@@ -39,8 +40,8 @@ const graph = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={`/favicon.ico?v=${icons.favicon}`} sizes="32x32" />
+    <link rel="icon" href={`/favicon.svg?v=${icons.favicon}`} type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#f4f1ea" />

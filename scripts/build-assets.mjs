@@ -1,7 +1,7 @@
 // Generates every image derived from the Primitives mark and the catalogue:
 //   public/favicon.svg, favicon.ico (16/32/48), apple-touch-icon.png (180),
 //   icon-192.png, icon-512.png, icon-maskable-512.png, public/og/**.png,
-//   src/generated/og.json (cache-busting hashes), and the social avatars (see below).
+//   src/generated/og.json and icons.json (cache-busting hashes), and the social avatars (see below).
 // Sources: src/lib/logo.ts (the mark), src/lib/mark-svg.ts (primitive marks),
 // src/lib/catalogue.ts (content). Layout follows the private brief and mark spec
 // (explorations: primitives-design/README.md and MARK.md).
@@ -58,11 +58,13 @@ function ico(images) {
 const TILE = logo.PAPER;
 const appRadius = 14 / 64; // the reference app icon: 14 px on a 64 px tile
 
-await write('public/favicon.svg', logo.faviconSvg());
-await write(
-  'public/favicon.ico',
-  ico([16, 32, 48].map((size) => ({ size, data: png(logo.faviconPixelSvg(size)) }))),
-);
+const faviconSvg = logo.faviconSvg();
+const faviconIco = ico([16, 32, 48].map((size) => ({ size, data: png(logo.faviconPixelSvg(size)) })));
+await write('public/favicon.svg', faviconSvg);
+await write('public/favicon.ico', faviconIco);
+// Browsers keep favicons for a long time, so the links carry a hash of what they show.
+const favicon = createHash('sha256').update(faviconSvg).update(faviconIco).digest('hex').slice(0, 10);
+await write('src/generated/icons.json', `${JSON.stringify({ favicon }, null, 2)}\n`);
 // iOS masks the touch icon itself and fills transparent corners with black, so it is full bleed.
 await write('public/apple-touch-icon.png', png(logo.tileSvg({ size: 180, background: TILE, color: logo.INK })));
 for (const size of [192, 512]) {
