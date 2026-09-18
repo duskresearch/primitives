@@ -34,11 +34,11 @@ What you set lives in the address and nowhere else. Send it, bookmark it or past
 
 ## The catalogue
 
-Thirteen primitives and fifty instruments, shipped one at a time. **Contrast** is live; the rest are planned.
+Thirteen primitives and fifty instruments, shipped one primitive at a time. **Color** is live, all six instruments; the rest are planned.
 
 | | Primitive | Instruments |
 |---|---|---|
-| 01 | **Color** | Pick · Scale · **[Contrast](https://primitiv.es/color/contrast)** · Harmony · Convert · Blend |
+| 01 | **Color** | **[Pick](https://primitiv.es/color/pick)** · **[Scale](https://primitiv.es/color/scale)** · **[Contrast](https://primitiv.es/color/contrast)** · **[Harmony](https://primitiv.es/color/harmony)** · **[Convert](https://primitiv.es/color/convert)** · **[Blend](https://primitiv.es/color/blend)** |
 | 02 | **Type** | Scale · Specimen · Measure · Units · Fallback |
 | 03 | **Grid** | Columns · Breakpoints · Baseline · Layout |
 | 04 | **Shape** | Form · Corner · Polygon · Blob · Favicon |

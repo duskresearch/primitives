@@ -1,0 +1,17 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/color/blend/Tool.svelte';
+import { oneOf, parse, percent } from '@/instruments/color/defaults';
+import { serializeWith } from '@/instruments/color/state';
+import { BLEND_MODES } from '@duskresearch/primitives/design/color';
+
+// Rendered per request so a shared link arrives with its colors, mode and amount in the HTML.
+export const prerender = false;
+const state = parse(Astro.url.searchParams);
+const mode = oneOf(Astro.url.searchParams.get('mode'), BLEND_MODES, 'mix');
+const amount = percent(Astro.url.searchParams.get('amount'), 50);
+---
+
+<Instrument primitive="color" slug="blend" query={serializeWith(state, { mode, amount })}>
+  <Tool client:load initial={state} {mode} {amount} />
+</Instrument>

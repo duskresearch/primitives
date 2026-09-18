@@ -1,0 +1,14 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/color/scale/Tool.svelte';
+import { parse } from '@/instruments/color/defaults';
+import { serialize } from '@/instruments/color/state';
+
+// Rendered per request so a shared link arrives with its colors already in the HTML.
+export const prerender = false;
+const state = parse(Astro.url.searchParams);
+---
+
+<Instrument primitive="color" slug="scale" query={serialize(state)}>
+  <Tool client:load initial={state} />
+</Instrument>

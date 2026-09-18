@@ -22,6 +22,59 @@
     color var(--dur-color);
 }
 
+/* A surface filled edge to edge by colors (swatches), with no padding of its own. */
+.tool .surface.bleed {
+  padding: 0;
+  gap: 0;
+}
+
+/* A block of code to copy (CSS, a palette): a mono label above, the code on paper. */
+.tool .block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tool .block > p {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-2);
+}
+.tool .code {
+  display: block;
+  padding: 12px 14px;
+  background: var(--paper);
+  border: 1px solid var(--line-2);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+/* Result rows at the foot of a panel: a mono name on the left, the value on the right. */
+.tool .rows {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--mono);
+  font-size: 11px;
+}
+.tool .row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: baseline;
+  padding: 8px 0;
+  border-top: 1px solid var(--line-2);
+  color: var(--ink-2);
+}
+.tool .row > :last-child {
+  justify-self: end;
+  text-align: right;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
 .tool .panel {
   grid-column: 2;
   display: flex;

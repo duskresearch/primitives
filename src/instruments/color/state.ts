@@ -22,3 +22,7 @@ export function decode(value: string | null, fallback: Lch): Lch {
 const encode = (c: Lch) => (hexSafe(c) ? hex(c).slice(1) : `${round(c.l, 3)},${round(c.c, 3)},${round(c.h, 1)}`);
 
 export const serialize = (s: ColorState) => `a=${encode(s.a)}&b=${encode(s.b)}`;
+
+/** The shared colors plus an instrument's own settings, e.g. `rule=triadic`. */
+export const serializeWith = (s: ColorState, own: Record<string, string | number>) =>
+  [serialize(s), ...Object.entries(own).map(([k, v]) => `${k}=${v}`)].join('&');

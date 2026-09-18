@@ -1,0 +1,16 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/color/harmony/Tool.svelte';
+import { oneOf, parse } from '@/instruments/color/defaults';
+import { serializeWith } from '@/instruments/color/state';
+import { RULE_NAMES } from '@duskresearch/primitives/design/color';
+
+// Rendered per request so a shared link arrives with its colors and rule already in the HTML.
+export const prerender = false;
+const state = parse(Astro.url.searchParams);
+const rule = oneOf(Astro.url.searchParams.get('rule'), RULE_NAMES, 'analogous');
+---
+
+<Instrument primitive="color" slug="harmony" query={serializeWith(state, { rule })}>
+  <Tool client:load initial={state} {rule} />
+</Instrument>

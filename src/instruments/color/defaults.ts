@@ -14,3 +14,13 @@ export const parse = (params: URLSearchParams): ColorState => ({
   a: decode(params.get('a'), defaults.a),
   b: decode(params.get('b'), defaults.b),
 });
+
+/** An instrument's own setting from the URL, when it is one it knows. */
+export const oneOf = <T extends string>(value: string | null, options: readonly T[], fallback: T): T =>
+  options.includes(value as T) ? (value as T) : fallback;
+
+/** A whole percentage from the URL, 0 to 100. */
+export const percent = (value: string | null, fallback: number) => {
+  const n = Number(value);
+  return value !== null && value !== '' && Number.isFinite(n) ? Math.round(Math.min(100, Math.max(0, n))) : fallback;
+};
