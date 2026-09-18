@@ -2,7 +2,7 @@
 // interpolation; the only formulas written out here are the blend modes, taken from the W3C
 // spec. Building blocks first, operations (JSON in, JSON out, see ../operation.ts) at the end.
 import {
-  useMode, modeOklch, modeOklab, modeRgb, modeLrgb, modeHsl, modeP3,
+  useMode, modeOklch, modeOklab, modeRgb, modeLrgb, modeHsl, modeP3, modeOkhsv,
   formatHex, parseHex, parse as parseCss, toGamut, differenceEuclidean, wcagContrast, wcagLuminance,
   interpolate, nearest, colorsNamed,
   type Oklch, type Rgb,
@@ -15,6 +15,7 @@ const toRgb = useMode(modeRgb);
 useMode(modeLrgb);
 const toHsl = useMode(modeHsl);
 const toP3 = useMode(modeP3);
+const toOkhsv = useMode(modeOkhsv);
 
 /** An OKLCH color as the sliders hold it. */
 export interface Lch {
@@ -213,6 +214,52 @@ export function formatAs(c: Lch, format: CssFormat): string {
   const hsl = toHsl(rgb8);
   return `hsl(${angle(hsl.h ?? 0)} ${num((hsl.s ?? 0) * 100, 1)}% ${num(hsl.l * 100, 1)}%)`;
 }
+
+/** A color as three numbers in one format: RGB 0 to 255, HSL in degrees and percent, OKLCH. */
+export type Channels = [number, number, number];
+export type ChannelFormat = Exclude<CssFormat, 'hex'>;
+
+/** The numbers a picker shows for the color, rounded as formatAs() writes them, so the two agree. */
+export function channelsOf(c: Lch, format: ChannelFormat): Channels {
+  if (format === 'oklch') return [round(c.l, 3), round(c.c, 3), Number(angle(hueOf(c)))];
+  const rgb8 = parseHex(formatHex(displayed(c)))!;
+  if (format === 'rgb') return [Math.round(rgb8.r * 255), Math.round(rgb8.g * 255), Math.round(rgb8.b * 255)];
+  const hsl = toHsl(rgb8);
+  return [Number(angle(hsl.h ?? 0)), round((hsl.s ?? 0) * 100, 1), round(hsl.l * 100, 1)];
+}
+
+/** The color three numbers stand for, read the way CSS reads them. */
+export function fromChannels(format: ChannelFormat, [x, y, z]: Channels): Lch {
+  return parseColor(format === 'hsl' ? `hsl(${x} ${y}% ${z}%)` : `${format}(${x} ${y} ${z})`);
+}
+
+/**
+ * Okhsv, Björn Ottosson's 2021 remake of HSV on Oklab, for the familiar picker: a square of
+ * saturation and value at one hue, and a hue strip. Unlike HSV its hues are evenly spaced,
+ * and like HSV the square holds exactly the colors sRGB can show.
+ */
+export interface Hsv {
+  h: number;
+  s: number;
+  v: number;
+}
+
+const unit = (v: number | undefined) => Math.min(1, Math.max(0, v ?? 0));
+
+/** A color's place in the picker. Grays have no hue; they keep `hue`, the one last shown. */
+export function toHsv(c: Lch, hue = 0): Hsv {
+  const o = toOkhsv(ok(c));
+  const gray = !o.s || o.s < 1e-4 || o.h === undefined;
+  return { h: gray ? hue : o.h!, s: gray ? 0 : unit(o.s), v: unit(o.v) };
+}
+
+export function fromHsv(x: Hsv): Lch {
+  const o = toOklch({ mode: 'okhsv', h: x.h, s: x.s, v: x.v });
+  return { l: o.l, c: o.c ?? 0, h: o.h ?? x.h };
+}
+
+/** The sRGB channels (0 to 1) of a point in the picker, for painting it. */
+export const hsvRgb = (x: Hsv) => snapped(toRgb({ mode: 'okhsv', h: x.h, s: x.s, v: x.v }));
 
 export function formats(c: Lch): Formats {
   const shown = formatHex(displayed(c));

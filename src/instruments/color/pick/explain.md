@@ -1,38 +1,31 @@
 ---
-title: Color picker with hex, RGB, HSL and OKLCH
-description: Pick a color by lightness, chroma and hue, or type the one you have as hex, rgb(), hsl() or a name, and copy it in the same format.
+title: Color picker for hex, RGB, HSL and OKLCH
+description: Choose a color by eye on a saturation and brightness square with a hue strip, or type the one you have, then copy it as hex, RGB, HSL or OKLCH.
 ---
 
 ## What it measures
 
-A color picker. Type the color you already have, as hex, rgb(), hsl(), oklch() or a name, or set it with three sliders: lightness (L, from black to white), chroma (C, how strong the color is, from gray upward) and hue (H, the angle around the color wheel, in degrees).
+A color picker. The square sets saturation (across) and brightness (up) at one hue, and the strip below it sets the hue. If you already have a color, type it instead: hex, rgb(), hsl(), oklch() or a name.
 
-The field answers in the format you typed. Paste a hex and you get a hex back; paste rgb() and it stays rgb() as you move the sliders. The surface shows the color with that value, and oklch() beside it for CSS you will adjust later.
+Choose the format you work in from the list beside the value: hex, RGB, HSL or OKLCH. The boxes follow it, the large value on the surface follows it, and C copies it. The same color in OKLCH sits above, for CSS you plan to adjust later.
 
-The plane shows lightness against chroma at the current hue. The painted area is every color an ordinary screen can show at that hue, in sRGB. The marker stops at its edge, so every color you pick looks the same on every screen. Where the edge falls changes a great deal with hue: yellow reaches high chroma only when it is light, blue only when it is dark.
+Every point in the square is a color ordinary screens can show, so the color you pick is the color everyone sees. There is nothing to fall off: the square ends where the screen's colors end.
 
 ## How it is computed
 
-Hex, rgb() and hsl() are three ways of writing the same sRGB channels, so any of them can be read and written back without a change.
+The square and strip use Okhsv, a version of the familiar HSV model that Björn Ottosson published in 2021. It is built on his Oklab color space, the basis of oklch() in CSS Color 4.
 
-The sliders work in OKLCH, the polar form of Oklab, a color space published by Björn Ottosson in 2020 and added to CSS in Color Level 4. Oklab was fitted so that equal distances look like equal differences, which is why a step of 0.05 in L looks about the same anywhere on the scale. HSL's lightness makes no such promise.
+HSV is a reshaping of RGB, quick to read, but its hues are unevenly spaced: green takes up a wide band of the strip while yellow and cyan flash past. Okhsv keeps HSV's shape, the same square with white at the top left, full color at the top right and black along the bottom, but spaces the hues by how different they look.
 
-To show a color, chroma and hue become Oklab's two color axes, then two fixed matrices with a cube between them lead to linear sRGB, which is gamma-encoded for the screen:
-
-```
-a = C × cos(H)
-b = C × sin(H)
-```
-
-A color is inside sRGB when all three channels land between 0 and 1. The plane paints exactly those, and past the edge chroma is held at the most sRGB allows for that lightness and hue.
+Like HSV, Okhsv covers exactly the colors sRGB can show, with no gaps and nothing beyond. The formats are one color written different ways. Hex, rgb() and hsl() are three spellings of its sRGB channels, and oklch() gives its lightness, chroma and hue in Oklab.
 
 ## When to use it
 
-When you need a color, or need to adjust one you were given. Start from the hue, set lightness for the role the color plays (high for backgrounds, low for text), then chroma for how loud it should be.
+When you need a color and want to choose it by eye, or need to adjust one you were given. Drag across the square for how strong the color is, up and down for how light, and along the strip for its hue.
 
-The sliders are in OKLCH because steps of lightness stay even there, and two colors with the same L look equally light. HSL cannot promise that: it calls a yellow and a blue equally light at 50% when the yellow looks far lighter. You do not need to know OKLCH to use them; the field gives the result back as hex or whatever you typed.
+Choose the format by where you will paste it. Hex goes almost anywhere. RGB and HSL match what design tools show. OKLCH is the one for CSS you will build on, because its lightness means the same thing for every hue: two colors with the same L look equally light, which HSL's lightness does not promise.
 
-Use the plane to see how much chroma a hue can hold. A strong color near the edge is as vivid as ordinary screens go; pulling it back a little leaves room for hover and pressed states to go further.
+From the keyboard, the square is two sliders, saturation then brightness, and the strip is a third, all stepped with the arrow keys. In the number boxes the arrow keys step the value, with Shift for ten steps.
 
 ## Related
 

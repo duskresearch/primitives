@@ -2,6 +2,7 @@
   // One color's controls: a field that takes the color in whatever form you have it, then
   // lightness, chroma and hue in OKLCH. The field answers in the format you typed (hex until
   // you type something else), so it speaks your language while the sliders keep steps even.
+  import FormatSelect from '@/components/tool/FormatSelect.svelte';
   import Slider from '@/components/tool/Slider.svelte';
   import { formatAs, formatOf, parseColor, type CssFormat, type Lch } from '@duskresearch/primitives/design/color';
 
@@ -56,23 +57,26 @@
 <div class="side" role="group" aria-label={`${name} color`}>
   <div class="side-head mono">
     <label for={id}>{name} · {key}</label>
-    <input
-      {id}
-      class="field"
-      class:invalid
-      type="text"
-      value={shown}
-      {oninput}
-      {onfocus}
-      onblur={() => ((editing = false), (invalid = false))}
-      {onkeydown}
-      title="Hex, rgb(), hsl(), oklch() or a color name"
-      aria-invalid={invalid}
-      autocomplete="off"
-      autocapitalize="off"
-      spellcheck="false"
-      data-autosize
-    />
+    <span class="value">
+      <FormatSelect bind:format label={`${name} color format`} />
+      <input
+        {id}
+        class="field"
+        class:invalid
+        type="text"
+        value={shown}
+        {oninput}
+        {onfocus}
+        onblur={() => ((editing = false), (invalid = false))}
+        {onkeydown}
+        title="Hex, rgb(), hsl(), oklch() or a color name"
+        aria-invalid={invalid}
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        data-autosize
+      />
+    </span>
   </div>
   <Slider group={name} label="L" bind:value={color.l} min={0} max={1} step={0.005} format={L} />
   <Slider group={name} label="C" bind:value={color.c} min={0} max={cmax} step={0.001} format={C} />
@@ -93,10 +97,16 @@
     font-size: 11px;
     color: var(--ink-2);
   }
+  .value {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    min-width: 0;
+  }
   .side-head .field {
     field-sizing: content;
     min-width: 8ch;
-    max-width: 70%;
+    max-width: 100%;
     padding: 5px 0;
     line-height: 1.25;
     border-bottom-color: var(--line-3);

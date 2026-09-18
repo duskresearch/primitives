@@ -3,7 +3,7 @@
 // formulas of W3C Compositing and Blending Level 1.
 import { describe, expect, it } from 'vitest';
 import { InputError } from '../../operation';
-import { blend, blendChannel, convert, formatAs, formatOf, harmony, hex, parseColor, pick, scale, SCALE_STEP } from '.';
+import { blend, blendChannel, channelsOf, convert, formatAs, formatOf, fromChannels, fromHsv, harmony, hex, parseColor, pick, scale, SCALE_STEP, toHsv } from '.';
 
 describe('convert', () => {
   it('writes red the way CSS Color 4 does', () => {
@@ -211,5 +211,32 @@ describe('input, the way people have it', () => {
     expect(formatAs(c, 'rgb')).toBe('rgb(197 54 55)');
     expect(formatAs(c, 'hsl')).toBe('hsl(359.6 57% 49.2%)');
     expect(formatAs(c, 'oklch')).toBe('oklch(0.55 0.18 25)');
+  });
+});
+
+describe('the picker', () => {
+  it('round-trips a color through its place in the square', () => {
+    for (const color of ['#c53637', '#fd7043', '#00ff00', '#1a1a17', '#f4f1ea', '#663399']) {
+      expect(hex(fromHsv(toHsv(parseColor(color))))).toBe(color);
+    }
+  });
+
+  it('keeps the last hue for a gray, so the square does not jump', () => {
+    expect(toHsv(parseColor('#808080'), 200).h).toBe(200);
+    expect(toHsv(parseColor('white'), 42)).toMatchObject({ h: 42, s: 0, v: 1 });
+  });
+
+  it('has white, full color and black at the corners', () => {
+    expect(hex(fromHsv({ h: 30, s: 0, v: 1 }))).toBe('#ffffff');
+    expect(hex(fromHsv({ h: 30, s: 1, v: 0 }))).toBe('#000000');
+  });
+
+  it('shows and reads channels the way a picker does', () => {
+    const c = parseColor('#fd7043');
+    expect(channelsOf(c, 'rgb')).toEqual([253, 112, 67]);
+    expect(channelsOf(c, 'hsl')).toEqual([14.5, 97.9, 62.7]);
+    expect(formatAs(c, 'hsl')).toBe('hsl(14.5 97.9% 62.7%)');
+    expect(hex(fromChannels('rgb', [253, 112, 67]))).toBe('#fd7043');
+    expect(hex(fromChannels('oklch', channelsOf(c, 'oklch')))).toBe('#fd7043');
   });
 });

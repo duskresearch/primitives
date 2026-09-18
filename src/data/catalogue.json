@@ -32,7 +32,7 @@
       ],
       "state": { "a": "oklch triple, default 0.55 0.18 25", "b": "oklch triple, default 0.95 0.03 250" },
       "instruments": [
-        { "n": "01", "name": "Pick", "slug": "pick", "does": "Choose a color by light, strength and hue", "pain": "You need a color, not a hex code you found somewhere", "primaryValue": "A, in the format you typed", "keywords": ["picker", "oklch", "hex", "hsl", "rgb"] },
+        { "n": "01", "name": "Pick", "slug": "pick", "does": "Choose a color and copy it in any format", "pain": "You need a color, not a hex code you found somewhere", "primaryValue": "A, in the format you choose", "keywords": ["picker", "color picker", "hex", "rgb", "hsl", "hsv", "hsb", "oklch"] },
         { "n": "02", "name": "Scale", "slug": "scale", "does": "Even tints and shades from one color", "pain": "Your grays and tints look uneven because they were made in HSL", "primaryValue": "CSS custom properties for 7 steps", "keywords": ["tints", "shades", "palette", "ramp", "100-700"] },
         { "n": "03", "name": "Contrast", "slug": "contrast", "does": "Check a text color against a background", "pain": "You are not sure the gray text passes", "primaryValue": "ratio", "keywords": ["WCAG", "AA", "AAA", "accessibility", "readable", "legible"], "fix": "Lower L of A by 0.02 until ratio >= 4.5, keep C and H" },
         { "n": "04", "name": "Harmony", "slug": "harmony", "does": "Colors that sit well with one", "pain": "You have one brand color and need four more", "primaryValue": "the palette's oklch values", "keywords": ["complement", "triad", "analogous", "palette"] },
