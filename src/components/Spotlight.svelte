@@ -7,7 +7,7 @@
   import { search, type SearchItem } from '@/lib/search';
   import { stateHref } from '@/lib/client/harness';
 
-  let { items }: { items: SearchItem[] } = $props();
+  let { items, placeholder }: { items: SearchItem[]; placeholder: string } = $props();
 
   let open = $state(false);
   let q = $state('');
@@ -149,14 +149,15 @@
 {#if open}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <div class="scrim" role="presentation" onclick={(e) => e.target === e.currentTarget && hide()}>
-    <div class="panel" role="dialog" aria-modal="true" aria-label="Find an instrument">
+    <div class="panel" role="dialog" aria-modal="true" aria-label="Search">
       <div class="head">
         <input
           bind:this={input}
           bind:value={q}
           oninput={() => (sel = 0)}
           onkeydown={onInputKey}
-          placeholder="Find an instrument"
+          {placeholder}
+          aria-label="Search"
           role="combobox"
           aria-expanded="true"
           aria-controls="spotlight-results"

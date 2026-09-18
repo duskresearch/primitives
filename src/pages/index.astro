@@ -5,8 +5,7 @@ import Footer from '@/components/Footer.astro';
 import Mark from '@/components/Mark.astro';
 import { countLabel, counts, primitives, site, tint } from '@/lib/catalogue';
 
-const description =
-  'Free single-purpose instruments for color, type, grid, shape and motion: contrast checks, modular scales, easing curves and more. Every result is a link.';
+const description = `${site.subline} Contrast checks, modular scales, easing curves and more for color, type, grid, shape and motion. Free, no account, and every result is a link.`;
 ---
 
 <Base title={`${site.name}: ${site.headline}`} description={description}>
@@ -18,7 +17,7 @@ const description =
         <div class="intro">
           <p>{site.subline}</p>
           <label class="search">
-            <span class="visually-hidden">Find an instrument</span>
+            <span class="visually-hidden">Search</span>
             <input data-spotlight-trigger type="text" placeholder={site.searchPlaceholder} autocomplete="off" spellcheck="false" />
             <span class="badge" aria-hidden="true">⌘K</span>
           </label>

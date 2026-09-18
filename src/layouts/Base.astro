@@ -63,7 +63,7 @@ const graph = {
   </head>
   <body>
     <slot />
-    <Spotlight client:load transition:persist="spotlight" items={searchIndex()} />
+    <Spotlight client:load transition:persist="spotlight" items={searchIndex()} placeholder={site.searchPlaceholder} />
     <script>
       import '@/lib/client/global';
     </script>

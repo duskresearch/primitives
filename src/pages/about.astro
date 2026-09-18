@@ -9,7 +9,7 @@ import { links } from '@/lib/links';
 
 const newTab = { target: '_blank', rel: 'noopener' };
 const description =
-  'What Primitives is: small instruments for the basic elements of digital work, one job per screen, every result a link. Made by Dusk Research.';
+  'Primitives is a set of instruments for the fundamentals of design: one job per screen, every result a link. For setting up scales, palettes, grids and motion, and for quick answers mid-task. Made by Dusk Research.';
 
 // The still life, composed on a 470 px wide panel and scaled with it (container units).
 const at = (px: number) => `${((px / 470) * 100).toFixed(3)}cqw`;
@@ -48,9 +48,14 @@ const strip = primitives.map((p) => `oklch(${p.shipped ? '0.86 0.08' : '0.92 0.0
     <main class="about">
       <div class="intro">
         <h1>About</h1>
-        <p>
-          Primitives is a set of small instruments for the basic elements of digital work. Each one does a single job on a single screen. It is
-          free, needs no account and is open source.
+        <p class="lead">
+          Primitives is a set of instruments for the fundamentals of design. Each one does a single job on a single screen. It is free, needs no
+          account and is open source.
+        </p>
+        <p class="audience">
+          For the work itself: setting up scales, palettes, grids and motion before they become tokens; checking something mid-task, like whether
+          a gray is readable on white or what 18&nbsp;px is in rem; learning why an answer is right; or finding one answer fast for a deck, a landing
+          page or a favicon.
         </p>
       </div>
 
@@ -127,8 +132,8 @@ const strip = primitives.map((p) => `oklch(${p.shipped ? '0.86 0.08' : '0.92 0.0
     display: grid;
     grid-template-columns: 470px minmax(0, 1fr);
     grid-template-rows: auto 1fr;
-    gap: 20px 40px;
-    padding: 28px var(--page-x) 24px;
+    gap: 14px 40px;
+    padding: 20px var(--page-x) 16px;
   }
   .still-life {
     grid-column: 1;
@@ -163,7 +168,7 @@ const strip = primitives.map((p) => `oklch(${p.shipped ? '0.86 0.08' : '0.92 0.0
     grid-column: 2;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
   }
   h1 {
     font-size: 56px;
@@ -173,9 +178,16 @@ const strip = primitives.map((p) => `oklch(${p.shipped ? '0.86 0.08' : '0.92 0.0
   }
   .intro p {
     max-width: 600px;
+    color: var(--ink-1);
+  }
+  .lead {
     font-size: 17px;
     line-height: 1.45;
-    color: var(--ink-1);
+  }
+  .audience {
+    margin-top: -4px;
+    font-size: 15px;
+    line-height: 1.45;
   }
 
   .cells {
@@ -187,14 +199,13 @@ const strip = primitives.map((p) => `oklch(${p.shipped ? '0.86 0.08' : '0.92 0.0
   .cell {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 16px 18px;
+    gap: 6px;
+    padding: 14px 18px;
     background: var(--paper-2);
     border: 1px solid var(--line-2);
   }
   .figure {
-    height: 74px;
-    margin-bottom: 4px;
+    height: 56px;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -230,11 +241,11 @@ const strip = primitives.map((p) => `oklch(${p.shipped ? '0.86 0.08' : '0.92 0.0
 
   /* One job, one screen: the instrument page in miniature. */
   .wireframe {
-    width: 150px;
-    height: 70px;
+    width: 120px;
+    height: 56px;
     display: grid;
     grid-template-columns: 1.4fr 1fr;
-    grid-template-rows: 44px 1fr;
+    grid-template-rows: 35px 1fr;
     gap: 3px;
   }
   .wireframe i {
@@ -333,7 +344,7 @@ const strip = primitives.map((p) => `oklch(${p.shipped ? '0.86 0.08' : '0.92 0.0
       line-height: 1.05;
       letter-spacing: -0.03em;
     }
-    .intro p {
+    .lead {
       font-size: 15px;
       line-height: 1.4;
     }
