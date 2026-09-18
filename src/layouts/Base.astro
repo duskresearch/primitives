@@ -18,10 +18,12 @@ interface Props {
 }
 
 const { title, description, jsonLd = [] } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+// Prerendered pages see their file name (/color.html, /index.html); pages are addressed without it.
+const pathname = Astro.url.pathname.replace(/(?:\/index)?\.html$/, '') || '/';
+const canonical = new URL(pathname, Astro.site).href;
 // One OG image per page (never per state), versioned by its content so shares refresh.
 const ogPages: Record<string, string> = og;
-const ogPath = Astro.url.pathname in ogPages ? Astro.url.pathname : '/';
+const ogPath = pathname in ogPages ? pathname : '/';
 const ogImage = new URL(`/og/${field}${ogPath === '/' ? '/index' : ogPath}.png?v=${ogPages[ogPath]}`, Astro.site).href;
 const graph = {
   '@context': 'https://schema.org',
