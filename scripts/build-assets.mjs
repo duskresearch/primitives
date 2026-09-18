@@ -1,10 +1,12 @@
 // Generates every image derived from the Primitives mark and the catalogue:
 //   public/favicon.svg, favicon.ico (16/32/48), apple-touch-icon.png (180),
 //   icon-192.png, icon-512.png, icon-maskable-512.png, public/og/**.png,
-//   src/generated/og.json (cache-busting hashes), design/brand/avatar*.png.
+//   src/generated/og.json (cache-busting hashes), and the social avatars (see below).
 // Sources: src/lib/logo.ts (the mark), src/lib/mark-svg.ts (primitive marks),
-// src/lib/catalogue.ts (content). Layout follows design/README.md and design/MARK.md.
+// src/lib/catalogue.ts (content). Layout follows the private brief and mark spec
+// (explorations: primitives-design/README.md and MARK.md).
 import { createHash } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -67,8 +69,13 @@ for (const size of [192, 512]) {
   await write(`public/icon-${size}.png`, png(logo.tileSvg({ size, background: TILE, color: logo.INK, radius: appRadius })));
 }
 await write('public/icon-maskable-512.png', png(logo.tileSvg({ size: 512, background: TILE, color: logo.INK })));
-await write('design/brand/avatar.png', png(logo.tileSvg({ size: 400, background: TILE, color: logo.INK })));
-await write('design/brand/avatar-ink.png', png(logo.tileSvg({ size: 400, background: logo.INK, color: logo.PAPER })));
+// The social avatars live with the private brief, so they are written only where the
+// explorations repo is checked out beside this one.
+const brand = '../explorations/primitives-design/brand/';
+if (existsSync(at(brand))) {
+  await write(`${brand}avatar.png`, png(logo.tileSvg({ size: 400, background: TILE, color: logo.INK })));
+  await write(`${brand}avatar-ink.png`, png(logo.tileSvg({ size: 400, background: logo.INK, color: logo.PAPER })));
+}
 
 // ── OG images ────────────────────────────────────────────────────────────────────────
 

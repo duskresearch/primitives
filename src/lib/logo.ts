@@ -1,4 +1,4 @@
-// The Primitives mark (design/MARK.md): one square, divided once. A 1×1 square stroked
+// The Primitives mark (spec: primitives-design/MARK.md, private): one square, divided once. A 1×1 square stroked
 // at 0.09 inside the box, plus strokes at x = 0.5 and y = 0.5 that outline the
 // upper-left quadrant. Stroke only, square caps, miter joins, never filled.
 // This is the single source for every use: header, favicons, app icons, OG images.

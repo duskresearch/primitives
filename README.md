@@ -105,12 +105,11 @@ Local development uses a local D1 database and `.dev.vars` for `VOTE_SALT`; prod
    - `explain.md`: front matter `title` and `description`, then exactly four `##` sections: What it measures, How it is computed, When to use it, Related. 120 to 220 words each.
 4. Add `src/pages/<primitive>/<slug>.astro`, copying `src/pages/color/contrast.astro`.
 
-The instrument goes live everywhere (index, search, related lists, sitemap, llms.txt) once `meta.ts` exists. The definition of done is in [`design/README.md`](design/README.md), and the rules coding agents follow are in [`CLAUDE.md`](CLAUDE.md).
+The instrument goes live everywhere (index, search, related lists, sitemap, llms.txt) once `meta.ts` exists. The rules coding agents follow are in [`CLAUDE.md`](CLAUDE.md).
 
 ## Where things are
 
 ```
-design/                       the brief (README.md), the mark (MARK.md), the approved reference
 packages/primitives/          the instruments' logic, one module per primitive: JSON in, JSON out
 src/data/tokens.json          every design value; scripts/build-tokens.mjs writes src/styles/tokens.css
 src/data/catalogue.json       every primitive and instrument, shipped and planned, with copy
