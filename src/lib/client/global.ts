@@ -54,9 +54,10 @@ document.addEventListener('submit', async (e) => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ ...body, page: location.pathname }),
     });
-    if (!res.ok) throw new Error(String(res.status));
-    form.reset();
-    say(form.dataset.confirm ?? '', motion.toast.confirm);
+    // The server words its own answers ("Already planned: Shadow, in Light.").
+    const reply = (await res.json().catch(() => ({}))) as { message?: string };
+    if (res.ok) form.reset();
+    say(reply.message ?? (res.ok ? form.dataset.confirm : form.dataset.error) ?? '', motion.toast.confirm);
   } catch {
     say(form.dataset.error ?? '', motion.toast.confirm);
   }

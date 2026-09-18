@@ -10,7 +10,9 @@
     "build": "npm run tokens && npm run assets && astro build",
     "preview": "astro preview",
     "check": "npm run tokens && npm run assets && astro check",
-    "test": "vitest run"
+    "test": "vitest run",
+    "requests": "node scripts/requests.mjs",
+    "db:migrate": "wrangler d1 migrations apply primitives --local"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.2",
@@ -18,6 +20,7 @@
     "@duskresearch/primitives": "*",
     "astro": "^7.3.3",
     "culori": "^4.0.2",
+    "obscenity": "^0.4.6",
     "svelte": "^5.57.0"
   },
   "devDependencies": {

@@ -43,7 +43,7 @@ const description = `${site.subline} Contrast checks, modular scales, easing cur
           ))
         }
         <form class="tile request" method="post" action="/api/request" novalidate data-form data-astro-reload data-confirm={site.requestConfirm} data-error={site.errorLine}>
-          <span class="top mono">{String(counts.primitives + 1)}</span>
+          <span class="top mono"><span>{String(counts.primitives + 1)}</span><a class="all" href="/requests" data-astro-prefetch>All requests →</a></span>
           <label class="request-title" for="request-text">{site.requestTitle}</label>
           <span class="request-row">
             <input id="request-text" class="field" type="text" name="text" placeholder={site.requestPlaceholder} maxlength="200" autocomplete="off" />
@@ -172,6 +172,12 @@ const description = `${site.subline} Contrast checks, modular scales, easing cur
     background: transparent;
     border: 1px dashed var(--line-3);
   }
+  .all {
+    color: var(--ink-2);
+  }
+  .all:hover {
+    color: var(--ink);
+  }
   .request-title {
     font-size: 22px;
     font-weight: 500;
@@ -243,6 +249,9 @@ const description = `${site.subline} Contrast checks, modular scales, easing cur
       gap: 12px;
     }
     .request .top {
+      justify-content: flex-end;
+    }
+    .request .top > span {
       display: none;
     }
     .request-title {

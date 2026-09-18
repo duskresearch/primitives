@@ -16,3 +16,6 @@ public/apple-touch-icon.png
 public/icon-*.png
 public/og/
 src/generated/
+
+# wrangler types output declares Workers globals that clash with DOM types; see src/env.d.ts
+worker-configuration.d.ts

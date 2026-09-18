@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Astro's Cloudflare adapter supplies `main` and the static assets binding.
+  "name": "primitives",
+  "compatibility_date": "2026-09-01",
+  "observability": { "enabled": true },
+
+  // Suggestions, votes, request log, subscribers and rate-limit counters (migrations/).
+  // database_id is replaced with the real one when the database is created for production.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "primitives",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ]
+
+  // Secrets (wrangler secret put <NAME>):
+  //   VOTE_SALT  salts the hashes that stand in for visitors (votes, rate limits). Locally
+  //              it comes from .dev.vars.
+}

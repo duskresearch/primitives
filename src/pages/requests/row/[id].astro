@@ -1,0 +1,18 @@
+---
+// One board row as an HTML fragment, for the page to insert after a new suggestion.
+import { env } from 'cloudflare:workers';
+import IdeaRow from '@/components/IdeaRow.astro';
+import { idea } from '@/lib/server/ideas';
+import { visitor } from '@/lib/server/visitor';
+
+export const prerender = false;
+export const partial = true;
+
+const who = await visitor(Astro.request);
+const found = await idea(env.DB, Astro.params.id ?? '', who.voter);
+if (!found) return new Response(null, { status: 404 });
+Astro.response.headers.set('cache-control', 'private, no-store');
+const rank = Number(Astro.url.searchParams.get('rank')) || 0;
+---
+
+<IdeaRow idea={found.idea} rank={rank} voted={found.voted} />

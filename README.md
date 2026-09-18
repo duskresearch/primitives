@@ -10,11 +10,13 @@ npm run dev       # http://localhost:4321, runs in the Workers runtime (workerd)
 npm test          # unit tests (color math, URL state)
 npm run check     # type check
 npm run assets    # favicons, app icons, OG images (also run by dev and build)
+npm run db:migrate            # apply migrations/ to the local D1 database
+npm run requests -- held      # review the /requests board (see scripts/requests.mjs; --remote for production)
 npm run build     # static pages + the Worker for on-demand instrument pages
 npm run preview   # serve the production build locally
 ```
 
-Stack: Astro with Svelte islands, deployed to Cloudflare Workers with static assets. Fonts are Hanken Grotesk and Geist Mono, self-hosted by the Astro Fonts API. Color math uses [culori](https://culorijs.org).
+Stack: Astro with Svelte islands, deployed to Cloudflare Workers with static assets and D1 (suggestions, votes, the email list). Local development uses a local D1 and `.dev.vars` for `VOTE_SALT`; production needs `wrangler secret put VOTE_SALT`. Fonts are Hanken Grotesk and Geist Mono, self-hosted by the Astro Fonts API. Color math uses [culori](https://culorijs.org).
 
 ## Layout
 

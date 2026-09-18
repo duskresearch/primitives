@@ -1,15 +1,16 @@
 ---
 // A primitive's mark: CSS layers from catalogue.json inside a 1em box, so one definition
 // scales from a list row to the index hero. Unshipped marks are drawn in ink-2 at 60%.
-import type { Primitive } from '@/lib/catalogue';
+import type { MarkLayer, Primitive } from '@/lib/catalogue';
 
-interface Props {
-  primitive: Primitive;
+type Props = {
   /** Any CSS length; usually a token such as var(--mark-tile). */
   size: string;
-}
+} & ({ primitive: Primitive } | { layers: MarkLayer[] });
 
-const { primitive: p, size } = Astro.props;
+const { size } = Astro.props;
+// A primitive's own mark, or bare layers (the generated marks of ideas on /requests).
+const p = 'primitive' in Astro.props ? Astro.props.primitive : { mark: Astro.props.layers, shipped: true, letter: undefined };
 const ink2 = (v: string) => v.replace(/\bink2\b/g, 'var(--ink-2)');
 const layers = p.mark.map((l) =>
   [

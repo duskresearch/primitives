@@ -1,0 +1,13 @@
+[
+  { "id": "sound", "name": "Sound", "primitive": null, "detail": "UI sounds for taps, confirmations and errors, synthesized in the browser" },
+  { "id": "depth", "name": "Depth", "primitive": null, "detail": "Perspective and 3D transforms you can turn and feel, as CSS" },
+  { "id": "vision", "name": "Vision", "primitive": "color", "detail": "See a palette the way people with color blindness do" },
+  { "id": "chart", "name": "Chart", "primitive": "color", "detail": "Categorical palettes for charts that stay distinct for every reader" },
+  { "id": "dark", "name": "Dark", "primitive": "color", "detail": "A dark theme derived from a light palette, with contrast kept" },
+  { "id": "axes", "name": "Axes", "primitive": "type", "detail": "A variable font's axes on sliders, as font-variation-settings" },
+  { "id": "features", "name": "Features", "primitive": "type", "detail": "OpenType features such as tabular figures and ligatures, as CSS" },
+  { "id": "masonry", "name": "Masonry", "primitive": "grid", "detail": "Packed card layouts with CSS grid, and the fallback for older browsers" },
+  { "id": "divider", "name": "Divider", "primitive": "shape", "detail": "Wave, zigzag and curved section edges as SVG" },
+  { "id": "scroll", "name": "Scroll", "primitive": "motion", "detail": "Scroll-driven animation on the CSS timeline, previewed as you scroll" },
+  { "id": "transition", "name": "Transition", "primitive": "motion", "detail": "View transitions between two states, played and exported as CSS" }
+]

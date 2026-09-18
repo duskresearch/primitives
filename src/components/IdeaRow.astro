@@ -1,0 +1,149 @@
+---
+// One idea on the /requests board. Rendered by the page and by /requests/row/<id>, which
+// the page fetches to insert a new idea without reloading.
+import Mark from './Mark.astro';
+import { getPrimitive } from '@/lib/catalogue';
+import { ideaMark } from '@/lib/idea-mark';
+import { age } from '@/lib/requests';
+import type { Idea } from '@/lib/server/ideas';
+
+interface Props {
+  idea: Idea;
+  rank: number;
+  voted: boolean;
+}
+
+const { idea, rank, voted } = Astro.props;
+const mark = ideaMark(idea.id);
+const kind = idea.primitive ? `Instrument · ${getPrimitive(idea.primitive).name}` : 'New primitive';
+const when = idea.source === 'roadmap' ? 'from the roadmap' : `suggested ${age(idea.created_at)}`;
+---
+
+<li class="idea" data-idea={idea.id} data-votes={idea.votes}>
+  <span class="rank mono">{String(rank).padStart(2, '0')}</span>
+  <span class="tile" style={`background:${mark.tint}`} aria-hidden="true"><Mark layers={mark.layers} size="30px" /></span>
+  <div class="text">
+    <h3>{idea.name}</h3>
+    {idea.detail && <p class="detail">{idea.detail}</p>}
+    <p class="meta mono"><span class="kind">{kind}</span><span>{when}</span></p>
+  </div>
+  <button
+    type="button"
+    class="vote"
+    data-vote={idea.id}
+    data-name={idea.name}
+    aria-pressed={voted ? 'true' : 'false'}
+    aria-label={`Vote for ${idea.name}: ${idea.votes}`}
+  >
+    <i aria-hidden="true"></i><span class="count mono">{idea.votes}</span>
+  </button>
+</li>
+
+<style>
+  .idea {
+    display: grid;
+    grid-template-columns: 36px 48px minmax(0, 1fr) auto;
+    gap: 18px;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line-2);
+  }
+  .idea:global(.fresh) {
+    animation: fresh 1.6s var(--ease-lift);
+  }
+  @keyframes fresh {
+    from {
+      background: var(--paper-2);
+    }
+  }
+  .rank {
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+  .tile {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  h3 {
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .detail {
+    margin-top: 2px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--ink-1);
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--ink-2);
+  }
+  .kind {
+    color: var(--ink);
+  }
+  .vote {
+    width: 56px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0;
+    background: var(--paper-2);
+    border: 1px solid var(--line-1);
+    color: var(--ink);
+    transition:
+      border-color var(--dur-color),
+      background-color var(--dur-color),
+      color var(--dur-color);
+  }
+  .vote i {
+    width: 12px;
+    height: 10px;
+    background: currentColor;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  }
+  .count {
+    font-size: 13px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .vote:hover {
+    border-color: var(--ink);
+  }
+  .vote[aria-pressed='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+  @media (max-width: 719px) {
+    .idea {
+      grid-template-columns: 22px 40px minmax(0, 1fr) auto;
+      gap: 12px;
+    }
+    .tile {
+      width: 40px;
+      height: 40px;
+    }
+    .tile :global(.mark) {
+      font-size: 24px !important;
+    }
+    h3 {
+      font-size: 17px;
+    }
+    .vote {
+      width: 48px;
+      height: 56px;
+    }
+  }
+</style>

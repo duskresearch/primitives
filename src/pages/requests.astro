@@ -1,0 +1,360 @@
+---
+// /requests: ideas that are not on the roadmap yet, ranked by votes. Visitors vote once
+// per idea and suggest new ones; the form's answer appears in place.
+import { env } from 'cloudflare:workers';
+import Base from '@/layouts/Base.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import IdeaRow from '@/components/IdeaRow.astro';
+import { counts, primitives, site } from '@/lib/catalogue';
+import { board, type Idea } from '@/lib/server/ideas';
+import { visitor } from '@/lib/server/visitor';
+
+export const prerender = false;
+
+const who = await visitor(Astro.request);
+let ideas: Idea[] = [];
+let voted = new Set<string>();
+try {
+  ({ ideas, voted } = await board(env.DB, who.voter));
+} catch (error) {
+  console.error('requests board unavailable', error);
+}
+const votes = ideas.reduce((sum, i) => sum + i.votes, 0);
+Astro.response.headers.set('cache-control', 'private, no-store');
+---
+
+<Base
+  title={`Requests · ${site.name}`}
+  description="Ideas for new primitives and instruments that are not on the roadmap yet, ranked by votes. Vote for the ones you want, or suggest one."
+  jsonLd={[
+    {
+      '@type': 'ItemList',
+      name: 'Requested primitives and instruments',
+      itemListOrder: 'https://schema.org/ItemListOrderDescending',
+      itemListElement: ideas.slice(0, 50).map((i, idx) => ({ '@type': 'ListItem', position: idx + 1, name: i.name, description: i.detail ?? undefined })),
+    },
+  ]}
+>
+  <div class="page">
+    <Header crumbs={[{ label: 'Requests', current: true }]} address={`${site.domain}/requests`} />
+    <main>
+      <div class="title-row">
+        <h1>Requests</h1>
+        <p>What should we build next? Vote for the ideas you want, or suggest one. The list sets the order.</p>
+      </div>
+
+      <div class="board">
+        <form class="suggest" method="post" action="/api/request" novalidate data-idea-form data-astro-reload>
+          <span class="n mono">{counts.primitives + 1}</span>
+          <h2><label for="idea-name">What is missing?</label></h2>
+          <input id="idea-name" class="field" type="text" name="text" placeholder="Halftone, for instance" maxlength="48" autocomplete="off" />
+          <input
+            class="field detail"
+            type="text"
+            name="detail"
+            placeholder="What would it do? Optional"
+            aria-label="What would it do? Optional"
+            maxlength="100"
+            autocomplete="off"
+          />
+          <label class="for">
+            <span class="mono">For</span>
+            <select name="primitive">
+              <option value="">A new primitive</option>
+              {primitives.map((p) => <option value={p.slug}>{p.name}</option>)}
+            </select>
+          </label>
+          <input type="hidden" name="page" value="/requests" />
+          <input class="visually-hidden" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <button type="submit">Suggest</button>
+          <p class="answer" data-answer role="status" aria-live="polite"></p>
+          <ul class="how mono">
+            <li>One vote per visitor per idea</li>
+            <li>Ideas are checked before they appear</li>
+            <li>A repeat counts as a vote</li>
+            <li>Planned instruments live on each primitive's page</li>
+          </ul>
+        </form>
+
+        <section class="list" aria-label="Ideas, most votes first">
+          <div class="head mono">
+            <span data-totals>Rank · {ideas.length} ideas · {votes} votes</span>
+            <span>Votes</span>
+          </div>
+          <ol data-ideas>
+            {ideas.map((idea, idx) => <IdeaRow idea={idea} rank={idx + 1} voted={voted.has(idea.id)} />)}
+          </ol>
+          {ideas.length === 0 && <p class="empty">No ideas yet. Suggest the first one.</p>}
+        </section>
+      </div>
+    </main>
+    <Footer variant="full" />
+  </div>
+</Base>
+
+<script>
+  // Votes and suggestions without reloading. Bound once, by delegation, like the rest of
+  // the site's scripts under the client router.
+  const post = (url: string, body: unknown) => fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+
+  function setVote(button: HTMLButtonElement, on: boolean, votes: number) {
+    button.setAttribute('aria-pressed', String(on));
+    button.querySelector('.count')!.textContent = String(votes);
+    button.setAttribute('aria-label', `Vote for ${button.dataset.name}: ${votes}`);
+    button.closest<HTMLElement>('[data-idea]')!.dataset.votes = String(votes);
+  }
+
+  function refresh() {
+    const rows = [...document.querySelectorAll<HTMLElement>('[data-ideas] [data-idea]')];
+    rows.forEach((row, i) => (row.querySelector('.rank')!.textContent = String(i + 1).padStart(2, '0')));
+    const votes = rows.reduce((sum, row) => sum + Number(row.dataset.votes), 0);
+    const totals = document.querySelector('[data-totals]');
+    if (totals) totals.textContent = `Rank · ${rows.length} ideas · ${votes} votes`;
+    document.querySelector('.empty')?.remove();
+  }
+
+  function flash(row: Element) {
+    row.classList.remove('fresh');
+    void (row as HTMLElement).offsetWidth;
+    row.classList.add('fresh');
+    row.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  }
+
+  function answer(form: HTMLFormElement, message: string, href?: string) {
+    const out = form.querySelector('[data-answer]')!;
+    out.textContent = message;
+    if (href) {
+      const link = Object.assign(document.createElement('a'), { href, textContent: 'Open it' });
+      out.append(' ', link);
+    }
+  }
+
+  document.addEventListener('click', async (event) => {
+    const button = (event.target as Element).closest<HTMLButtonElement>('[data-vote]');
+    if (!button || button.disabled) return;
+    const on = button.getAttribute('aria-pressed') !== 'true';
+    const before = Number(button.closest<HTMLElement>('[data-idea]')!.dataset.votes);
+    setVote(button, on, before + (on ? 1 : -1));
+    button.disabled = true;
+    try {
+      const res = await post('/api/vote', { id: button.dataset.vote, on });
+      const data = (await res.json().catch(() => ({}))) as { voted?: boolean; votes?: number; message?: string };
+      if (!res.ok) throw new Error(data.message);
+      setVote(button, Boolean(data.voted), data.votes ?? before);
+    } catch (error) {
+      setVote(button, !on, before);
+      const form = document.querySelector<HTMLFormElement>('[data-idea-form]');
+      if (form) answer(form, (error as Error).message || 'That did not go through. Try again.');
+    } finally {
+      button.disabled = false;
+      refresh();
+    }
+  });
+
+  document.addEventListener('submit', async (event) => {
+    const form = (event.target as Element).closest<HTMLFormElement>('form[data-idea-form]');
+    if (!form) return;
+    event.preventDefault();
+    const body = Object.fromEntries(new FormData(form)) as Record<string, string>;
+    const field = form.querySelector<HTMLInputElement>('#idea-name')!;
+    if (!body.text.trim()) return field.focus();
+    const submit = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    submit.disabled = true;
+    try {
+      const res = await post('/api/request', body);
+      const data = (await res.json().catch(() => ({}))) as { outcome?: string; id?: string; votes?: number; message?: string; href?: string };
+      answer(form, data.message ?? 'That did not go through. Try again.', data.outcome === 'live' ? data.href : undefined);
+      if (!res.ok) return;
+      if (data.outcome === 'new' || data.outcome === 'repeat' || data.outcome === 'held') form.reset();
+      const list = document.querySelector('[data-ideas]')!;
+      if (data.outcome === 'new' && data.id) {
+        const html = await (await fetch(`/requests/row/${data.id}`)).text();
+        const row = document.createRange().createContextualFragment(html).firstElementChild!;
+        // New ideas lead the ideas with no votes yet.
+        const firstZero = [...list.children].find((r) => (r as HTMLElement).dataset.votes === '0');
+        list.insertBefore(row, firstZero ?? null);
+        refresh();
+        flash(row);
+      } else if (data.outcome === 'repeat' && data.id) {
+        const row = list.querySelector<HTMLElement>(`[data-idea="${CSS.escape(data.id)}"]`);
+        const button = row?.querySelector<HTMLButtonElement>('[data-vote]');
+        if (row && button) {
+          setVote(button, true, data.votes ?? Number(row.dataset.votes));
+          refresh();
+          flash(row);
+        }
+      }
+    } catch {
+      answer(form, 'That did not go through. Try again.');
+    } finally {
+      submit.disabled = false;
+    }
+  });
+</script>
+
+<style>
+  .title-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: end;
+    padding: 48px var(--page-x) 32px;
+  }
+  h1 {
+    font-size: 56px;
+    line-height: 1;
+    font-weight: 300;
+    letter-spacing: -0.035em;
+  }
+  .title-row p {
+    justify-self: end;
+    max-width: 440px;
+    font-size: 17px;
+    line-height: 1.45;
+    color: var(--ink-1);
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: 340px minmax(0, 1fr);
+    gap: 56px;
+    align-items: start;
+    padding: 0 var(--page-x) 56px;
+  }
+
+  .suggest {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px;
+    border: 1px dashed var(--line-3);
+  }
+  .n {
+    font-size: 12px;
+    color: var(--ink-1);
+  }
+  h2 {
+    font-size: 22px;
+    line-height: 1.2;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .field.detail {
+    font-size: 14px;
+    border-bottom-color: var(--line-3);
+  }
+  .for {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .for .mono {
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+  select {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 0;
+    border: 0;
+    border-bottom: 1px solid var(--line-3);
+    border-radius: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .suggest button {
+    align-self: flex-start;
+    padding: 10px 16px;
+    border: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 13px;
+  }
+  .suggest button:disabled {
+    opacity: 0.6;
+  }
+  .answer:empty {
+    display: none;
+  }
+  .answer {
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+  .answer :global(a) {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .how {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line-2);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+
+  .head {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--ink);
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+  .empty {
+    padding: 22px 0;
+    font-size: 15px;
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 1099px) {
+    .board {
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 40px;
+    }
+  }
+
+  @media (max-width: 719px) {
+    .title-row {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding-top: 32px;
+      padding-bottom: 24px;
+    }
+    h1 {
+      font-size: 34px;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+    .title-row p {
+      justify-self: start;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    .board {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
+    .suggest {
+      position: static;
+    }
+  }
+
+  @media (pointer: coarse) {
+    .suggest button {
+      min-height: var(--min-hit);
+    }
+    select {
+      min-height: var(--min-hit);
+    }
+  }
+</style>
