@@ -9,7 +9,7 @@ A scale is one color stepped from light to dark: the tints and shades a design s
 
 The steps look even because they are even in OKLCH lightness, 0.1 apart. The base color sits exactly on one of the steps, as near the middle as the range allows, so the color you started with appears in the scale unchanged. Because OKLCH holds hue steady as lightness changes, a blue scale stays blue at its light end instead of drifting toward purple, a common flaw of scales made in HSL or CIELAB.
 
-The result is seven swatches, each of which copies its hex, and the whole scale as CSS custom properties, from --color-100 to --color-700.
+The result is seven swatches, each of which copies itself, and the whole scale as CSS custom properties, from --color-100 to --color-700, all written in the format set beside the base color: hex, RGB, HSL or OKLCH.
 
 ## How it is computed
 
@@ -24,7 +24,7 @@ k is chosen so the base lands as near the middle as it can while the ladder stay
 
 Very light and very dark colors cannot hold much chroma in sRGB. A step that falls outside it is brought in by lowering its chroma to the most that fits, keeping lightness and hue exactly. The steps remain evenly spaced and the same hue, which is why the ends of a scale look calmer than its middle.
 
-Every step is brought inside sRGB this way, so the swatches, the hex values and the CSS describe the same colors. A base color beyond sRGB is brought in too.
+Every step is brought inside sRGB this way, so the swatches and the CSS describe the same colors in any format. A base color beyond sRGB is brought in too.
 
 ## When to use it
 

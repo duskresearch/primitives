@@ -3,27 +3,32 @@
     key: string;
     /** Above the hex: the step name, the hue offset. */
     name: string;
+    /** Paints the chip. */
     hex: string;
+    /** Shown under the chip and copied: the color in the format in use. */
+    value: string;
+    /** Names what was copied, e.g. "rgb". */
+    label: string;
     /** A short word after the name, e.g. "base". */
     note?: string;
   }
 </script>
 
 <script lang="ts">
-  // Colors side by side, each filling its share of the surface and copying its hex when
-  // clicked. Like paint chips, the label sits on paper under the color, so it reads for any
+  // Colors side by side, each filling its share of the surface and copying its value, in the
+  // format in use, when clicked. Like paint chips, the label sits on paper under the color, so it reads for any
   // color at all. Columns on wide screens, rows on phones.
   let { items }: { items: Swatch[] } = $props();
 </script>
 
 <div class="swatches">
   {#each items as s (s.key)}
-    <button type="button" class="swatch" data-copy={s.hex} data-copy-label="hex">
+    <button type="button" class="swatch" data-copy={s.value} data-copy-label={s.label}>
       <span class="visually-hidden">Copy </span>
       <span class="chip" style:background-color={s.hex}></span>
       <span class="label mono">
         <span class="name">{s.note ? `${s.name} · ${s.note}` : s.name}</span>
-        <span class="hex">{s.hex}</span>
+        <span class="value">{s.value}</span>
       </span>
     </button>
   {/each}
@@ -68,9 +73,8 @@
   .name {
     color: var(--ink-2);
   }
-  .hex {
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .value {
+    overflow-wrap: anywhere;
   }
   @media (max-width: 639px) {
     .swatches {

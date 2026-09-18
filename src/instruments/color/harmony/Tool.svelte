@@ -3,7 +3,7 @@
   import Copy from '@/components/tool/Copy.svelte';
   import Swatches from '@/components/tool/Swatches.svelte';
   import { setQuery } from '@/lib/client/harness';
-  import { cssOklch, harmonyOf, hex, RULE_NAMES, type Lch, type Rule } from '@duskresearch/primitives/design/color';
+  import { formatAs, harmonyOf, hex, RULE_NAMES, type CssFormat, type Lch, type Rule } from '@duskresearch/primitives/design/color';
   import { serializeWith, type ColorState } from '../state';
   import ColorControls from '../ColorControls.svelte';
 
@@ -27,8 +27,10 @@
 
   const colors = $derived(harmonyOf(a, rule));
   const degrees = (offset: number) => (offset === 0 ? 'base' : `${offset > 0 ? '+' : '−'}${Math.abs(offset)}°`);
-  const items = $derived(colors.map((x) => ({ key: String(x.offset), name: degrees(x.offset), hex: hex(x.color) })));
-  const palette = $derived(colors.map((x) => cssOklch(x.color)).join('\n'));
+  let format = $state<CssFormat>('hex');
+  // Everything made from the base is written in the base's format.
+  const items = $derived(colors.map((x) => ({ key: String(x.offset), name: degrees(x.offset), hex: hex(x.color), value: formatAs(x.color, format), label: format })));
+  const palette = $derived(colors.map((x) => formatAs(x.color, format)).join('\n'));
   // Below this chroma there is barely a hue to turn.
   const gray = $derived(a.c < 0.02);
 
@@ -45,7 +47,7 @@
 </div>
 
 <div class="panel">
-  <ColorControls name="Base" key="A" bind:color={a} />
+  <ColorControls name="Base" key="A" bind:color={a} bind:format />
   <div class="rule">
     <Choice label="Rule" options={RULE_NAMES} {names} bind:value={rule} />
     <p class="mono">{gray ? 'A gray has no hue to turn. Raise C.' : describe[rule]}</p>

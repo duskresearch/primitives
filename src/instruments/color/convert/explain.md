@@ -9,7 +9,7 @@ Convert reads a color in any format CSS understands and writes it in every other
 
 The formats describe one color in different coordinates. Hex, rgb() and hsl() are all sRGB, the color space of ordinary screens and of the web for most of its life. oklch() and oklab() describe how a color looks, and can reach colors beyond sRGB. color(display-p3) is the wider gamut that many phones and laptops can show.
 
-Paste a value to start. The large value is the format you did not paste: oklch() for anything else, hex when you pasted oklch(). Every row in the panel copies itself. Hex works with or without the #, in three or six digits.
+Paste a value to start. The large value is the color as the format chosen beside it. Until you choose, it offers the other side of the likely conversion: oklch() for a hex or rgb(), hex for anything else. Every row in the panel copies itself. Hex works with or without the #, in three or six digits.
 
 ## How it is computed
 

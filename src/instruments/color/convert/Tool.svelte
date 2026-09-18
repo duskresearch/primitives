@@ -1,7 +1,8 @@
 <script lang="ts">
   import Copy from '@/components/tool/Copy.svelte';
+  import FormatSelect from '@/components/tool/FormatSelect.svelte';
   import { setQuery } from '@/lib/client/harness';
-  import { cssOklch, formats, gamutOf, hex, parseColor, type Lch } from '@duskresearch/primitives/design/color';
+  import { cssOklch, formatAs, formatOf, formats, gamutOf, hex, parseColor, type CssFormat, type Lch } from '@duskresearch/primitives/design/color';
   import { serialize, type ColorState } from '../state';
   import { textOn } from '../ui';
 
@@ -14,15 +15,17 @@
   // svelte-ignore state_referenced_locally
   let text = $state(hex(initial.a));
   let invalid = $state(false);
-  // Pasted oklch() comes back as hex; anything else comes back as oklch().
-  let pastedOklch = $state(false);
+  // The large value is the color "as" a format you choose. Until you choose, it offers the
+  // likely other side of the conversion: oklch() for a hex or rgb(), hex for anything else.
+  let target = $state<CssFormat>('oklch');
+  let chosen = false;
 
   function oninput(e: Event) {
     text = (e.currentTarget as HTMLInputElement).value;
     try {
       a = parseColor(text);
       invalid = false;
-      pastedOklch = /^\s*oklch\(/i.test(text);
+      if (!chosen) target = ['hex', 'rgb'].includes(formatOf(text)) ? 'oklch' : 'hex';
     } catch {
       invalid = text.trim() !== '';
     }
@@ -30,7 +33,7 @@
 
   const f = $derived(formats(a));
   const gamut = $derived(gamutOf(a));
-  const primary = $derived(pastedOklch ? { label: 'hex', value: f.hex } : { label: 'oklch', value: f.oklch });
+  const primary = $derived(formatAs(a, target));
   const rows = $derived([
     ['Hex', f.hex],
     ['RGB', f.rgb],
@@ -66,8 +69,8 @@
     </p>
   </div>
   <div class="result">
-    <span class="mono label">{primary.label}</span>
-    <Copy value={primary.value} label={primary.label} primary class="big">{primary.value}</Copy>
+    <span class="mono label" onchange={() => (chosen = true)}>as <FormatSelect bind:format={target} label="Convert to" /></span>
+    <Copy value={primary} label={target} primary class="big">{primary}</Copy>
   </div>
 </div>
 
@@ -123,7 +126,13 @@
     gap: 6px;
   }
   .label {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
     font-size: 11px;
+  }
+  .label :global(.format) {
+    color: inherit;
   }
   .surface :global(.big) {
     font-size: 44px;

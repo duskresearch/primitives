@@ -51,6 +51,7 @@
 
   const value = $derived(formatAs(a, format));
   const oklch = $derived(cssOklch(a));
+  const names: Record<CssFormat, string> = { hex: 'Hex', rgb: 'RGB', hsl: 'HSL', oklch: 'OKLCH' };
 
   let loaded = false;
   $effect(() => {
@@ -61,13 +62,7 @@
 </script>
 
 <div class="surface" style:background-color={oklch} style:color={textOn(a)}>
-  <div class="labels mono">
-    {#if format === 'oklch'}
-      <Copy value={hex(a)} label="hex">{hex(a)}</Copy>
-    {:else}
-      <Copy value={oklch} label="oklch">{oklch}</Copy>
-    {/if}
-  </div>
+  <p class="labels mono">{names[format]}</p>
   <Copy {value} label={format} primary class="big">{value}</Copy>
 </div>
 

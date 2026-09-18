@@ -9,7 +9,7 @@ Blend shows the color two colors make when they meet. A is the top color and B t
 
 Amount is how much of A: its share of a mix, or its opacity for everything else. For mix and opacity, two strips run from A to B, one in OKLCH and one in sRGB, with the space in use marked. The gap between them is where muddy mixes come from.
 
-The result is a hex you can copy, and the CSS that produces it.
+The result is a color you can copy, written in the top color's format, and the CSS that produces it, with each color written in its own.
 
 ## How it is computed
 

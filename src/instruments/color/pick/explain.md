@@ -7,7 +7,7 @@ description: Choose a color by eye on a saturation and brightness square with a 
 
 A color picker. The square sets saturation (across) and brightness (up) at one hue, and the strip below it sets the hue. If you already have a color, type it instead: hex, rgb(), hsl(), oklch() or a name.
 
-Choose the format you work in from the list beside the value: hex, RGB, HSL or OKLCH. The boxes follow it, the large value on the surface follows it, and C copies it. The same color in OKLCH sits above, for CSS you plan to adjust later.
+Choose the format you work in from the list beside the value: hex, RGB, HSL or OKLCH. The boxes follow it, the large value on the surface follows it, and C copies it. Type a color in another format and the list switches to that format.
 
 Every point in the square is a color ordinary screens can show, so the color you pick is the color everyone sees. There is nothing to fall off: the square ends where the screen's colors end.
 

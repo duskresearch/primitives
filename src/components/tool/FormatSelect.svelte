@@ -20,7 +20,9 @@
     padding: 5px 14px 5px 0;
     border: 0;
     border-radius: 0;
-    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0h8L4 5z' fill='%236b6a63'/%3E%3C/svg%3E") no-repeat right center;
+    background:
+      linear-gradient(45deg, transparent 50%, currentColor 50%) no-repeat calc(100% - 4px) 55% / 4px 4px,
+      linear-gradient(135deg, currentColor 50%, transparent 50%) no-repeat 100% 55% / 4px 4px;
     font-family: var(--mono);
     font-size: 11px;
     line-height: 1.25;

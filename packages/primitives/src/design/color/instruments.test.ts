@@ -3,7 +3,7 @@
 // formulas of W3C Compositing and Blending Level 1.
 import { describe, expect, it } from 'vitest';
 import { InputError } from '../../operation';
-import { blend, blendChannel, channelsOf, convert, formatAs, formatOf, fromChannels, fromHsv, harmony, hex, parseColor, pick, scale, SCALE_STEP, toHsv } from '.';
+import { blend, blendChannel, blendCss, channelsOf, convert, formatAs, formatOf, fromChannels, fromHsv, harmony, hex, parseColor, pick, scale, scaleCss, SCALE_STEP, toHsv } from '.';
 
 describe('convert', () => {
   it('writes red the way CSS Color 4 does', () => {
@@ -97,6 +97,12 @@ describe('scale', () => {
     expect(result.css).not.toMatch(/oklch/);
   });
 
+  it('writes the steps in the format you ask for', () => {
+    const steps = scale({ color: base }).steps.map((st) => ({ name: st.name, base: st.base, color: parseColor(st.hex) }));
+    expect(scaleCss(steps, '--color', 'rgb').split('\n')[4]).toBe('--color-500: rgb(197 54 55);');
+    expect(scaleCss(steps, '--brand', 'hsl').split('\n')[4]).toBe('--brand-500: hsl(359.6 57% 49.2%);');
+  });
+
   it('writes one custom property per step', () => {
     const lines = result.css.split('\n');
     expect(lines).toHaveLength(7);
@@ -176,6 +182,12 @@ describe('blend', () => {
     expect(blend({ top: 'red', bottom: 'blue', mode: 'opacity', amount: 0.25 }).css).toBe('color-mix(in srgb, #ff0000 25%, #0000ff)');
     expect(blend({ top: 'red', bottom: 'blue', mode: 'multiply', amount: 0.5 }).css).toBe('mix-blend-mode: multiply; opacity: 0.5;');
     expect(blend({ top: 'red', bottom: 'blue', mode: 'screen', amount: 1 }).css).toBe('mix-blend-mode: screen;');
+  });
+
+  it('writes the colors in the CSS in the formats you use', () => {
+    const red = parseColor('red');
+    const blue = parseColor('blue');
+    expect(blendCss(red, blue, 'mix', 0.5, { top: 'rgb', bottom: 'hsl' })).toBe('color-mix(in oklch, rgb(255 0 0) 50%, hsl(240 100% 50%))');
   });
 
   it('refuses a bad mode or amount', () => {

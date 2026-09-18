@@ -309,7 +309,9 @@ export function scaleOf(base: Lch): Step[] {
   return SCALE_NAMES.map((name, i) => ({ name, color: fitSrgb({ ...base, l: round(base.l + (k - i) * SCALE_STEP, 4) }), base: i === k }));
 }
 
-export const scaleCss = (steps: Step[], prefix = '--color') => steps.map((s) => `${prefix}-${s.name}: ${cssColor(s.color)};`).join('\n');
+/** The scale as CSS custom properties, each step written in `format` (hex unless you ask). */
+export const scaleCss = (steps: Step[], prefix = '--color', format: CssFormat = 'hex') =>
+  steps.map((s) => `${prefix}-${s.name}: ${formatAs(s.color, format)};`).join('\n');
 
 // ── Harmony ──────────────────────────────────────────────────────────────────────────
 
@@ -374,10 +376,11 @@ export function blendOf(top: Lch, bottom: Lch, mode: BlendMode, amount: number):
 }
 
 /** The CSS that makes the blend: a color-mix() value, or the properties for the top layer. */
-export function blendCss(top: Lch, bottom: Lch, mode: BlendMode, amount: number): string {
+export function blendCss(top: Lch, bottom: Lch, mode: BlendMode, amount: number, formats?: { top: CssFormat; bottom: CssFormat }): string {
+  const write = (c: Lch, f?: CssFormat) => (f ? formatAs(c, f) : cssColor(c));
   const pct = `${num(amount * 100, 1)}%`;
-  if (mode === 'mix') return `color-mix(in oklch, ${cssColor(top)} ${pct}, ${cssColor(bottom)})`;
-  if (mode === 'opacity') return `color-mix(in srgb, ${cssColor(top)} ${pct}, ${cssColor(bottom)})`;
+  if (mode === 'mix') return `color-mix(in oklch, ${write(top, formats?.top)} ${pct}, ${write(bottom, formats?.bottom)})`;
+  if (mode === 'opacity') return `color-mix(in srgb, ${write(top, formats?.top)} ${pct}, ${write(bottom, formats?.bottom)})`;
   return `mix-blend-mode: ${mode};${amount < 1 ? ` opacity: ${num(amount, 3)};` : ''}`;
 }
 

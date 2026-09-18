@@ -9,7 +9,7 @@ Harmony finds the colors that sit well with one you already have, by turning its
 
 The difference is the wheel. The hues turn in OKLCH, so every color in the palette keeps the perceived lightness and chroma of your base. On a wheel built from HSL, the same rules give a yellow that glows beside a blue that sinks.
 
-The result is the palette as swatches, each of which copies its hex, and as a list of oklch() values.
+The result is the palette as swatches, each of which copies itself, and as a list to copy whole. Both are written in the format set beside the base color: hex, RGB, HSL or OKLCH.
 
 ## How it is computed
 
@@ -23,7 +23,7 @@ triadic         H, H + 120, H + 240
 square          H, H + 90, H + 180, H + 270
 ```
 
-Hues differ in how much chroma they can hold at a given lightness. At the lightness of a strong red, a blue reaches the edge of sRGB sooner. A color that falls outside it is brought in by lowering its chroma to the most that fits, keeping lightness and hue exactly, so the palette stays level in lightness even where it cannot stay as strong. The oklch() values you copy are those fitted colors, the same ones the swatches show.
+Hues differ in how much chroma they can hold at a given lightness. At the lightness of a strong red, a blue reaches the edge of sRGB sooner. A color that falls outside it is brought in by lowering its chroma to the most that fits, keeping lightness and hue exactly, so the palette stays level in lightness even where it cannot stay as strong. The values you copy are those fitted colors, the same ones the swatches show.
 
 The base is the first color of every rule except analogous, where it sits in the middle with its neighbors on either side. A gray has no hue to turn. Give the base some chroma first.
 
