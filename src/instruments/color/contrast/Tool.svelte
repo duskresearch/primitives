@@ -207,6 +207,24 @@
       font-size: 19px;
     }
   }
+  @media (orientation: landscape) and (max-height: 500px) {
+    .large {
+      font-size: 34px;
+    }
+    .wide {
+      display: none;
+    }
+    .narrow {
+      display: inline;
+    }
+    .ratio {
+      font-size: 44px;
+      line-height: 1.05;
+    }
+    .unit {
+      font-size: 19px;
+    }
+  }
   @media (pointer: coarse) {
     .fix {
       min-height: var(--min-hit);

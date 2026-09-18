@@ -212,6 +212,17 @@ const description = `${site.subline} Contrast checks, modular scales, easing cur
     }
   }
 
+  @media (max-width: 899px) {
+    .hero {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .intro {
+      justify-self: start;
+      max-width: 520px;
+    }
+  }
+
   @media (max-width: 719px) {
     .hero {
       grid-template-columns: 1fr;
@@ -267,9 +278,27 @@ const description = `${site.subline} Contrast checks, modular scales, easing cur
     }
   }
 
+  @media (orientation: landscape) and (max-height: 500px) {
+    .hero {
+      padding-top: 24px;
+      padding-bottom: 20px;
+    }
+    h1 {
+      font-size: 34px;
+      line-height: 1.05;
+    }
+  }
+
   @media (pointer: coarse) {
     .request button {
       min-height: var(--min-hit);
+    }
+    .search input {
+      min-height: var(--min-hit);
+    }
+    .all {
+      padding-block: 15px;
+      margin-block: -15px;
     }
     .search .badge {
       display: none;

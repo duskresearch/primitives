@@ -312,6 +312,19 @@ const strip = primitives.map((p) => `oklch(${p.shipped ? '0.86 0.08' : '0.92 0.0
     border: 1px dashed var(--line-3);
   }
 
+  @media (max-width: 1199px) {
+    .cells {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (orientation: landscape) and (max-height: 500px) {
+    h1 {
+      font-size: 34px;
+      line-height: 1.05;
+    }
+  }
+
   @media (max-width: 1099px) {
     .about {
       grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);

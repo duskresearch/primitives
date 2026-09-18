@@ -142,6 +142,13 @@ input[type='range'] {
   white-space: nowrap;
 }
 
+/* Touch: text fields reach a 44px hit area without changing their underline look. */
+@media (pointer: coarse) {
+  .field {
+    min-height: var(--min-hit);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

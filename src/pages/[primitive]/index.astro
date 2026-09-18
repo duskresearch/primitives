@@ -281,6 +281,20 @@ const url = new URL(p.href, Astro.site).href;
     }
   }
 
+  @media (orientation: landscape) and (max-height: 500px) {
+    .page {
+      --mark-index: 72px;
+    }
+    .hero {
+      padding-top: 24px;
+      padding-bottom: 24px;
+    }
+    h1 {
+      font-size: 34px;
+      line-height: 1.05;
+    }
+  }
+
   @media (pointer: coarse) {
     .sooner button {
       min-height: var(--min-hit);

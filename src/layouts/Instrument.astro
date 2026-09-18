@@ -271,6 +271,25 @@ const legend = [`C copies ${meta.primaryLabel}`, prev && '[ ] previous, next', '
     color: var(--ink-2);
   }
 
+  @media (orientation: landscape) and (max-height: 500px) {
+    .title-row {
+      padding-top: 16px;
+    }
+    h1 {
+      font-size: 34px;
+      line-height: 1.05;
+    }
+    .tool {
+      margin-top: 16px;
+    }
+  }
+
+  @media (pointer: coarse) {
+    .toc a {
+      padding-block: 12.5px;
+    }
+  }
+
   @media (max-width: 1099px) {
     .explain {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);

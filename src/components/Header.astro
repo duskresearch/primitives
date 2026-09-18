@@ -144,6 +144,11 @@ const { crumbs, address, stateful } = Astro.props;
   .short {
     display: none;
   }
+  @media (orientation: landscape) and (max-height: 500px) {
+    .header {
+      padding-top: 14px;
+    }
+  }
   /* Touch: 44px hit areas from padding cancelled by margin, so the crumbs keep one baseline. */
   @media (pointer: coarse) {
     .crumbs a,

@@ -349,6 +349,17 @@ Astro.response.headers.set('cache-control', 'private, no-store');
     }
   }
 
+  @media (orientation: landscape) and (max-height: 500px) {
+    .title-row {
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+    h1 {
+      font-size: 34px;
+      line-height: 1.05;
+    }
+  }
+
   @media (pointer: coarse) {
     .suggest button {
       min-height: var(--min-hit);
