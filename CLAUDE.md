@@ -28,6 +28,10 @@ The brief and the definition of done are private: `primitives-design/README.md` 
 
 `astro dev` sometimes keeps serving a component's previous stylesheet after an edit (markup updates, styles lag one save behind). If styles look stale, save the file again or restart `npm run dev`; production builds are not affected. Screenshot with a second or so of settle time after the first load.
 
+## Redirect workers
+
+`workers/www-redirect` and `workers/design-redirect` deploy on their own: `npx wrangler deploy --config wrangler.jsonc` from the worker's folder. Without `--config`, wrangler finds the site build's `.wrangler/deploy/config.json` further up and refuses to choose.
+
 ## Check before committing
 
 `npm test && npm run check && npm run build`, then look at the page at 1280×800 and 390×844: the tool must be visible above the fold.
