@@ -1,0 +1,63 @@
+---
+// A primitive's mark: CSS layers from catalogue.json inside a 1em box, so one definition
+// scales from a list row to the index hero. Unshipped marks are drawn in ink-2 at 60%.
+import type { Primitive } from '@/lib/catalogue';
+
+interface Props {
+  primitive: Primitive;
+  /** Any CSS length; usually a token such as var(--mark-tile). */
+  size: string;
+}
+
+const { primitive: p, size } = Astro.props;
+const ink2 = (v: string) => v.replace(/\bink2\b/g, 'var(--ink-2)');
+const layers = p.mark.map((l) =>
+  [
+    `width:${l.w ?? 0}`,
+    `height:${l.h ?? 0}`,
+    l.bg && `background:${ink2(l.bg)}`,
+    l.bs && `background-size:${l.bs}`,
+    l.r && `border-radius:${l.r}`,
+    l.cp && `clip-path:${l.cp}`,
+    l.tf && `transform:${l.tf}`,
+    l.bd && `border:${l.bd}`,
+    l.bc && `border-color:${ink2(l.bc)}`,
+    `mix-blend-mode:${l.blend ?? 'multiply'}`,
+  ]
+    .filter(Boolean)
+    .join(';'),
+);
+---
+
+<span class:list={['mark', { planned: !p.shipped }]} style={`font-size:${size}`} aria-hidden="true">
+  {layers.map((style) => <span class="layer" style={style} />)}
+  {p.letter && <span class="letter">{p.letter}</span>}
+</span>
+
+<style>
+  .mark {
+    position: relative;
+    flex: none;
+    width: 1em;
+    height: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .planned {
+    opacity: 0.6;
+  }
+  .layer,
+  .letter {
+    position: absolute;
+    box-sizing: content-box;
+  }
+  .letter {
+    font: 400 1.15em/1 var(--sans);
+    letter-spacing: -0.05em;
+    color: var(--ink);
+  }
+  .planned .letter {
+    color: var(--ink-2);
+  }
+</style>

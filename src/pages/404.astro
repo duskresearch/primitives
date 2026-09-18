@@ -1,0 +1,47 @@
+---
+import Base from '@/layouts/Base.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+---
+
+<Base title="Not found · Primitives" description="There is nothing at this address.">
+  <div class="page">
+    <Header crumbs={[{ label: 'Not found', current: true }]} />
+    <main>
+      <h1>Nothing at this address.</h1>
+      <p>Press <span class="badge">/</span> to find an instrument, or start from <a href="/">all primitives</a>.</p>
+    </main>
+    <Footer variant="instrument" />
+  </div>
+</Base>
+
+<style>
+  main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 56px var(--page-x) 0;
+  }
+  h1 {
+    font-size: 56px;
+    line-height: 1;
+    font-weight: 300;
+    letter-spacing: -0.035em;
+  }
+  p {
+    font-size: 17px;
+    line-height: 1.45;
+    color: var(--ink-1);
+  }
+  a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  @media (max-width: 719px) {
+    h1 {
+      font-size: 34px;
+    }
+  }
+</style>

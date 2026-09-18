@@ -1,0 +1,157 @@
+---
+// Footer. Every variant has the status slot: the only place feedback appears.
+import { site, type Primitive } from '@/lib/catalogue';
+import { links } from '@/lib/links';
+
+interface Props {
+  variant: 'landing' | 'index' | 'instrument';
+  next?: Primitive;
+}
+
+const { variant, next } = Astro.props;
+---
+
+<footer class:list={['footer', variant]}>
+  {links.maker ? <a href={links.maker}>{site.maker}</a> : <span>{site.maker}</span>}
+  {
+    variant === 'landing' && (
+      <form class="notify" method="post" action="/api/subscribe" novalidate data-form data-astro-reload data-confirm={site.emailConfirm} data-error={site.errorLine}>
+        <label for="notify-email">{site.emailLine}</label>
+        <span class="notify-row">
+          <input id="notify-email" class="field" type="email" name="email" placeholder="you@…" autocomplete="email" />
+          <input class="visually-hidden" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <button type="submit">{site.emailButton}</button>
+        </span>
+      </form>
+    )
+  }
+  <span class="end">
+    <span class="status" data-status role="status" aria-live="polite"></span>
+    {
+      variant === 'landing' && (
+        <>
+          <a class="out" href={links.github}>GitHub</a>
+          {links.x && <a class="out" href={links.x}>X</a>}
+          <span class="domain">{site.domain}</span>
+        </>
+      )
+    }
+    {
+      variant === 'index' && next && (
+        <a class="out" href={next.href} data-astro-prefetch>
+          {next.name} {next.n} →
+        </a>
+      )
+    }
+  </span>
+</footer>
+
+<style>
+  .footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 20px var(--page-x) 24px;
+    border-top: 1px solid var(--line-1);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+  .instrument {
+    margin-top: 56px;
+  }
+  .landing {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+  }
+  .end {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+    min-width: 0;
+  }
+  .status {
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .out {
+    color: var(--ink);
+  }
+  .index .out {
+    color: var(--ink-2);
+  }
+  .domain {
+    display: none;
+  }
+  .notify {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-1);
+  }
+  .notify-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .notify .field {
+    width: var(--email-input);
+    padding: 5px 0;
+    font-size: 13px;
+  }
+  .notify button {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-size: 13px;
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  @media (pointer: coarse) {
+    .notify button,
+    .out {
+      min-height: var(--min-hit);
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+  @media (max-width: 719px) {
+    .footer {
+      padding: 16px var(--page-x) 22px;
+      font-size: 11px;
+    }
+    .landing {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+    }
+    .landing .notify {
+      order: -1;
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 4px;
+    }
+    .notify .field {
+      flex: 1;
+      width: auto;
+    }
+    .landing .out {
+      display: none;
+    }
+    .landing .domain {
+      display: inline;
+    }
+    .landing .status:not(:empty) ~ .domain {
+      display: none;
+    }
+  }
+</style>

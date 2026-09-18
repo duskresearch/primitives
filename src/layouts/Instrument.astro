@@ -1,0 +1,310 @@
+---
+// The instrument page template. An instrument supplies its Tool (the default slot) and
+// explain.md; everything else here is the harness: breadcrumb, stateful address, title
+// row, tool chrome and key legend, the four-part explanation, related list and footer.
+// Order is fixed: tool, then explanation, then related. Never text above the tool.
+import Base from './Base.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { explanationHeadings, getInstrument, getPrimitive, related, siblings, site } from '@/lib/catalogue';
+import '@/styles/tool.css';
+
+interface Props {
+  primitive: string;
+  slug: string;
+  /** The primitive's state, serialized: shown in the header address. */
+  query: string;
+}
+
+interface Explain {
+  frontmatter: { title: string; description: string };
+  compiledContent: () => string | Promise<string>;
+}
+
+const { primitive, slug, query } = Astro.props;
+const p = getPrimitive(primitive);
+const i = getInstrument(primitive, slug);
+const meta = i.meta;
+if (!meta) throw new Error(`${i.href} has no meta.ts`);
+if (!i.pain) throw new Error(`${i.href} names no pain point in catalogue.json`);
+
+const explains = import.meta.glob<Explain>('/src/instruments/*/*/explain.md', { eager: true });
+const explain = explains[`/src/instruments/${primitive}/${slug}/explain.md`];
+if (!explain) throw new Error(`${i.href} has no explain.md`);
+
+const html = await explain.compiledContent();
+const sections = html
+  .split(/(?=<h2[\s>])/)
+  .filter((chunk) => chunk.startsWith('<h2'))
+  .map((chunk) => {
+    const [, id, heading] = /^<h2 id="([^"]+)">(.*?)<\/h2>/.exec(chunk) ?? [];
+    return { id, heading, html: chunk };
+  });
+const headings = sections.map((s) => s.heading);
+if (headings.join('|') !== explanationHeadings.join('|')) {
+  throw new Error(`${i.href}/explain.md needs exactly these sections: ${explanationHeadings.join(', ')}. Found: ${headings.join(', ')}`);
+}
+
+const { prev, next } = siblings(i);
+const relatedItems = related(i);
+const base = `${site.domain}${i.href}`;
+const url = new URL(i.href, Astro.site).href;
+const legend = [`C copies ${meta.primaryLabel}`, prev && '[ ] previous, next', '⌘K find'].filter(Boolean).join(' · ');
+---
+
+<Base
+  title={`${explain.frontmatter.title} · ${site.name}`}
+  description={explain.frontmatter.description}
+  jsonLd={[
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: site.name, item: Astro.site?.href },
+        { '@type': 'ListItem', position: 2, name: p.name, item: new URL(p.href, Astro.site).href },
+        { '@type': 'ListItem', position: 3, name: i.name, item: url },
+      ],
+    },
+    {
+      '@type': 'WebApplication',
+      name: `${i.name}, ${p.name} · ${site.name}`,
+      url,
+      description: explain.frontmatter.description,
+      applicationCategory: 'DesignApplication',
+      operatingSystem: 'Any',
+      isAccessibleForFree: true,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      publisher: { '@type': 'Organization', name: site.maker },
+    },
+  ]}
+>
+  <div class="page">
+    <Header crumbs={[{ label: p.name, href: p.href }, { label: i.name, n: i.n, current: true }]} stateful={{ base, query }} />
+    <main data-primitive={p.slug} data-prev={prev?.href} data-next={next?.href}>
+      <div class="title-row">
+        <h1>{i.name}</h1>
+        <p>{meta.purpose}</p>
+      </div>
+
+      <section class="tool" aria-label={i.name}>
+        <slot />
+        <div class="legend" aria-hidden="true"><p>{legend}</p></div>
+      </section>
+
+      <div class="explain">
+        <nav class="toc mono" aria-label="On this page">
+          {sections.map((s, idx) => <a href={`#${s.id}`} aria-current={idx === 0 ? 'true' : undefined}>{s.heading}</a>)}
+        </nav>
+        {
+          [sections.slice(0, 2), sections.slice(2)].map((column) => (
+            <div class="column">
+              {column.map((s) => (
+                <section class="part" aria-labelledby={s.id}>
+                  <Fragment set:html={s.html} />
+                  {s.heading === 'Related' && relatedItems.length > 0 && (
+                    <ul class="related">
+                      {relatedItems.map((r) => (
+                        <li>
+                          {r.live ? (
+                            <a class="row" href={r.href} data-astro-prefetch {...(r.primitive === p.slug ? { 'data-state-link': '' } : {})}>
+                              <span>{r.name}</span>
+                              <span class="mono">
+                                /{r.primitive} · {r.n}
+                              </span>
+                            </a>
+                          ) : (
+                            <span class="row later">
+                              <span>{r.name}</span>
+                              <span class="mono">In preparation</span>
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              ))}
+            </div>
+          ))
+        }
+      </div>
+    </main>
+    <Footer variant="instrument" />
+  </div>
+</Base>
+
+<script>
+  // The section nav marks the section last jumped to; both columns sit side by side, so
+  // there is no reading order for a scroll spy to follow.
+  document.addEventListener('click', (e) => {
+    const link = (e.target as Element).closest<HTMLAnchorElement>('.toc a');
+    if (!link) return;
+    link.parentElement!.querySelectorAll('a').forEach((a) => a.removeAttribute('aria-current'));
+    link.setAttribute('aria-current', 'true');
+  });
+</script>
+
+<style>
+  .title-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: end;
+    padding: 48px var(--page-x) 0;
+  }
+  h1 {
+    font-size: 56px;
+    line-height: 1;
+    font-weight: 300;
+    letter-spacing: -0.035em;
+  }
+  .title-row p {
+    justify-self: end;
+    max-width: 400px;
+    margin-bottom: 6px;
+    font-size: 17px;
+    line-height: 1.45;
+    color: var(--ink-1);
+  }
+
+  .explain {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr) minmax(0, 1fr);
+    gap: 64px;
+    align-items: start;
+    padding: 64px var(--page-x) 0;
+  }
+  .toc {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+  .toc a {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line-2);
+    transition: color var(--dur-color);
+  }
+  .toc a:hover,
+  .toc a[aria-current] {
+    color: var(--ink);
+  }
+  .column {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    max-width: 460px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--ink-1);
+  }
+  .part {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    scroll-margin-top: 24px;
+  }
+  .part :global(h2) {
+    font-size: 22px;
+    line-height: 1.2;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    scroll-margin-top: 24px;
+  }
+  .part :global(p + p),
+  .part :global(pre + p),
+  .part :global(p + pre) {
+    margin-top: 8px;
+  }
+  .part :global(pre) {
+    margin: 8px 0 0;
+    padding: 12px 14px;
+    overflow-x: auto;
+    background: var(--paper-2);
+    border: 1px solid var(--line-2);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink);
+    white-space: pre;
+  }
+  .part :global(code) {
+    font-family: var(--mono);
+    font-size: 0.875em;
+    color: var(--ink);
+  }
+  .part :global(pre code) {
+    font-size: inherit;
+  }
+  .part :global(a) {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .related {
+    display: flex;
+    flex-direction: column;
+  }
+  .related .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line-2);
+    font-size: 16px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .related .later {
+    color: var(--ink-2);
+  }
+  .related a:hover span:first-child {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .related .mono {
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 1099px) {
+    .explain {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 48px;
+    }
+    .toc {
+      display: none;
+    }
+  }
+
+  @media (max-width: 719px) {
+    .title-row {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding-top: 32px;
+    }
+    h1 {
+      font-size: 34px;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+    .title-row p {
+      justify-self: start;
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    .tool {
+      margin-top: 20px;
+    }
+    .explain {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 28px;
+      padding-top: 48px;
+    }
+  }
+</style>

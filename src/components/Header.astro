@@ -1,0 +1,162 @@
+---
+// Site header. Landing: name, counts, domain. Elsewhere: a breadcrumb and the canonical URL.
+import { counts, site } from '@/lib/catalogue';
+
+export interface Crumb {
+  label: string;
+  href?: string;
+  n?: string;
+  current?: boolean;
+}
+
+interface Props {
+  crumbs?: Crumb[];
+  /** The canonical address shown at the right, e.g. "primitiv.es/color". */
+  address?: string;
+  /** Set on instrument pages: the address carries state and copies the full link. */
+  stateful?: { base: string; query: string };
+}
+
+const { crumbs, address, stateful } = Astro.props;
+---
+
+<header class="header">
+  {
+    crumbs ? (
+      <nav aria-label="Breadcrumb">
+        <ol class="crumbs">
+          <li>
+            <a href="/" class="home">
+              {site.name}
+            </a>
+          </li>
+          {crumbs.map((c) => (
+            <li class:list={{ current: c.current }}>
+              <span class="slash" aria-hidden="true">/</span>
+              {c.n && <span class="n mono">{c.n}</span>}
+              {c.href && !c.current ? (
+                <a href={c.href} data-astro-prefetch>
+                  {c.label}
+                </a>
+              ) : (
+                <span aria-current={c.current ? 'page' : undefined}>{c.label}</span>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
+    ) : (
+      <>
+        <a href="/" class="home" aria-current="page">
+          {site.name}
+        </a>
+        <span class="counts mono">
+          <span class="long">
+            {counts.primitives} primitives · {counts.instruments} instruments
+          </span>
+          <span class="short" aria-hidden="true">
+            {counts.primitives} · {counts.instruments}
+          </span>
+        </span>
+        <span class="address mono">{site.domain}</span>
+      </>
+    )
+  }
+  {
+    stateful ? (
+      <button
+        type="button"
+        class="copy address mono"
+        data-canonical
+        data-base={stateful.base}
+        data-query={stateful.query}
+        data-copy={`https://${stateful.base}?${stateful.query}`}
+        data-copy-label="link"
+      >
+        {stateful.base}?{stateful.query}
+      </button>
+    ) : (
+      address && <span class="address mono">{address}</span>
+    )
+  }
+</header>
+
+<style>
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 24px;
+    padding: var(--header-top) var(--page-x) 0;
+    font-size: 15px;
+  }
+  .home {
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .crumbs li {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .crumbs a:not(.home) {
+    color: var(--ink-1);
+  }
+  .crumbs .current {
+    font-weight: 500;
+  }
+  .slash,
+  .n,
+  .counts,
+  .address {
+    color: var(--ink-2);
+  }
+  .n,
+  .counts,
+  .address {
+    font-size: 12px;
+  }
+  .counts {
+    letter-spacing: 0.04em;
+  }
+  .address {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .short {
+    display: none;
+  }
+  @media (pointer: coarse) {
+    .crumbs a,
+    .home {
+      min-height: var(--min-hit);
+      display: inline-flex;
+      align-items: center;
+    }
+    .header {
+      align-items: center;
+    }
+  }
+  @media (max-width: 719px) {
+    .header {
+      padding-top: 22px;
+    }
+    .long {
+      display: none;
+    }
+    .short {
+      display: inline;
+    }
+    .address {
+      display: none;
+    }
+  }
+</style>

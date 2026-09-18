@@ -1,0 +1,56 @@
+---
+// The shell: head, fonts, client router, and the spotlight that lives across navigations.
+import { ClientRouter } from 'astro:transitions';
+import { Font } from 'astro:assets';
+import Spotlight from '@/components/Spotlight.svelte';
+import { searchIndex, site } from '@/lib/catalogue';
+import '@/styles/tokens.css';
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Structured data for this page, merged into one JSON-LD graph. */
+  jsonLd?: Record<string, unknown>[];
+}
+
+const { title, description, jsonLd = [] } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'WebSite', '@id': `${Astro.site}#site`, name: site.name, url: Astro.site?.href, publisher: { '@type': 'Organization', name: site.maker } },
+    ...jsonLd,
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en" transition:animate="none">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#f4f1ea" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <Font cssVariable="--font-hanken" preload />
+    <Font cssVariable="--font-geist" preload={[{ weight: 400 }]} />
+    <ClientRouter />
+    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
+  </head>
+  <body>
+    <slot />
+    <Spotlight client:load transition:persist="spotlight" items={searchIndex()} />
+    <script>
+      import '@/lib/client/global';
+    </script>
+  </body>
+</html>

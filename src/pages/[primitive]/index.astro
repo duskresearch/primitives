@@ -1,0 +1,288 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '@/layouts/Base.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import Mark from '@/components/Mark.astro';
+import { nextPrimitive, primitives, site, type Primitive } from '@/lib/catalogue';
+
+export const getStaticPaths = (() => primitives.map((p) => ({ params: { primitive: p.slug }, props: { p } }))) satisfies GetStaticPaths;
+
+const { p } = Astro.props as { p: Primitive };
+const numberWords = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+const planned = `${numberWords[p.instruments.length] ?? p.instruments.length} instruments`;
+const intro = p.shipped
+  ? p.intro
+  : [`${p.name} is in preparation.`, `${planned[0].toUpperCase()}${planned.slice(1)} are planned: ${p.list.toLowerCase()}. Each is listed below with what it will do.`];
+const description = p.shipped ? p.intro[1] : `${p.name} is in preparation. Planned instruments: ${p.list.toLowerCase()}.`;
+const url = new URL(p.href, Astro.site).href;
+---
+
+<Base
+  title={`${p.name}: ${p.list.toLowerCase()} · ${site.name}`}
+  description={description}
+  jsonLd={[
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: site.name, item: Astro.site?.href },
+        { '@type': 'ListItem', position: 2, name: p.name, item: url },
+      ],
+    },
+    {
+      '@type': 'ItemList',
+      name: `${p.name} instruments`,
+      itemListElement: p.instruments.map((i, idx) => ({
+        '@type': 'ListItem',
+        position: idx + 1,
+        name: i.name,
+        description: i.does,
+        ...(i.live ? { url: new URL(i.href, Astro.site).href } : {}),
+      })),
+    },
+  ]}
+>
+  <div class="page">
+    <Header crumbs={[{ label: p.name, n: p.n, current: true }]} address={`${site.domain}${p.href}`} />
+    <main>
+      <section class="hero">
+        <div class="title">
+          <Mark primitive={p} size="var(--mark-index)" />
+          <h1>{p.name}</h1>
+        </div>
+        <div class="intro">
+          {intro.map((line) => <p>{line}</p>)}
+        </div>
+      </section>
+
+      <section class="table" aria-label={`${p.name} instruments`}>
+        <div class="row head mono" aria-hidden="true">
+          <span>No.</span><span>Instrument</span><span>Does</span><span>For when</span><span class="address">Address</span>
+        </div>
+        <ol>
+          {
+            p.instruments.map((i) => {
+              const cells = (
+                <>
+                  <span class="n mono">{i.n}</span>
+                  <span class="name">{i.name}</span>
+                  <span class="does">{i.does}</span>
+                  <span class="pain">{i.pain}</span>
+                  <span class="address mono">{i.live ? i.href : 'In preparation'}</span>
+                </>
+              );
+              return (
+                <li>
+                  {i.live ? (
+                    <a class="row link" href={i.href} data-astro-prefetch>
+                      {cells}
+                    </a>
+                  ) : (
+                    <div class="row">{cells}</div>
+                  )}
+                </li>
+              );
+            })
+          }
+        </ol>
+        {
+          !p.shipped && (
+            <form class="sooner" method="post" action="/api/request" novalidate data-form data-astro-reload data-confirm={site.requestConfirm} data-error={site.errorLine}>
+              <label for="sooner-text">Want this sooner? Tell us which instrument.</label>
+              <span class="sooner-row">
+                <input id="sooner-text" class="field" type="text" name="text" placeholder={p.instruments[0].name} maxlength="200" autocomplete="off" />
+                <input class="visually-hidden" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+                <button type="submit">Request</button>
+              </span>
+            </form>
+          )
+        }
+      </section>
+    </main>
+    <Footer variant="index" next={nextPrimitive(p)} />
+  </div>
+</Base>
+
+<style>
+  .page {
+    --mark-index: var(--mark-index-hero);
+  }
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: end;
+    padding: 56px var(--page-x) 48px;
+  }
+  .title {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  h1 {
+    font-size: 56px;
+    line-height: 1;
+    font-weight: 300;
+    letter-spacing: -0.035em;
+  }
+  .intro {
+    justify-self: end;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 17px;
+    line-height: 1.45;
+    color: var(--ink-1);
+  }
+
+  .table {
+    padding: 0 var(--page-x) 48px;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 56px 1.2fr 2fr 2fr 200px;
+    gap: 24px;
+    align-items: baseline;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line-2);
+  }
+  .row.head {
+    padding: 0 0 10px;
+    border-bottom-color: var(--ink);
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+  .link {
+    transition:
+      background-color var(--dur-row),
+      padding var(--dur-row);
+  }
+  .link:hover {
+    background: var(--paper-2);
+    padding-inline: 10px;
+  }
+  .link:hover .name {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .n,
+  .address {
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+  .address {
+    text-align: right;
+  }
+  .name {
+    font-size: 26px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .does,
+  .pain {
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--ink-1);
+  }
+  .pain {
+    color: var(--ink-2);
+  }
+  .row:not(.link) .name {
+    color: var(--ink-2);
+  }
+
+  .sooner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px 24px;
+    padding-top: 28px;
+    font-size: 15px;
+    color: var(--ink-1);
+  }
+  .sooner-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+    width: min(100%, 360px);
+  }
+  .sooner .field {
+    flex: 1;
+  }
+  .sooner button {
+    border: 0;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0 16px;
+    font-size: 13px;
+  }
+
+  @media (max-width: 1099px) {
+    .row {
+      grid-template-columns: 40px 1fr 1.4fr 1.4fr;
+    }
+    .link .address,
+    .head .address {
+      display: none;
+    }
+    .row:not(.link) .address {
+      grid-column: 3;
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 719px) {
+    .page {
+      --mark-index: 72px;
+    }
+    .hero {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding: 44px var(--page-x) 32px;
+    }
+    .title {
+      gap: 20px;
+    }
+    h1 {
+      font-size: 34px;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+    .intro {
+      justify-self: stretch;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    .row {
+      grid-template-columns: 32px 1fr;
+      gap: 4px 12px;
+      padding: 16px 0;
+    }
+    .row.head {
+      display: none;
+    }
+    .does {
+      grid-column: 2;
+    }
+    .pain {
+      display: none;
+    }
+    .row:not(.link) .address {
+      grid-column: 2;
+    }
+    .name {
+      font-size: 22px;
+    }
+    .link:hover {
+      padding-inline: 0;
+    }
+  }
+
+  @media (pointer: coarse) {
+    .sooner button {
+      min-height: var(--min-hit);
+    }
+  }
+</style>

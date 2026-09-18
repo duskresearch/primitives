@@ -1,0 +1,153 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--paper);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, p, ol, ul, figure {
+  margin: 0;
+}
+
+ol, ul {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button, input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+input[type='range'] {
+  accent-color: var(--ink);
+}
+
+::placeholder {
+  color: var(--ink-2);
+  opacity: 1;
+}
+
+:focus-visible {
+  outline: var(--focus);
+  outline-offset: var(--focus-offset);
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.page {
+  width: 100%;
+  max-width: var(--canvas);
+  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* A value that copies itself on click: looks like text, behaves like a button. */
+.copy {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 1px;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  text-align: inherit;
+  cursor: copy;
+}
+
+/* On a colored result surface the ring takes the text color, which is visible wherever the text is. */
+.surface .copy:focus-visible {
+  outline-color: currentColor;
+}
+
+@media (pointer: coarse) {
+  .copy {
+    min-height: var(--min-hit);
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+.mono {
+  font-family: var(--mono);
+  font-weight: 400;
+}
+
+.muted {
+  color: var(--ink-2);
+}
+
+.badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ink-2);
+  border: 1px solid var(--line-1);
+  border-radius: var(--radius-badge);
+  padding: 3px 6px;
+  white-space: nowrap;
+}
+
+/* Underlined text input: the only input style on the site. */
+.field {
+  min-width: 0;
+  border: 0;
+  border-bottom: 1px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  padding: 8px 0;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
