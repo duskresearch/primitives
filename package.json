@@ -1,0 +1,28 @@
+{
+  "name": "primitives",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "tokens": "node scripts/build-tokens.mjs",
+    "dev": "npm run tokens && astro dev",
+    "build": "npm run tokens && astro build",
+    "preview": "astro preview",
+    "check": "npm run tokens && astro check",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^14.3.2",
+    "@astrojs/svelte": "^9.0.1",
+    "astro": "^7.3.3",
+    "culori": "^4.0.2",
+    "svelte": "^5.57.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/culori": "^4.0.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11",
+    "wrangler": "^4.134.0"
+  }
+}

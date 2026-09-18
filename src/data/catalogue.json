@@ -1,0 +1,142 @@
+{
+  "site": {
+    "name": "Primitives",
+    "domain": "primitiv.es",
+    "maker": "Dusk Research",
+    "repo": "https://github.com/duskresearch/primitives",
+    "headline": "The smallest useful parts of digital work.",
+    "subline": "Free instruments for color, type, grid, shape and motion. Open one and begin.",
+    "searchPlaceholder": "Find an instrument: contrast, easing, modular scale…",
+    "requestTitle": "Which primitive is missing?",
+    "requestPlaceholder": "Sound, for instance",
+    "requestConfirm": "Noted. Thank you.",
+    "emailLine": "New primitives, a few times a year.",
+    "emailButton": "Notify me",
+    "emailConfirm": "We will write when something new is ready.",
+    "errorLine": "That did not go through. Try again."
+  },
+  "explanationHeadings": ["What it measures", "How it is computed", "When to use it", "Related"],
+  "markLayerSchema": "Layers are absolutely positioned inside a 1em box, centered. Fields: w,h (size), bg (background), bs (background-size), r (border-radius), cp (clip-path), tf (transform), bd (border shorthand without color), bc (border-color). Unshipped primitives replace accent colors with ink2 and render at 0.6 opacity.",
+  "primitives": [
+    {
+      "n": "01", "name": "Color", "slug": "color", "status": "shipped", "hue": 25,
+      "list": "Pick, scale, contrast, harmony, convert, blend",
+      "intro": [
+        "A color is never alone. Put red beside green and both grow louder; put it on cream and it rests. What you are choosing is a relationship.",
+        "Six instruments for the recurring color problems in digital work. They use OKLCH, so steps look even to the eye, and every value is one click from your clipboard."
+      ],
+      "mark": [
+        { "w": ".8em", "h": ".8em", "bg": "oklch(.65 .18 25)", "r": "50%", "tf": "translateX(.15em)", "blend": "multiply" },
+        { "w": ".8em", "h": ".8em", "bg": "oklch(.65 .18 250)", "r": "50%", "tf": "translateX(-.15em)", "blend": "multiply" }
+      ],
+      "state": { "a": "oklch triple, default 0.55 0.18 25", "b": "oklch triple, default 0.95 0.03 250" },
+      "instruments": [
+        { "n": "01", "name": "Pick", "slug": "pick", "does": "Choose a color by light, strength and hue", "pain": "You need a color, not a hex code you found somewhere", "primaryValue": "oklch of A", "keywords": ["picker", "oklch", "hex", "hsl", "rgb"] },
+        { "n": "02", "name": "Scale", "slug": "scale", "does": "Even tints and shades from one color", "pain": "Your grays and tints look uneven because they were made in HSL", "primaryValue": "CSS custom properties for 7 steps", "keywords": ["tints", "shades", "palette", "ramp", "100-700"] },
+        { "n": "03", "name": "Contrast", "slug": "contrast", "does": "Check a text color against a background", "pain": "You are not sure the gray text passes", "primaryValue": "ratio", "keywords": ["WCAG", "AA", "AAA", "accessibility", "readable", "legible"], "fix": "Lower L of A by 0.02 until ratio >= 4.5, keep C and H" },
+        { "n": "04", "name": "Harmony", "slug": "harmony", "does": "Colors that sit well with one", "pain": "You have one brand color and need four more", "primaryValue": "the five oklch values", "keywords": ["complement", "triad", "analogous", "palette"] },
+        { "n": "05", "name": "Convert", "slug": "convert", "does": "Any color format into every other", "pain": "The design file says one thing, the code wants another", "primaryValue": "the format you did not paste", "keywords": ["hex", "rgb", "hsl", "oklch", "p3", "named"] },
+        { "n": "06", "name": "Blend", "slug": "blend", "does": "What two colors make together", "pain": "Overlays and multiplies come out muddy", "primaryValue": "resulting hex", "keywords": ["multiply", "mix", "opacity", "overlay", "color-mix"] }
+      ]
+    },
+    {
+      "n": "02", "name": "Type", "slug": "type", "status": "shipped", "hue": 70, "accent": "ink",
+      "list": "Scale, specimen, measure, units, fallback",
+      "intro": [
+        "Type is language given a body. Size, weight, and the space around each line decide whether a reader keeps going.",
+        "Five instruments for the type decisions made on every project, from a modular scale to the system font that stands in before your webfont loads."
+      ],
+      "mark": [], "letter": "a",
+      "state": { "base": "16", "ratio": "1.25", "font": "family id", "text": "specimen string" },
+      "instruments": [
+        { "n": "01", "name": "Scale", "slug": "scale", "does": "A modular type ramp with line heights, as clamp() CSS", "pain": "Your sizes were picked one at a time and nothing lines up", "primaryValue": "CSS ramp", "keywords": ["modular", "ratio", "clamp", "fluid", "rem"] },
+        { "n": "02", "name": "Specimen", "slug": "specimen", "does": "Your text in a curated shelf of faces, with pairings", "pain": "Google Fonts has 1,700 families and no opinion", "primaryValue": "@import line", "keywords": ["fonts", "google fonts", "pairing", "serif", "sans"] },
+        { "n": "03", "name": "Measure", "slug": "measure", "does": "Line length and paragraph rhythm", "pain": "Lines are too long on wide screens and you cannot tell by how much", "primaryValue": "max-width in ch", "keywords": ["line length", "characters per line", "ch", "rhythm"] },
+        { "n": "04", "name": "Units", "slug": "units", "does": "px, rem, em, pt and letter-spacing conversions", "pain": "The spec is in points and tracking, the CSS is in rem and em", "primaryValue": "converted value", "keywords": ["px to rem", "pt", "em", "tracking", "letter-spacing"] },
+        { "n": "05", "name": "Fallback", "slug": "fallback", "does": "System font stacks that match your webfont metrics", "pain": "Text jumps when the webfont arrives", "primaryValue": "@font-face with size-adjust", "keywords": ["font-display", "size-adjust", "FOUT", "system font", "layout shift"] }
+      ]
+    },
+    {
+      "n": "03", "name": "Grid", "slug": "grid", "status": "shipped", "hue": 85,
+      "list": "Columns, breakpoints, baseline, layout",
+      "intro": [
+        "A grid is a decision made once so that a hundred small decisions do not have to be made later.",
+        "Four instruments for dividing space: columns and gaps as real CSS, breakpoints you can test, a baseline overlay, and common page skeletons."
+      ],
+      "mark": [
+        { "w": ".18em", "h": ".9em", "bg": "oklch(.65 .18 85)", "tf": "translateX(-.3em)" },
+        { "w": ".18em", "h": ".9em", "bg": "oklch(.65 .18 85)" },
+        { "w": ".18em", "h": ".9em", "bg": "oklch(.65 .18 85)", "tf": "translateX(.3em)" }
+      ],
+      "state": { "cols": "12", "gap": "24", "margin": "40", "max": "1280" },
+      "instruments": [
+        { "n": "01", "name": "Columns", "slug": "columns", "does": "Columns, gap and margin with live reflow, as CSS", "pain": "You want a 12-column grid and the CSS to match, not a framework", "primaryValue": "grid CSS", "keywords": ["columns", "gutter", "gap", "margin", "12 column", "css grid"] },
+        { "n": "02", "name": "Breakpoints", "slug": "breakpoints", "does": "Define and test breakpoints", "pain": "Nobody remembers why 768 and 1024", "primaryValue": "media query set", "keywords": ["breakpoints", "media query", "responsive", "container query"] },
+        { "n": "03", "name": "Baseline", "slug": "baseline", "does": "Vertical rhythm overlay", "pain": "Things look slightly off and you suspect the line heights", "primaryValue": "baseline value", "keywords": ["baseline", "vertical rhythm", "line-height", "4px grid", "8px grid"] },
+        { "n": "04", "name": "Layout", "slug": "layout", "does": "Page skeletons as grid-template-areas", "pain": "You rebuild the same header, sidebar, content layout every time", "primaryValue": "grid-template-areas CSS", "keywords": ["layout", "template areas", "holy grail", "sidebar", "skeleton"] }
+      ]
+    },
+    {
+      "n": "04", "name": "Shape", "slug": "shape", "status": "shipped", "hue": 250,
+      "list": "Form, corner, polygon, blob, favicon",
+      "intro": [
+        "Every shape is a boundary. Where the boundary bends, softens, or breaks is most of what people feel about it.",
+        "Five instruments that produce clean SVG and CSS for the simple forms you need constantly and redraw every time."
+      ],
+      "mark": [
+        { "w": ".95em", "h": ".85em", "bg": "oklch(.65 .18 250)", "cp": "polygon(50% 0,100% 100%,0 100%)" }
+      ],
+      "state": { "form": "circle|square|triangle|ngon|star", "sides": "n", "radius": "r", "rotation": "deg" },
+      "instruments": [
+        { "n": "01", "name": "Form", "slug": "form", "does": "Parametric shapes exported as clean SVG", "pain": "You need a triangle and the SVG you found has 40 lines of cruft", "primaryValue": "SVG", "keywords": ["svg", "circle", "square", "triangle", "star", "polygon"] },
+        { "n": "02", "name": "Corner", "slug": "corner", "does": "Radius, squircle and smooth corners", "pain": "border-radius never looks like the iOS corner", "primaryValue": "CSS or SVG path", "keywords": ["border-radius", "squircle", "smooth corners", "continuous curvature"] },
+        { "n": "03", "name": "Polygon", "slug": "polygon", "does": "A clip-path builder", "pain": "Writing clip-path percentages by hand", "primaryValue": "clip-path", "keywords": ["clip-path", "polygon", "mask", "cut"] },
+        { "n": "04", "name": "Blob", "slug": "blob", "does": "Organic forms from a seed", "pain": "You need one soft shape that does not look like every other generator", "primaryValue": "SVG path", "keywords": ["blob", "organic", "random shape", "seed"] },
+        { "n": "05", "name": "Favicon", "slug": "favicon", "does": "One mark exported at every size", "pain": "Favicons need six files and a manifest", "primaryValue": "zip", "keywords": ["favicon", "icon sizes", "apple-touch-icon", "manifest"] }
+      ]
+    },
+    {
+      "n": "05", "name": "Motion", "slug": "motion", "status": "shipped", "hue": 150,
+      "list": "Ease, spring, duration, stagger, export",
+      "intro": [
+        "Movement is how an interface says what just happened. The right curve makes a change feel caused; the wrong one makes it feel broken.",
+        "Five instruments for feeling a curve before you commit to it, with values ready for CSS, Framer Motion and SwiftUI."
+      ],
+      "mark": [
+        { "w": ".8em", "h": ".8em", "bd": ".11em solid", "bc": "oklch(.65 .18 150) transparent transparent oklch(.65 .18 150)", "r": "100% 0 0 0", "tf": "translate(.06em,.06em)" }
+      ],
+      "state": { "curve": "cubic-bezier or spring params", "duration": "ms" },
+      "instruments": [
+        { "n": "01", "name": "Ease", "slug": "ease", "does": "Easing curves played beside linear", "pain": "cubic-bezier numbers mean nothing until you see them move", "primaryValue": "cubic-bezier()", "keywords": ["easing", "cubic-bezier", "ease-out", "timing function"] },
+        { "n": "02", "name": "Spring", "slug": "spring", "does": "Mass, stiffness and damping, felt", "pain": "Springs feel right in the app and wrong in your CSS", "primaryValue": "spring params or linear() approximation", "keywords": ["spring", "stiffness", "damping", "bounce", "linear()"] },
+        { "n": "03", "name": "Duration", "slug": "duration", "does": "How long a movement should take", "pain": "Everything is 300ms because that is the default", "primaryValue": "ms", "keywords": ["duration", "ms", "distance", "timing"] },
+        { "n": "04", "name": "Stagger", "slug": "stagger", "does": "Choreography for lists", "pain": "Items appearing at once feel like a page load, not a reveal", "primaryValue": "delay per item", "keywords": ["stagger", "delay", "sequence", "list animation"] },
+        { "n": "05", "name": "Export", "slug": "export", "does": "CSS, Framer Motion and SwiftUI values", "pain": "The same curve has to be written three ways", "primaryValue": "code for chosen target", "keywords": ["framer motion", "swiftui", "css transition", "keyframes"] }
+      ]
+    },
+    { "n": "06", "name": "Space", "slug": "space", "status": "planned", "hue": 200, "list": "Scale, padding and margin, tokens",
+      "mark": [ { "w": ".22em", "h": ".9em", "bd": ".05em solid", "bc": "ink2", "tf": "translateX(-.32em)" }, { "w": ".22em", "h": ".9em", "bd": ".05em solid", "bc": "ink2", "tf": "translateX(.32em)" }, { "w": ".3em", "h": ".05em", "bg": "repeating-linear-gradient(90deg, ink2 0 .06em, transparent .06em .12em)" } ],
+      "instruments": [ { "name": "Scale", "does": "A spacing scale with live examples" }, { "name": "Inset", "does": "Padding and margin applied to a card and a text column" }, { "name": "Tokens", "does": "CSS variables or Tailwind config" } ] },
+    { "n": "07", "name": "Light", "slug": "light", "status": "planned", "hue": 300, "list": "Shadow, elevation, blur",
+      "mark": [ { "w": ".55em", "h": ".55em", "bg": "rgba(26,26,23,.22)", "tf": "translate(.16em,.16em)" }, { "w": ".55em", "h": ".55em", "bg": "ink2", "tf": "translate(-.06em,-.06em)" } ],
+      "instruments": [ { "name": "Shadow", "does": "Layered box-shadow from a light angle and softness" }, { "name": "Elevation", "does": "A consistent ladder of depths" }, { "name": "Blur", "does": "Backdrop blur and translucency that stays legible" } ] },
+    { "n": "08", "name": "Noise", "slug": "noise", "status": "planned", "hue": 60, "list": "Grain, gradient, texture",
+      "mark": [ { "w": ".9em", "h": ".9em", "bg": "radial-gradient(#1a1a17 .03em, transparent .04em)", "bs": ".13em .13em" } ],
+      "instruments": [ { "name": "Grain", "does": "Film grain over any color" }, { "name": "Gradient", "does": "Smooth gradients with dithering" }, { "name": "Texture", "does": "Procedural textures exported as PNG or SVG filter" } ] },
+    { "n": "09", "name": "Ratio", "slug": "ratio", "status": "planned", "hue": 340, "list": "Aspect, proportion, crop",
+      "mark": [ { "w": ".95em", "h": ".54em", "bd": ".05em solid", "bc": "ink2" }, { "w": ".54em", "h": ".54em", "bd": ".05em solid", "bc": "ink2", "tf": "translateX(-.2em)" } ],
+      "instruments": [ { "name": "Aspect", "does": "Aspect ratios and the sizes they produce" }, { "name": "Proportion", "does": "Golden, musical and root ratios applied to a frame" }, { "name": "Crop", "does": "Safe areas for every platform" } ] },
+    { "n": "10", "name": "Pattern", "slug": "pattern", "status": "planned", "hue": 120, "list": "Tile, stripes and dots, export",
+      "mark": [ { "w": ".9em", "h": ".9em", "bg": "repeating-conic-gradient(ink2 0 25%, transparent 0 50%)", "bs": ".3em .3em" } ],
+      "instruments": [ { "name": "Tile", "does": "A repeat from one shape" }, { "name": "Stripes", "does": "Stripes, dots and checks as CSS" }, { "name": "Export", "does": "SVG pattern or PNG tile" } ] },
+    { "n": "11", "name": "Icon", "slug": "icon", "status": "planned", "hue": 40, "list": "Grid, stroke, optical size",
+      "mark": [ { "w": ".9em", "h": ".9em", "bd": ".05em solid", "bc": "ink2", "r": ".16em" }, { "w": ".42em", "h": ".42em", "bg": "ink2", "r": "50%" } ],
+      "instruments": [ { "name": "Grid", "does": "A 24px icon grid with keylines" }, { "name": "Stroke", "does": "Consistent stroke across sizes" }, { "name": "Optical", "does": "Optical size adjustments" } ] },
+    { "n": "12", "name": "Random", "slug": "random", "status": "planned", "hue": 50, "list": "UUID, range, dice, shuffle, seed",
+      "mark": [ { "w": ".9em", "h": ".9em", "bd": ".06em solid", "bc": "ink2", "r": ".14em" }, { "w": ".16em", "h": ".16em", "bg": "ink2", "r": "50%", "tf": "translate(-.2em,-.2em)" }, { "w": ".16em", "h": ".16em", "bg": "ink2", "r": "50%", "tf": "translate(.2em,.2em)" } ],
+      "instruments": [ { "name": "UUID", "does": "v4 and v7 identifiers" }, { "name": "Range", "does": "A number between two others" }, { "name": "Dice", "does": "Any dice, any count" }, { "name": "Shuffle", "does": "A list in random order" }, { "name": "Seed", "does": "Repeatable sequences from a shareable seed" } ] },
+    { "n": "13", "name": "State", "slug": "state", "status": "planned", "hue": 20, "list": "Machine, export",
+      "mark": [ { "w": ".3em", "h": ".3em", "bg": "ink2", "r": "50%", "tf": "translateX(-.32em)" }, { "w": ".5em", "h": ".05em", "bg": "ink2" }, { "w": ".3em", "h": ".3em", "bd": ".05em solid", "bc": "ink2", "r": "50%", "tf": "translateX(.32em)" } ],
+      "instruments": [ { "name": "Machine", "does": "States, events and transitions you can click through" }, { "name": "Export", "does": "XState JSON or a plain switch" } ] }
+  ]
+}

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.astro/
+.wrangler/
+.dev.vars*
+.env*
+.DS_Store
+
+# Generated from src/data/tokens.json by npm run tokens
+src/styles/tokens.css

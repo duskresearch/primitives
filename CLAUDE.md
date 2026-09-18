@@ -1,0 +1,20 @@
+# Primitives: working notes for agents
+
+Read `design/README.md` before building anything. It is the brief and the definition of done. Values come from `src/data/tokens.json`, content from `src/data/catalogue.json`; never hard-code either elsewhere. `src/styles/tokens.css` is generated (`npm run tokens`), do not edit it.
+
+## Rules that are easy to break
+
+- The URL is the only state. No localStorage, no cookies, no sessions (`session: false` in astro.config.mjs stays). Only exception: the consent choice.
+- Instrument pages render on demand (`export const prerender = false`) so shared links arrive with their state in the HTML. Everything else is prerendered.
+- Order on an instrument page is fixed: tool, explanation, related. Never text above the tool.
+- Every value shown copies itself: use `src/components/tool/Copy.svelte` (or `data-copy` / `data-copy-label` on static markup). Feedback goes only to the footer status slot via `say()`.
+- Range inputs are one-way (`value` + `oninput`); binding them two-way snaps URL state to the step grid on hydration.
+- Forms carry `data-form data-astro-reload` so the client router leaves them to `src/lib/client/global.ts`.
+- Bundled scripts run once per session under the client router; bind with document-level delegation or `astro:page-load`.
+- Copy: plain American English (color, gray), no em-dashes, never "beautiful", "premium" or "delightful". Explanations cite standards (WCAG success criteria, CSS specs).
+- One theme, light. No dark mode.
+- Keep client JS under 60 kB gzipped per page; import from `culori/fn` and register only the modes you use.
+
+## Check before committing
+
+`npm test && npm run check && npm run build`, then look at the page at 1280×800 and 390×844: the tool must be visible above the fold.
