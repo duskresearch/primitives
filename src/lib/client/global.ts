@@ -3,6 +3,7 @@
 import { navigate } from 'astro:transitions/client';
 import { motion } from '@/data/tokens.json';
 import { copy } from './copy';
+import { stamp, stampAbove } from './stamp';
 import { say } from './status';
 import { currentQuery, onPageLoad } from './harness';
 
@@ -11,12 +12,33 @@ const editable = (el: Element | null) =>
   (el.isContentEditable || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' ||
     (el.tagName === 'INPUT' && !['range', 'checkbox', 'radio', 'button', 'submit'].includes((el as HTMLInputElement).type)));
 
-// Every value shown copies itself.
+// Every value shown copies itself, and says so where it was clicked: a stamp at the pointer
+// (above the value when the keyboard pressed it), or, for a button that names its action
+// (data-copy-swap), its own label turning to "Copied" for a moment.
+const swapped = new WeakMap<HTMLElement, ReturnType<typeof setTimeout>>();
+function confirmCopy(el: HTMLElement, label: string, at?: MouseEvent) {
+  if ('copySwap' in el.dataset) {
+    if (!swapped.has(el)) el.dataset.label = el.textContent ?? '';
+    clearTimeout(swapped.get(el));
+    el.textContent = 'Copied';
+    swapped.set(
+      el,
+      setTimeout(() => {
+        el.textContent = el.dataset.label ?? '';
+        swapped.delete(el);
+      }, motion.toast.copied),
+    );
+  } else if (at && at.detail > 0) stamp(`Copied ${label}`, at.clientX, at.clientY);
+  else stampAbove(`Copied ${label}`, el);
+}
+
 document.addEventListener('click', (e) => {
   const el = (e.target as Element).closest<HTMLElement>('[data-copy]');
   if (!el) return;
   e.preventDefault();
-  copy(el.dataset.copy!, el.dataset.copyLabel ?? 'value');
+  const label = el.dataset.copyLabel ?? 'value';
+  copy(el.dataset.copy!, label);
+  confirmCopy(el, label, e);
 });
 
 // Keys: [ ] step through a primitive's instruments, C copies the primary value.
@@ -34,7 +56,9 @@ document.addEventListener('keydown', (e) => {
     const primary = document.querySelector<HTMLElement>('[data-primary]');
     if (!primary) return;
     e.preventDefault();
-    copy(primary.dataset.copy!, primary.dataset.copyLabel ?? 'value');
+    const label = primary.dataset.copyLabel ?? 'value';
+    copy(primary.dataset.copy!, label);
+    confirmCopy(primary, label);
   }
 });
 

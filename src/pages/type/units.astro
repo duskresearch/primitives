@@ -7,19 +7,23 @@ import { TRACKING_UNITS, UNITS } from '@duskresearch/primitives/design/type';
 
 // Rendered per request so a shared link arrives with its values already in the HTML.
 export const prerender = false;
-const q = Astro.url.searchParams;
-const state = parse(q);
-const own = {
-  value: numberIn(q.get('value'), -10000, 10000, 24),
-  unit: oneOf(q.get('unit'), UNITS, 'px'),
-  to: oneOf(q.get('to'), UNITS, 'rem'),
-  root: numberIn(q.get('root'), 1, 100, 16),
-  context: numberIn(q.get('context'), 1, 1000, 16),
-  track: numberIn(q.get('track'), -1000, 1000, -2),
-  trackUnit: oneOf(q.get('trackUnit'), TRACKING_UNITS, 'percent'),
+const read = (q: URLSearchParams) => {
+  const state = parse(q);
+  const own = {
+    value: numberIn(q.get('value'), -10000, 10000, 24),
+    unit: oneOf(q.get('unit'), UNITS, 'px'),
+    to: oneOf(q.get('to'), UNITS, 'rem'),
+    root: numberIn(q.get('root'), 1, 100, 16),
+    context: numberIn(q.get('context'), 1, 1000, 16),
+    track: numberIn(q.get('track'), -1000, 1000, -2),
+    trackUnit: oneOf(q.get('trackUnit'), TRACKING_UNITS, 'percent'),
+  };
+  return { state, own, query: serializeWith(state, own) };
 };
+const { state, own, query } = read(Astro.url.searchParams);
+const defaults = read(new URLSearchParams()).query;
 ---
 
-<Instrument primitive="type" slug="units" query={serializeWith(state, own)}>
+<Instrument primitive="type" slug="units" {query} {defaults}>
   <Tool client:load initial={state} {own} />
 </Instrument>

@@ -8,12 +8,15 @@ import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import { explanationHeadings, getInstrument, getPrimitive, related, siblings, site } from '@/lib/catalogue';
 import '@/styles/tool.css';
+import { withoutDefaults } from '@/lib/query';
 
 interface Props {
   primitive: string;
   slug: string;
-  /** The primitive's state, serialized: shown in the header address. */
+  /** The primitive's state, serialized: carried by the header's link and sibling links. */
   query: string;
+  /** The same serializer's output at the page's defaults; those pairs are left out of links. */
+  defaults: string;
 }
 
 interface Explain {
@@ -21,7 +24,8 @@ interface Explain {
   compiledContent: () => string | Promise<string>;
 }
 
-const { primitive, slug, query } = Astro.props;
+const { primitive, slug, defaults } = Astro.props;
+const query = withoutDefaults(Astro.props.query, defaults);
 const p = getPrimitive(primitive);
 const i = getInstrument(primitive, slug);
 const meta = i.meta;
@@ -78,7 +82,7 @@ const legend = [`C copies ${meta.primaryLabel}`, prev && '[ ] previous, next', '
   ]}
 >
   <div class="page">
-    <Header crumbs={[{ label: p.name, href: p.href }, { label: i.name, n: i.n, current: true }]} stateful={{ base, query }} />
+    <Header crumbs={[{ label: p.name, href: p.href }, { label: i.name, n: i.n, current: true }]} stateful={{ base, query, defaults }} />
     <main data-primitive={p.slug} data-prev={prev?.href} data-next={next?.href}>
       <div class="title-row">
         <h1>{i.name}</h1>

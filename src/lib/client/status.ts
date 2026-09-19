@@ -1,4 +1,5 @@
-// The footer status slot: the only place feedback appears. No floating toasts.
+// The footer status slot, where feedback is announced (a live region). Copies also get a
+// stamp where they were clicked (stamp.ts); nothing else floats.
 import { motion } from '@/data/tokens.json';
 
 let timer: ReturnType<typeof setTimeout> | undefined;

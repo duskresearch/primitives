@@ -149,6 +149,38 @@ input[type='range'] {
   }
 }
 
+/* The copy confirmation at the pointer (src/lib/client/stamp.ts). */
+.stamp {
+  position: fixed;
+  z-index: 1000;
+  padding: 3px 7px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: stamp var(--dur-stamp) ease-out forwards;
+}
+@keyframes stamp {
+  0% {
+    opacity: 0;
+    transform: translateY(3px) scale(0.94);
+  }
+  18% {
+    opacity: 1;
+    transform: none;
+  }
+  65% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(calc(var(--stamp-rise) * -1));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

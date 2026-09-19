@@ -7,7 +7,8 @@ The brief and the definition of done are private: `primitives-design/README.md` 
 - The URL is the only state. No localStorage, no cookies, no sessions (`session: false` in astro.config.mjs stays). Only exception: the consent choice.
 - Instrument pages render on demand (`export const prerender = false`) so shared links arrive with their state in the HTML. Everything else is prerendered.
 - Order on an instrument page is fixed: tool, explanation, related. Never text above the tool.
-- Every value shown copies itself: use `src/components/tool/Copy.svelte` (or `data-copy` / `data-copy-label` on static markup). Feedback goes only to the footer status slot via `say()`.
+- Every value shown copies itself: use `src/components/tool/Copy.svelte` (or `data-copy` / `data-copy-label` on static markup). `src/lib/client/global.ts` confirms each copy with a stamp at the pointer (`src/lib/client/stamp.ts`) and announces it in the footer status slot via `say()`; nothing else floats.
+- Links leave out settings at their defaults. Each instrument page has a `read(q)` and passes `defaults` (its query at empty params) to the Instrument layout; the harness strips those pairs from the header's "Copy this setup" link, sibling links and the address bar.
 - Range inputs are one-way (`value` + `oninput`); binding them two-way snaps URL state to the step grid on hydration.
 - Forms carry `data-form data-astro-reload` so the client router leaves them to `src/lib/client/global.ts`.
 - Bundled scripts run once per session under the client router; bind with document-level delegation or `astro:page-load`.

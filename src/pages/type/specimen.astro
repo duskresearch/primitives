@@ -8,22 +8,26 @@ import picks from '@/data/type-picks.json';
 
 // Rendered per request so a shared link arrives with its text, face and comparison in the HTML.
 export const prerender = false;
-const q = Astro.url.searchParams;
-const state = parse(q);
-const weights = [100, 200, 300, 400, 500, 600, 700, 800, 900];
-const own = {
-  size: numberIn(q.get('size'), 12, 120, 40),
-  weight: weights.includes(Number(q.get('weight'))) ? Number(q.get('weight')) : 400,
-  view: oneOf(q.get('view'), ['picks', 'all'] as const, 'picks'),
-  sort: oneOf(q.get('sort'), SORTS, 'popular'),
-  cat: oneOf(q.get('cat'), CATEGORIES, 'all'),
-  lang: oneOf(q.get('lang'), LANGUAGES, 'any'),
-  vf: q.get('vf') === '1',
-  it: q.get('it') === '1',
-  q: (q.get('q') ?? '').slice(0, 60),
-  pins: (q.get('pins') ?? '').split(',').filter((id) => /^[a-z0-9-]{1,80}$/.test(id)).slice(0, 4),
-  embed: oneOf(q.get('embed'), EMBEDS, 'google'),
+const read = (q: URLSearchParams) => {
+  const state = parse(q);
+  const weights = [100, 200, 300, 400, 500, 600, 700, 800, 900];
+  const own = {
+    size: numberIn(q.get('size'), 12, 120, 40),
+    weight: weights.includes(Number(q.get('weight'))) ? Number(q.get('weight')) : 400,
+    view: oneOf(q.get('view'), ['picks', 'all'] as const, 'picks'),
+    sort: oneOf(q.get('sort'), SORTS, 'popular'),
+    cat: oneOf(q.get('cat'), CATEGORIES, 'all'),
+    lang: oneOf(q.get('lang'), LANGUAGES, 'any'),
+    vf: q.get('vf') === '1',
+    it: q.get('it') === '1',
+    q: (q.get('q') ?? '').slice(0, 60),
+    pins: (q.get('pins') ?? '').split(',').filter((id) => /^[a-z0-9-]{1,80}$/.test(id)).slice(0, 4),
+    embed: oneOf(q.get('embed'), EMBEDS, 'google'),
+  };
+  return { state, own, query: serializeWith(state, { size: own.size, weight: own.weight, view: own.view, sort: own.sort, cat: own.cat, lang: own.lang, vf: own.vf ? 1 : 0, it: own.it ? 1 : 0, q: own.q, pins: own.pins.join(','), embed: own.embed }) };
 };
+const { state, own, query } = read(Astro.url.searchParams);
+const defaults = read(new URLSearchParams()).query;
 const pairs = pairIds(state.font);
 const seed = { fonts: seedFonts(state.font, [...picks.groups.flatMap((g) => g.ids), ...own.pins, ...pairs]), pairs };
 ---
@@ -31,7 +35,8 @@ const seed = { fonts: seedFonts(state.font, [...picks.groups.flatMap((g) => g.id
 <Instrument
   primitive="type"
   slug="specimen"
-  query={serializeWith(state, { size: own.size, weight: own.weight, view: own.view, sort: own.sort, cat: own.cat, lang: own.lang, vf: own.vf ? 1 : 0, it: own.it ? 1 : 0, q: own.q, pins: own.pins.join(','), embed: own.embed })}
+  {query}
+  {defaults}
 >
   <Tool client:load initial={state} {own} {seed} />
 </Instrument>

@@ -7,12 +7,16 @@ import { serializeWith } from '@/instruments/type/state';
 
 // Rendered per request so a shared link arrives with its fonts already in the HTML.
 export const prerender = false;
-const q = Astro.url.searchParams;
-const state = parse(q);
-const fb = (q.get('fb') ?? '').slice(0, 40).match(/^[A-Za-z][A-Za-z ]*$/)?.[0] ?? 'Arial';
-const own = { fb, view: oneOf(q.get('view'), ['adjusted', 'plain'] as const, 'adjusted') };
+const read = (q: URLSearchParams) => {
+  const state = parse(q);
+  const fb = (q.get('fb') ?? '').slice(0, 40).match(/^[A-Za-z][A-Za-z ]*$/)?.[0] ?? 'Arial';
+  const own = { fb, view: oneOf(q.get('view'), ['adjusted', 'plain'] as const, 'adjusted') };
+  return { state, own, query: serializeWith(state, own) };
+};
+const { state, own, query } = read(Astro.url.searchParams);
+const defaults = read(new URLSearchParams()).query;
 ---
 
-<Instrument primitive="type" slug="fallback" query={serializeWith(state, own)}>
+<Instrument primitive="type" slug="fallback" {query} {defaults}>
   <Tool client:load initial={state} {own} seed={{ font: seedFont(state.font), system }} />
 </Instrument>

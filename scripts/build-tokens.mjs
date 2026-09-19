@@ -45,6 +45,8 @@ v('dur-lift', `${t.motion.lift.duration}ms`);
 v('ease-lift', t.motion.lift.easing);
 v('dur-row', `${t.motion.row.duration}ms`);
 v('dur-color', `${t.motion.color.duration}ms`);
+v('dur-stamp', `${t.motion.stamp.duration}ms`);
+v('stamp-rise', `${t.motion.stamp.rise}px`);
 
 const typeClasses = Object.entries(t.type).map(([k, s]) => {
   const decl = [];

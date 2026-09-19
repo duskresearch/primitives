@@ -7,8 +7,9 @@ import { serialize } from '@/instruments/color/state';
 // Rendered per request so a shared link arrives with its colors already in the HTML.
 export const prerender = false;
 const state = parse(Astro.url.searchParams);
+const defaults = serialize(parse(new URLSearchParams()));
 ---
 
-<Instrument primitive="color" slug="scale" query={serialize(state)}>
+<Instrument primitive="color" slug="scale" query={serialize(state)} {defaults}>
   <Tool client:load initial={state} />
 </Instrument>

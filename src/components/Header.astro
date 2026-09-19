@@ -1,5 +1,6 @@
 ---
-// Site header. Landing: name, counts, domain. Elsewhere: a breadcrumb and the canonical URL.
+// Site header. Landing: name, counts, domain. Elsewhere: a breadcrumb and the canonical URL,
+// or on instrument pages a button that copies the link to the current setup.
 import Logo from './Logo.astro';
 import { counts, site } from '@/lib/catalogue';
 
@@ -14,8 +15,8 @@ interface Props {
   crumbs?: Crumb[];
   /** The canonical address shown at the right, e.g. "primitiv.es/color". */
   address?: string;
-  /** Set on instrument pages: the address carries state and copies the full link. */
-  stateful?: { base: string; query: string };
+  /** Set on instrument pages: copies the link to the setup, defaults left out. */
+  stateful?: { base: string; query: string; defaults: string };
 }
 
 const { crumbs, address, stateful } = Astro.props;
@@ -73,10 +74,12 @@ const { crumbs, address, stateful } = Astro.props;
         data-canonical
         data-base={stateful.base}
         data-query={stateful.query}
-        data-copy={`https://${stateful.base}?${stateful.query}`}
+        data-defaults={stateful.defaults}
+        data-copy={`https://${stateful.base}${stateful.query ? `?${stateful.query}` : ''}`}
         data-copy-label="link"
+        data-copy-swap
       >
-        {stateful.base}?{stateful.query}
+        Copy this setup
       </button>
     ) : (
       address && <span class="address mono">{address}</span>
@@ -140,6 +143,9 @@ const { crumbs, address, stateful } = Astro.props;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  button.address:hover {
+    color: var(--ink);
   }
   .short {
     display: none;

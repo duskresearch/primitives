@@ -1,9 +1,11 @@
 // URL state for instrument pages. The URL is the only state: tools report their
-// serialized query here, and the harness mirrors it into the address bar (debounced),
-// the canonical URL shown in the header, and links to sibling instruments.
+// serialized query here, and the harness mirrors it, defaults left out, into the address
+// bar (debounced), the header's copy link, and links to sibling instruments.
 import { motion } from '@/data/tokens.json';
+import { withoutDefaults } from '@/lib/query';
 
 let query = '';
+let defaults = '';
 let timer: ReturnType<typeof setTimeout> | undefined;
 
 const withQuery = (href: string) => {
@@ -25,14 +27,11 @@ function apply() {
     a.href = withQuery(a.getAttribute('href')!);
   });
   const shown = document.querySelector<HTMLElement>('[data-canonical]');
-  if (shown) {
-    const address = `${shown.dataset.base}${query ? `?${query}` : ''}`;
-    shown.textContent = address;
-    shown.dataset.copy = `https://${address}`;
-  }
+  if (shown) shown.dataset.copy = `https://${shown.dataset.base}${query ? `?${query}` : ''}`;
 }
 
-export function setQuery(next: string) {
+export function setQuery(full: string) {
+  const next = withoutDefaults(full, defaults);
   if (next === query) return;
   query = next;
   apply();
@@ -51,6 +50,7 @@ export function setQuery(next: string) {
 export function onPageLoad() {
   clearTimeout(timer);
   const shown = document.querySelector<HTMLElement>('[data-canonical]');
+  defaults = shown?.dataset.defaults ?? '';
   query = shown && location.search ? (shown.dataset.query ?? '') : '';
   if (query) apply();
 }

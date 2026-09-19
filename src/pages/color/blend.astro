@@ -7,11 +7,16 @@ import { BLEND_MODES } from '@duskresearch/primitives/design/color';
 
 // Rendered per request so a shared link arrives with its colors, mode and amount in the HTML.
 export const prerender = false;
-const state = parse(Astro.url.searchParams);
-const mode = oneOf(Astro.url.searchParams.get('mode'), BLEND_MODES, 'mix');
-const amount = percent(Astro.url.searchParams.get('amount'), 50);
+const read = (q: URLSearchParams) => {
+  const state = parse(q);
+  const mode = oneOf(q.get('mode'), BLEND_MODES, 'mix');
+  const amount = percent(q.get('amount'), 50);
+  return { state, mode, amount, query: serializeWith(state, { mode, amount }) };
+};
+const { state, mode, amount, query } = read(Astro.url.searchParams);
+const defaults = read(new URLSearchParams()).query;
 ---
 
-<Instrument primitive="color" slug="blend" query={serializeWith(state, { mode, amount })}>
+<Instrument primitive="color" slug="blend" {query} {defaults}>
   <Tool client:load initial={state} {mode} {amount} />
 </Instrument>
