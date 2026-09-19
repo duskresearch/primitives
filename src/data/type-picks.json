@@ -1,0 +1,9 @@
+{
+  "note": "Specimen's curated shelf: proven faces by use. Fontsource ids; edit freely, every id must exist in public/data/fonts.json.",
+  "groups": [
+    { "name": "Text, sans", "ids": ["inter", "source-sans-3", "ibm-plex-sans", "public-sans", "work-sans", "dm-sans", "manrope", "figtree", "instrument-sans", "hanken-grotesk"] },
+    { "name": "Text, serif", "ids": ["source-serif-4", "literata", "newsreader", "crimson-pro", "eb-garamond", "spectral", "lora", "ibm-plex-serif"] },
+    { "name": "Display", "ids": ["fraunces", "playfair-display", "space-grotesk", "syne", "bricolage-grotesque", "young-serif", "dm-serif-display", "instrument-serif", "big-shoulders", "unbounded"] },
+    { "name": "Mono", "ids": ["jetbrains-mono", "ibm-plex-mono", "space-mono", "dm-mono", "fira-code", "source-code-pro"] }
+  ]
+}

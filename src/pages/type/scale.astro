@@ -1,0 +1,24 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/type/scale/Tool.svelte';
+import { numberIn, parse } from '@/instruments/type/defaults';
+import { seedFont } from '@/instruments/type/seed';
+import { serializeWith } from '@/instruments/type/state';
+
+// Rendered per request so a shared link arrives with its scale already in the HTML.
+export const prerender = false;
+const q = Astro.url.searchParams;
+const state = parse(q);
+const maxw = numberIn(q.get('maxw'), 201, 3000, 1240);
+const own = {
+  fluid: q.get('fluid') === '1',
+  minw: numberIn(q.get('minw'), 200, maxw - 1, 360),
+  maxw,
+  minbase: numberIn(q.get('minbase'), 8, 40, 16),
+  minratio: numberIn(q.get('minratio'), 1.01, 2, 1.2),
+};
+---
+
+<Instrument primitive="type" slug="scale" query={serializeWith(state, { fluid: own.fluid ? 1 : 0, minw: own.minw, maxw: own.maxw, minbase: own.minbase, minratio: own.minratio })}>
+  <Tool client:load initial={state} {own} seed={seedFont(state.font)} />
+</Instrument>

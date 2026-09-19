@@ -13,7 +13,8 @@
     "check": "npm run tokens && npm run assets && astro check",
     "test": "vitest run",
     "requests": "node scripts/requests.mjs",
-    "db:migrate": "wrangler d1 migrations apply primitives --local"
+    "db:migrate": "wrangler d1 migrations apply primitives --local",
+    "fonts": "node scripts/build-fonts.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.2",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@capsizecss/metrics": "^4.3.0",
     "@fontsource/hanken-grotesk": "^5.3.0",
     "@resvg/resvg-js": "^2.6.2",
     "@types/culori": "^4.0.1",

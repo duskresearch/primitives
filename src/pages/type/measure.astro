@@ -1,0 +1,17 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/type/measure/Tool.svelte';
+import { numberIn, parse } from '@/instruments/type/defaults';
+import { seedFont } from '@/instruments/type/seed';
+import { serializeWith } from '@/instruments/type/state';
+
+// Rendered per request so a shared link arrives with its width already in the HTML.
+export const prerender = false;
+const q = Astro.url.searchParams;
+const state = parse(q);
+const own = { size: numberIn(q.get('size'), 12, 32, 18), leading: numberIn(q.get('leading'), 1, 2, 1.5), width: numberIn(q.get('width'), 15, 120, 60) };
+---
+
+<Instrument primitive="type" slug="measure" query={serializeWith(state, own)}>
+  <Tool client:load initial={state} {own} seed={seedFont(state.font)} />
+</Instrument>

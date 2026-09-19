@@ -1,0 +1,25 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/type/units/Tool.svelte';
+import { numberIn, oneOf, parse } from '@/instruments/type/defaults';
+import { serializeWith } from '@/instruments/type/state';
+import { TRACKING_UNITS, UNITS } from '@duskresearch/primitives/design/type';
+
+// Rendered per request so a shared link arrives with its values already in the HTML.
+export const prerender = false;
+const q = Astro.url.searchParams;
+const state = parse(q);
+const own = {
+  value: numberIn(q.get('value'), -10000, 10000, 24),
+  unit: oneOf(q.get('unit'), UNITS, 'px'),
+  to: oneOf(q.get('to'), UNITS, 'rem'),
+  root: numberIn(q.get('root'), 1, 100, 16),
+  context: numberIn(q.get('context'), 1, 1000, 16),
+  track: numberIn(q.get('track'), -1000, 1000, -2),
+  trackUnit: oneOf(q.get('trackUnit'), TRACKING_UNITS, 'percent'),
+};
+---
+
+<Instrument primitive="type" slug="units" query={serializeWith(state, own)}>
+  <Tool client:load initial={state} {own} />
+</Instrument>

@@ -9,6 +9,12 @@
   margin: 40px var(--page-x) 0;
 }
 
+/* Neither side may be widened by its content (a long line of code scrolls instead). */
+.tool .surface,
+.tool .panel {
+  min-width: 0;
+}
+
 .tool .surface {
   grid-row: 1 / 3;
   min-height: 360px;

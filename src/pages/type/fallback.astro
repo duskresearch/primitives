@@ -1,0 +1,18 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/type/fallback/Tool.svelte';
+import { oneOf, parse } from '@/instruments/type/defaults';
+import { seedFont, system } from '@/instruments/type/seed';
+import { serializeWith } from '@/instruments/type/state';
+
+// Rendered per request so a shared link arrives with its fonts already in the HTML.
+export const prerender = false;
+const q = Astro.url.searchParams;
+const state = parse(q);
+const fb = (q.get('fb') ?? '').slice(0, 40).match(/^[A-Za-z][A-Za-z ]*$/)?.[0] ?? 'Arial';
+const own = { fb, view: oneOf(q.get('view'), ['adjusted', 'plain'] as const, 'adjusted') };
+---
+
+<Instrument primitive="type" slug="fallback" query={serializeWith(state, own)}>
+  <Tool client:load initial={state} {own} seed={{ font: seedFont(state.font), system }} />
+</Instrument>
