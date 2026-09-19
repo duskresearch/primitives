@@ -4,7 +4,8 @@ import { field, pages, primitives, site } from '@/lib/catalogue';
 // A plain index for language models: what each instrument does and the problem it answers.
 export const GET: APIRoute = ({ site: origin }) => {
   const url = (path: string) => new URL(path, origin).href;
-  const lower = (s = '') => s.charAt(0).toLowerCase() + s.slice(1);
+  // Mid-sentence, a pain starts lowercase unless it starts with a name.
+  const lower = (s = '') => (/^(Google|Figma|Tailwind|Apple|WCAG|CSS|SVG)\b/.test(s) ? s : s.charAt(0).toLowerCase() + s.slice(1));
   const shipped = primitives.filter((p) => p.instruments.some((i) => i.live));
   const planned = primitives.filter((p) => !p.instruments.some((i) => i.live));
   const lines = [

@@ -34,12 +34,12 @@ What you set lives in the address and nowhere else. Send it, bookmark it or past
 
 ## The catalogue
 
-Thirteen primitives and fifty instruments, shipped one primitive at a time. **Color** is live, all six instruments; the rest are planned.
+Thirteen primitives and fifty instruments, shipped one primitive at a time. **Color** and **Type** are live, every instrument; the rest are planned.
 
 | | Primitive | Instruments |
 |---|---|---|
 | 01 | **Color** | **[Pick](https://primitiv.es/color/pick)** · **[Scale](https://primitiv.es/color/scale)** · **[Contrast](https://primitiv.es/color/contrast)** · **[Harmony](https://primitiv.es/color/harmony)** · **[Convert](https://primitiv.es/color/convert)** · **[Blend](https://primitiv.es/color/blend)** |
-| 02 | **Type** | Scale · Specimen · Measure · Units · Fallback |
+| 02 | **Type** | **[Scale](https://primitiv.es/type/scale)** · **[Specimen](https://primitiv.es/type/specimen)** · **[Measure](https://primitiv.es/type/measure)** · **[Units](https://primitiv.es/type/units)** · **[Fallback](https://primitiv.es/type/fallback)** |
 | 03 | **Grid** | Columns · Breakpoints · Baseline · Layout |
 | 04 | **Shape** | Form · Corner · Polygon · Blob · Favicon |
 | 05 | **Motion** | Ease · Spring · Duration · Stagger · Export |
@@ -76,15 +76,16 @@ operations.contrast({ text: '#9a9a9a', background: '#ffffff' });
 - **[Astro](https://astro.build)** with **[Svelte](https://svelte.dev)** islands. Instrument pages render on demand, so a shared link arrives with its state already in the HTML; everything else is prerendered.
 - **[Cloudflare Workers](https://workers.cloudflare.com)** with static assets, and **[D1](https://developers.cloudflare.com/d1/)** for requests, votes and the email list. No cookies and no accounts: a vote is a salted hash.
 - **Color math** by [culori](https://culorijs.org), in OKLCH so steps look even to the eye, with WCAG 2.x contrast measured on the colors as displayed.
+- **Type data** from Google Fonts' metadata, [Fontsource](https://fontsource.org) and [Capsize](https://seek-oss.github.io/capsize/): every family previews from Fontsource on jsDelivr, so no request reaches Google, and is measured (x-height, width, ascent, descent) for sorting, pairings and fallback overrides.
 - **One mark, one source.** The favicons, app icons and social images are drawn from `src/lib/logo.ts` at build time with [Satori](https://github.com/vercel/satori) and [resvg](https://github.com/yisibl/resvg-js).
-- **Type** in Hanken Grotesk and Departure Mono, self-hosted.
+- **Set in** Hanken Grotesk and Departure Mono, self-hosted.
 
 ## Develop
 
 ```sh
 npm install
 npm run dev                   # http://localhost:4321, runs in the Workers runtime (workerd)
-npm test                      # unit tests (color math, URL state)
+npm test                      # unit tests (color and type math, URL state)
 npm run check                 # type check
 npm run build                 # static pages + the Worker for on-demand instrument pages
 npm run preview               # serve the production build locally
