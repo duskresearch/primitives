@@ -13,7 +13,7 @@ The curve follows the [CSS Borders Level 4 superellipse definition](https://draf
 
 ## When to use it
 
-Use the SVG path where the curve must render consistently. The CSS declaration is useful when supporting browsers implement corner-shape; keep a regular border-radius fallback. This model is not an exact reconstruction of Apple's or Figma's proprietary corner algorithm.
+Use the SVG path where the curve must render consistently. Raw path data describes geometry only; the standalone SVG includes the chosen foreground. The CSS declaration is useful when supporting browsers implement corner-shape; keep a regular border-radius fallback. This model is not an exact reconstruction of Apple's or Figma's proprietary corner algorithm.
 
 ## Related
 

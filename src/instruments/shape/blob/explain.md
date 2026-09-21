@@ -13,7 +13,7 @@ Mulberry32 is a named seeded 32-bit pseudorandom generator. Each knot receives a
 
 ## When to use it
 
-Copy the path into an existing SVG or the standalone SVG for a new asset. New seed advances to another explicit integer before drawing; it never relies on unrecorded random state. Verify the result at its intended display size.
+Copy the colorless path data into an existing SVG or the standalone SVG with the chosen foreground for a new asset. New seed advances to another explicit integer before drawing; it never relies on unrecorded random state. Verify the result at its intended display size.
 
 ## Related
 

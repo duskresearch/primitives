@@ -1,8 +1,9 @@
 import type { ShapeForm, Point, PolygonPreset } from '@duskresearch/primitives/design/shape';
+import tokens from '../../data/tokens.json';
 
 /** Catalogue values are symbolic; these are the numeric contract for every Shape route. */
-export interface ShapeState { form: ShapeForm; sides: number; radius: number; rotation: number }
-export const defaults: ShapeState = { form: 'circle', sides: 6, radius: 40, rotation: 0 };
+export interface ShapeState { form: ShapeForm; sides: number; radius: number; rotation: number; foreground: string }
+export const defaults: ShapeState = { form: 'circle', sides: 6, radius: 40, rotation: 0, foreground: tokens.color.ink };
 export const limits = { sides: [3, 12], radius: [1, 50], rotation: [0, 359], inner: [0.1, 0.9], cornerRadius: [0, 50], smoothing: [0, 1], complexity: [3, 12], irregularity: [0, 0.35], padding: [0, 30] } as const;
 export const numeric = (raw: string | null, min: number, max: number, fallback: number, decimals = 0) => {
   if (raw === null || raw.trim() === '' || raw.length > 32) return fallback;
@@ -15,8 +16,9 @@ export const parse = (q: URLSearchParams): ShapeState => ({
   sides: numeric(q.get('sides'), ...limits.sides, defaults.sides),
   radius: numeric(q.get('radius'), ...limits.radius, defaults.radius, 2),
   rotation: numeric(q.get('rotation'), ...limits.rotation, defaults.rotation, 2),
+  foreground: hex(q.get('foreground'), defaults.foreground),
 });
-export const serialize = (s: ShapeState) => `form=${s.form}&sides=${s.sides}&radius=${s.radius}&rotation=${s.rotation}`;
+export const serialize = (s: ShapeState) => `form=${s.form}&sides=${s.sides}&radius=${s.radius}&rotation=${s.rotation}&foreground=${encodeURIComponent(s.foreground)}`;
 export const serializeWith = (s: ShapeState, own: Record<string, string | number | boolean>) =>
   [serialize(s), ...Object.entries(own).map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)].join('&');
 export const formOwn = (q: URLSearchParams) => ({ inner: numeric(q.get('inner'), ...limits.inner, 0.5, 2) });
@@ -33,4 +35,4 @@ export const pointsString = (points: Point[]) => points.map(({x,y}) => `${x},${y
 export const cornerOwn = (q: URLSearchParams) => ({ cornerRadius: numeric(q.get('cornerRadius'), ...limits.cornerRadius, 32, 1), smoothing: numeric(q.get('smoothing'), ...limits.smoothing, 0.75, 2) });
 export const blobOwn = (q: URLSearchParams) => ({ seed: numeric(q.get('seed'), 0, 4294967295, 12345), complexity: numeric(q.get('complexity'), ...limits.complexity, 7), irregularity: numeric(q.get('irregularity'), ...limits.irregularity, 0.24, 2) });
 export const hex = (raw: string | null, fallback: string) => /^#?[\da-f]{6}$/i.test(raw ?? '') ? `#${raw!.replace('#', '').toLowerCase()}` : fallback;
-export const faviconOwn = (q: URLSearchParams) => ({ foreground: hex(q.get('foreground'), '#1a1a17'), background: hex(q.get('background'), '#f4f1ea'), padding: numeric(q.get('padding'), ...limits.padding, 12, 1), inner: numeric(q.get('inner'), ...limits.inner, 0.5, 2) });
+export const faviconOwn = (q: URLSearchParams) => ({ background: hex(q.get('background'), tokens.color.paper), padding: numeric(q.get('padding'), ...limits.padding, 12, 1), inner: numeric(q.get('inner'), ...limits.inner, 0.5, 2) });

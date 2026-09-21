@@ -5,7 +5,7 @@ description: Set a form, circumradius, and rotation in a 100 by 100 viewBox, the
 
 ## What it measures
 
-Form draws a circle, square, triangle, regular polygon, or star in a 100 × 100 coordinate system. Radius is the distance from the center to an outer vertex or circular edge, not the width of a bounding box. All shared settings travel in the URL even when a chosen form does not use them.
+Form draws a circle, square, triangle, regular polygon, or star in a 100 × 100 coordinate system. Radius is the distance from the center to an outer vertex or circular edge, not the width of a bounding box. The chosen foreground is written into the SVG and travels with the other shared settings in the URL.
 
 ## How it is computed
 

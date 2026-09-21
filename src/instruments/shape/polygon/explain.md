@@ -5,7 +5,7 @@ description: Start from a preset, edit each point in percentages, and copy the C
 
 ## What it measures
 
-Polygon is an ordered list of three to twelve points, each expressed as X and Y percentages of the element's reference box. The preview uses the actual exported CSS declaration. Points may cross; a star or edited outline need not be convex.
+Polygon is an ordered list of three to twelve points, each expressed as X and Y percentages of the element's reference box. The preview uses the exported clip-path with the chosen foreground as its background color. Points may cross; a star or edited outline need not be convex.
 
 ## How it is computed
 
@@ -13,7 +13,7 @@ The initial preset uses regular vertices in the shared 100 × 100 shape coordina
 
 ## When to use it
 
-Apply the declaration to an element whose clipping outline should follow its size. Add or remove points to change the contour, then edit the two coordinates numerically. Verify any self-intersection against the intended fill, particularly for a star.
+Apply the declaration to an element whose clipping outline should follow its size. The primary clip-path copy contains geometry only; the secondary colored CSS also includes the chosen background color. Add or remove points to change the contour, then edit the two coordinates numerically. Verify any self-intersection against the intended fill, particularly for a star.
 
 ## Related
 

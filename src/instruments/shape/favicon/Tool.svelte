@@ -4,13 +4,14 @@
   import Slider from '@/components/tool/Slider.svelte';
   import { setQuery } from '@/lib/client/harness';
   import { FORMS, favicon } from '@duskresearch/primitives/design/shape';
+  import ShapeColorControls from '../ShapeColorControls.svelte';
   import { hex, serializeWith, type ShapeState } from '../state';
-  let { initial, own }: { initial: ShapeState; own: {foreground:string;background:string;padding:number;inner:number} } = $props();
+  let { initial, own }: { initial: ShapeState; own: {background:string;padding:number;inner:number} } = $props();
   // svelte-ignore state_referenced_locally
   let shared=$state({...initial});
   // svelte-ignore state_referenced_locally
   let s=$state({...own});
-  let foregroundDraft=$state(own.foreground),backgroundDraft=$state(own.background);
+  let backgroundDraft=$state(own.background);
   let busy=$state(false),status=$state('');
   const answer=$derived(favicon({...shared,...s}));
   const preview=$derived(`data:image/svg+xml,${encodeURIComponent(answer.svg)}`);
@@ -29,13 +30,14 @@
   <div class="block"><p>HTML integration · C copies this</p><Copy value={answer.html} label="integration HTML" primary class="code">{answer.html}</Copy></div>
 </div>
 <div class="panel">
+  <ShapeColorControls bind:foreground={shared.foreground}/>
   <Choice label="Form" options={FORMS} names={{circle:'Circle',square:'Square',triangle:'Triangle',ngon:'Polygon',star:'Star'}} bind:value={shared.form}/>
   <Slider group="Shared circumradius" label="Radius" bind:value={shared.radius} min={1} max={50} step={1} format={String}/>
   <Slider group="Shared rotation" label="Turn" bind:value={shared.rotation} min={0} max={359} step={1} format={(n)=>`${n}°`}/>
   {#if shared.form==='ngon'||shared.form==='star'}<Slider group="Sides" label="Sides" bind:value={shared.sides} min={3} max={12} step={1} format={String}/>{/if}
   {#if shared.form==='star'}<Slider group="Star inner radius ratio" label="Inner" bind:value={s.inner} min={0.1} max={0.9} step={0.01} format={(n)=>n.toFixed(2)}/>{/if}
   <Slider group="Padding in viewBox units" label="Pad" bind:value={s.padding} min={0} max={30} step={1} format={String}/>
-  <div class="colors"><label>Foreground <input aria-label="Foreground six-digit hex color" value={foregroundDraft} aria-invalid={hex(foregroundDraft,'')===''} oninput={(e)=>{foregroundDraft=e.currentTarget.value;const value=hex(foregroundDraft,'');if(value)s.foreground=value}}/></label><label>Background <input aria-label="Background six-digit hex color" value={backgroundDraft} aria-invalid={hex(backgroundDraft,'')===''} oninput={(e)=>{backgroundDraft=e.currentTarget.value;const value=hex(backgroundDraft,'');if(value)s.background=value}}/></label></div>
+  <div class="colors"><label>Background <input aria-label="Background six-digit hex color" value={backgroundDraft} aria-invalid={hex(backgroundDraft,'')===''} oninput={(e)=>{backgroundDraft=e.currentTarget.value;const value=hex(backgroundDraft,'');if(value)s.background=value}}/></label></div>
   <button type="button" class="download" disabled={busy} onclick={download}>{busy?'Preparing ZIP…':'Download ZIP'}</button>
   <p role="status" aria-live="polite" class="note">{status}</p>
   <div class="block"><p>Included files</p><ul>{#each answer.files as file}<li>{file}</li>{/each}</ul></div>

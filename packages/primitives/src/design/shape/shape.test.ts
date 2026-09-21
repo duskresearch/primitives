@@ -70,4 +70,23 @@ describe('Shape operations', () => {
     expect(result.html).toContain('href="favicon.ico"');
     expect(()=>favicon({...base,inner:.5,foreground:'<script>',background:'#f4f1ea',padding:12})).toThrow(InputError);
   });
+  it('exports the chosen foreground without changing raw geometry paths', () => {
+    const chosen = {...base,foreground:'#e85854'};
+    expect(form({...chosen,inner:.5}).element).toContain('fill="#e85854"');
+    expect(form({...chosen,inner:.5}).svg).toContain('fill="#e85854"');
+    expect(corner({...chosen,cornerRadius:32,smoothing:.75}).svg).toContain('fill="#e85854"');
+    expect(blob({...chosen,seed:1,complexity:7,irregularity:.24}).svg).toContain('fill="#e85854"');
+    expect(polygon({...chosen,points:[{x:0,y:0},{x:100,y:0},{x:50,y:100}]}).coloredCss).toContain('background-color: #e85854;');
+    const icon=favicon({...chosen,inner:.5,background:'#f4f1ea',padding:12});
+    expect(icon.svg).toContain('fill="#e85854"');
+    expect(icon.svg).not.toContain('fill="currentColor"');
+    expect(blob({...chosen,seed:1,complexity:7,irregularity:.24}).path).not.toContain('#');
+    for (const run of [
+      () => form({...chosen,foreground:'<script>',inner:.5}),
+      () => corner({...chosen,foreground:'url(javascript:)',cornerRadius:32,smoothing:.75}),
+      () => blob({...chosen,foreground:'none',seed:1,complexity:7,irregularity:.24}),
+      () => polygon({...chosen,foreground:'<svg>',points:[{x:0,y:0},{x:100,y:0},{x:50,y:100}]}),
+      () => favicon({...chosen,foreground:'<script>',inner:.5,background:'#f4f1ea',padding:12}),
+    ]) expect(run).toThrow(InputError);
+  });
 });

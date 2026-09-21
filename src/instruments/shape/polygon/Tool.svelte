@@ -3,10 +3,11 @@
   import NumberField from '@/components/tool/NumberField.svelte';
   import { setQuery } from '@/lib/client/harness';
   import { polygon, presetPoints, POLYGON_PRESETS, type Point, type PolygonPreset } from '@duskresearch/primitives/design/shape';
+  import ShapeColorControls from '../ShapeColorControls.svelte';
   import { pointsString, serializeWith, type ShapeState } from '../state';
   let { initial, own }: { initial: ShapeState; own: { preset: PolygonPreset; points: Point[] } } = $props();
   // svelte-ignore state_referenced_locally
-  const shared = initial;
+  let shared = $state<ShapeState>({...initial});
   // svelte-ignore state_referenced_locally
   let preset = $state(own.preset);
   // svelte-ignore state_referenced_locally
@@ -18,11 +19,13 @@
   $effect(() => { const query = serializeWith(shared, { preset, points: pointsString(points) }); if (loaded) setQuery(query); loaded = true; });
 </script>
 <div class="surface">
-  <div class="clip-preview"><div class="clipped" style:clip-path={answer.css.slice('clip-path: '.length, -1)}></div></div>
+  <div class="clip-preview"><div class="clipped" style:clip-path={answer.css.slice('clip-path: '.length, -1)} style:background-color={shared.foreground}></div></div>
   <p class="mono note">{points.length} ordered vertices · nonzero fill rule</p>
   <div class="block"><p>CSS declaration</p><Copy value={answer.css} label="clip-path" primary class="code">{answer.css}</Copy></div>
 </div>
 <div class="panel">
+  <ShapeColorControls bind:foreground={shared.foreground}/>
+  <div class="block"><p>Colored CSS</p><Copy value={answer.coloredCss} label="colored clip-path CSS" class="code">{answer.coloredCss}</Copy></div>
   <p class="mono note">Preset: {preset}</p>
   {#if preset === 'star' && shared.sides > 6}<p class="note">Star preset uses six tips to stay within twelve vertices. Shared sides remain {shared.sides}.</p>{/if}
   <div class="presets">{#each POLYGON_PRESETS.filter((p)=>p!=='custom') as option}<button type="button" aria-pressed={preset===option} onclick={()=>choose(option)}>{option}</button>{/each}</div>

@@ -4,6 +4,7 @@
   import Slider from '@/components/tool/Slider.svelte';
   import { setQuery } from '@/lib/client/harness';
   import { FORMS, form } from '@duskresearch/primitives/design/shape';
+  import ShapeColorControls from '../ShapeColorControls.svelte';
   import { serializeWith, type ShapeState } from '../state';
   let { initial, own }: { initial: ShapeState; own: { inner: number } } = $props();
   // svelte-ignore state_referenced_locally
@@ -21,6 +22,7 @@
   <div class="block"><p>Standalone SVG</p><Copy value={answer.svg} label="SVG" primary class="code">{answer.svg}</Copy></div>
 </div>
 <div class="panel">
+  <ShapeColorControls bind:foreground={s.foreground}/>
   <Choice label="Form" options={FORMS} names={{circle:'Circle',square:'Square',triangle:'Triangle',ngon:'Polygon',star:'Star'}} bind:value={s.form}/>
   <Slider group="Circumradius" label="Radius" bind:value={s.radius} min={1} max={50} step={1} format={(n)=>`${n}`}/>
   <Slider group="Rotation in degrees" label="Turn" bind:value={s.rotation} min={0} max={359} step={1} format={(n)=>`${n}°`}/>
