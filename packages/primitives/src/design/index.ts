@@ -12,3 +12,4 @@ export * as light from './light';
 export * as pattern from './pattern';
 export * as noise from './noise';
 export * as icon from './icon';
+export * as state from './state';

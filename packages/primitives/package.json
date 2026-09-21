@@ -19,7 +19,8 @@
     "./design/light": "./src/design/light/index.ts",
     "./design/pattern": "./src/design/pattern/index.ts",
     "./design/noise": "./src/design/noise/index.ts",
-    "./design/icon": "./src/design/icon/index.ts"
+    "./design/icon": "./src/design/icon/index.ts",
+    "./design/state": "./src/design/state/index.ts"
   },
   "dependencies": {
     "culori": "^4.0.2"
