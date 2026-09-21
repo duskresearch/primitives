@@ -35,7 +35,7 @@ describe('primitive marks as SVG', () => {
   });
 
   it('draws unshipped marks at 60% and reports what a mark covers', () => {
-    expect(markSvg(getPrimitive('space'), 100).svg).toContain('opacity="0.6"');
+    expect(markSvg({...getPrimitive('light'), shipped:false}, 100).svg).toContain('opacity="0.6"');
     const { bounds } = markSvg(getPrimitive('color'), 100);
     // Two 0.8em discs offset by ±0.15em spill 0.05em past each side of the box.
     expect(bounds.x0).toBeCloseTo(-5);

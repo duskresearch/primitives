@@ -5,3 +5,4 @@ export * as type from './type';
 export * as grid from './grid';
 export * as shape from './shape';
 export * as motion from './motion';
+export * as space from './space';
