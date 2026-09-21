@@ -1,0 +1,10 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/noise/grain/Tool.svelte';
+import {parse,grainOwn,serializeWith} from '@/instruments/noise/state';
+export const prerender=false;
+const read=(q:URLSearchParams)=>{const state=parse(q),own=grainOwn(q);return {state,own,query:serializeWith(state,own)};};
+const {state,own,query}=read(Astro.url.searchParams);
+const defaults=read(new URLSearchParams()).query;
+---
+<Instrument primitive="noise" slug="grain" {query} {defaults}><Tool client:load initial={state} {own}/></Instrument>

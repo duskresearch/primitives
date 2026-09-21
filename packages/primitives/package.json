@@ -17,7 +17,8 @@
     "./design/ratio": "./src/design/ratio/index.ts",
     "./design/random": "./src/design/random/index.ts",
     "./design/light": "./src/design/light/index.ts",
-    "./design/pattern": "./src/design/pattern/index.ts"
+    "./design/pattern": "./src/design/pattern/index.ts",
+    "./design/noise": "./src/design/noise/index.ts"
   },
   "dependencies": {
     "culori": "^4.0.2"
