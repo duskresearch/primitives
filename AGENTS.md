@@ -1,18 +1,18 @@
 # Building the rest of Primitives
 
-Color and Type are live. This file is the handover for whoever builds the other eleven
+Color, Type and Grid are live. This file is the handover for whoever builds the other ten
 primitives. `CLAUDE.md` holds the rules that are easy to break and is not repeated here:
 read it first, then this.
 
 ## Where things stand
 
 - 13 primitives, 50 instruments, all named in `src/data/catalogue.json`.
-- Live: **Color** (Pick, Scale, Contrast, Harmony, Convert, Blend) and **Type** (Scale,
-  Specimen, Measure, Units, Fallback). Eleven of fifty.
-- **Local review checkpoint, 21 September 2026: Grid (4) is implemented.** Columns,
-  Breakpoints, Baseline, and Layout are built, tested, and locally reviewable. They are
-  not pushed or deployed; Amrith's taste approval is still pending. Do not rebuild them
-  from scratch. The review sheet and execution notes are in the private explorations
+- Live: **Color** (Pick, Scale, Contrast, Harmony, Convert, Blend), **Type** (Scale,
+  Specimen, Measure, Units, Fallback), and **Grid** (Columns, Breakpoints, Baseline,
+  Layout). Fifteen of fifty.
+- **Grid deployed, 21 September 2026**, following Amrith's approval. Production route
+  and shared-URL server-rendering checks passed. Do not rebuild it from scratch.
+  The earlier review sheet and execution notes are in the private explorations
   repo under `primitives-design/grid-review/` and `primitives-design/GRID-EXECUTION.md`.
 - **Ready to build: Shape (5), Motion (5).** These carry a full spec in the
   catalogue: `does`, `pain`, `primaryValue`, `keywords`, the primitive's `intro`, its mark,
@@ -48,8 +48,10 @@ primitive, not per instrument. Keep the loop short and do not stack up questions
 
 - Per primitive: math with tests first, then one instrument end to end, then the rest. The
   first one built settles the layout and the copy voice for the other three or four.
-- One checkpoint: a screenshot sheet of every instrument in the primitive at 1280x800 and
-  390x844, with the copy you wrote for it. Ship after he says so.
+- One checkpoint per primitive, then ship after Amrith says so. As of 21 September,
+  do not take screenshots or create screenshot sheets unless he requests them. For the
+  Shape assignment, he also waived browser-review loops: follow SHAPE-EXECUTION.md in
+  the private explorations repo and report unperformed browser checks honestly.
 - Commit locally as soon as the checks pass. Ask before pushing and before deploying.
   Never leave a primitive uncommitted overnight.
 - Small, obvious, zero-risk fixes to something already live can go straight out.
@@ -61,6 +63,9 @@ a third party at runtime; anything that follows a pattern Color or Type already 
 **Ask first:** anything that changes the shared harness or `tool.css`; a new interaction
 pattern nothing else uses; a new runtime dependency; an output that is not a copy, such as
 Favicon's zip; storage of any kind; a schema change; deploying or pushing.
+
+Shape's bounded Favicon ZIP export is approved for the current assignment (see the
+private SHAPE-EXECUTION.md). This does not approve dependencies or harness changes.
 
 ## Start from the interface people already know
 
@@ -193,7 +198,7 @@ call that yourself, the site-wide click handler does.
 4. Under 60 kB of gzipped JavaScript per page.
 5. Lighthouse on mobile: accessibility 100, performance median at least 95 over three runs.
 6. Every value on screen copies, and the primary one answers the instrument's question.
-7. The screenshot sheet, then Amrith's approval.
+7. A concise verification handoff, then Amrith's approval. No screenshots unless requested.
 
 ## How to measure
 
