@@ -1,0 +1,10 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/pattern/stripes/Tool.svelte';
+import {parse,stripesOwn,serializeWith} from '@/instruments/pattern/state';
+export const prerender=false;
+const read=(q:URLSearchParams)=>{const state=parse(q),own=stripesOwn(q,state.tileSize);return {state,own,query:serializeWith(state,own)};};
+const {state,own,query}=read(Astro.url.searchParams);
+const defaults=read(new URLSearchParams()).query;
+---
+<Instrument primitive="pattern" slug="stripes" {query} {defaults}><Tool client:load initial={state} {own}/></Instrument>
