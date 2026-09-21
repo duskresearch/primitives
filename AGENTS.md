@@ -12,10 +12,12 @@ read it first, then this.
 - **Ready to build: Grid (4), Shape (5), Motion (5).** These carry a full spec in the
   catalogue: `does`, `pain`, `primaryValue`, `keywords`, the primitive's `intro`, its mark,
   and the shared URL state under `state`.
-- **Not ready: Space, Light, Noise, Ratio, Pattern, Icon, Random, State** (23 instruments).
-  They have a name, a mark and one line of `does`. No `pain`, no `primaryValue`, no
-  `keywords`, no `intro`, no shared state. Do not invent that copy. It is written with
-  Amrith before the primitive is built, the same way Color's and Type's were.
+- **Copy still to write: Space, Light, Noise, Ratio, Pattern, Icon, Random, State**
+  (23 instruments). They have a name, a mark and one line of `does`. The `pain`,
+  `primaryValue`, `keywords`, the primitive's `intro` and its shared `state` are yours to
+  write, from the pattern the five finished primitives set. See "Writing a primitive's
+  copy". Amrith reads it when the primitive is ready and will cut and rewrite; that is the
+  process working, not a failure.
 - A primitive's instruments can only go live once its `status` in the catalogue is
   `shipped`. Grid, Shape and Motion already are. Until an instrument has a `meta.ts` it
   shows as "In preparation" everywhere, which is the correct resting state.
@@ -36,14 +38,24 @@ read it first, then this.
 
 ## The working agreement
 
-- Amrith decides design and copy. He holds final taste authority. Execute his calls.
-- Per primitive: write the math with tests first, build one instrument end to end, get it
-  looked at, then build the rest. Do not build five tools before anyone has seen one.
-- Before a primitive ships, put one screenshot sheet in front of him: each instrument at
-  1280x800 and 390x844. Ship after he says so.
-- Commit locally as soon as work passes the checks. Ask before pushing and before
-  deploying. Never leave a primitive uncommitted overnight.
+You own the build. Amrith holds final taste authority and reviews at one checkpoint per
+primitive, not per instrument. Keep the loop short and do not stack up questions.
+
+- Per primitive: math with tests first, then one instrument end to end, then the rest. The
+  first one built settles the layout and the copy voice for the other three or four.
+- One checkpoint: a screenshot sheet of every instrument in the primitive at 1280x800 and
+  390x844, with the copy you wrote for it. Ship after he says so.
+- Commit locally as soon as the checks pass. Ask before pushing and before deploying.
+  Never leave a primitive uncommitted overnight.
 - Small, obvious, zero-risk fixes to something already live can go straight out.
+
+**Decide these yourself:** the copy, within the voice; which familiar interface an
+instrument starts from; the math and its tests; data sources, as long as no request goes to
+a third party at runtime; anything that follows a pattern Color or Type already set.
+
+**Ask first:** anything that changes the shared harness or `tool.css`; a new interaction
+pattern nothing else uses; a new runtime dependency; an output that is not a copy, such as
+Favicon's zip; storage of any kind; a schema change; deploying or pushing.
 
 ## Start from the interface people already know
 
@@ -74,12 +86,62 @@ Duration: Material's guidance that distance and size set duration, so nothing is
 default. Stagger: the stagger control from GSAP and Framer, showing the list move. Export:
 one curve written as CSS, Framer Motion and SwiftUI.
 
+## Writing a primitive's copy
+
+Five primitives are written. Read all of their entries in `catalogue.json` before you write
+a word of a sixth, and match them. Every field has a shape.
+
+**`does`**, four to ten words. A noun phrase naming what you get, usually ending in the form
+it comes in. Never a verb aimed at the reader, never "helps you", never a feature list.
+
+> "Even tints and shades from one color" · "A modular type ramp with line heights, as
+> clamp() CSS" · "Columns, gap and margin with live reflow, as CSS" · "Parametric shapes
+> exported as clean SVG"
+
+**`pain`**, one sentence, present tense: the moment someone goes looking for this. Write the
+situation, not the feeling, and never name the instrument as the cure. It reads on its own
+on the primitive index and again after "for when" in `llms.txt`, so it has to work both
+ways. If a pain starts with a name, add that name to the list in `src/pages/llms.txt.ts`,
+which otherwise lowercases the first word.
+
+> "You are not sure the gray text passes" · "Nobody remembers why 768 and 1024" ·
+> "cubic-bezier numbers mean nothing until you see them move" · "Text jumps when the
+> webfont arrives"
+
+**`primaryValue`**, the answer the `C` key copies, as a lowercase noun phrase. Name the
+thing, not the button: "ratio", "grid CSS", "max-width in ch", "clip-path", "ms". Where the
+value follows a format the reader chose, say so: "the palette, in your format".
+
+**`keywords`**, lowercase, what someone would actually type, including the format names, the
+standard, and the words other tools use: "px to rem pt em tracking letter-spacing".
+
+**`intro`**, exactly two sentences for the primitive's page. The first says what the
+primitive is, as a claim about the world that a designer would nod at, with one idea in it
+and no hedging. The second says how many instruments there are and what they cover.
+
+> "A grid is a decision made once so that a hundred small decisions do not have to be
+> made later." then "Four instruments for dividing space: columns and gaps as real CSS,
+> breakpoints you can test, a baseline overlay, and common page skeletons."
+
+**`state`**, the two to four values every instrument in the primitive carries in the URL.
+Only what more than one instrument needs: Color carries two colors, Type carries base,
+ratio, face and sample text. Instrument-only settings stay in that instrument's own params.
+
+**`meta.ts`**: `purpose` is one sentence above the tool, longer than `does` and saying what
+it is for; `primaryLabel` is the word in "Copied ...", so it reads as a thing, not a
+setting.
+
+The voice: plain American English, objective, never first person. No em-dashes. Never
+beautiful, premium or delightful. Explanations cite the standard they follow, by name and
+number, because that is what makes them worth reading. Read every line aloud before you
+commit it; if it sounds like marketing, cut it until it sounds like a colleague.
+
 ## The recipe
 
 Per primitive, once:
 
-1. Catalogue: set `status` to `shipped`. The `intro`, `mark`, `hue` and per-instrument copy
-   must already be written (see "Where things stand").
+1. Catalogue: write the copy if it is not there yet (see above), then set `status` to
+   `shipped`. The mark and `hue` already exist for all thirteen.
 2. `packages/primitives/src/design/<primitive>/index.ts`: the math. Pure functions, one
    plain object in and one out, no DOM and no I/O, `InputError` on bad input, and an
    `operations` object keyed by instrument slug. Tests beside it in `<primitive>.test.ts`.
