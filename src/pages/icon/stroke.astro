@@ -1,0 +1,10 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/icon/stroke/Tool.svelte';
+import {parse,strokeOwn,serializeWith} from '@/instruments/icon/state';
+export const prerender=false;
+const read=(q:URLSearchParams)=>{const state=parse(q),own=strokeOwn(q);return {state,own,query:serializeWith(state,own)};};
+const {state,own,query}=read(Astro.url.searchParams);
+const defaults=read(new URLSearchParams()).query;
+---
+<Instrument primitive="icon" slug="stroke" {query} {defaults}><Tool client:load initial={state} {own}/></Instrument>

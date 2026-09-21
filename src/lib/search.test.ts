@@ -9,7 +9,7 @@ const names = (q: string) => search(items, q).hits.map((h) => `${h.kind}:${h.gro
 describe('spotlight search', () => {
   it('browses live instruments, then every primitive, then pages', () => {
     const { groups, hits } = search(items, '');
-    expect(groups.map((g) => g.label)).toEqual(['Color', 'Type', 'Grid', 'Shape', 'Motion', 'Space', 'Light', 'Noise', 'Ratio', 'Pattern', 'Random', 'Primitives', 'Pages']);
+    expect(groups.map((g) => g.label)).toEqual(['Color', 'Type', 'Grid', 'Shape', 'Motion', 'Space', 'Light', 'Noise', 'Ratio', 'Pattern', 'Icon', 'Random', 'Primitives', 'Pages']);
     expect(groups.find((g) => g.label === 'Grid')?.rows.map(({ item }) => [item.name, item.href])).toEqual([
       ['Columns', '/grid/columns'],
       ['Breakpoints', '/grid/breakpoints'],
@@ -23,7 +23,7 @@ describe('spotlight search', () => {
   it('finds primitives by name, ahead of instruments that mention them', () => {
     expect(top('color')).toMatchObject({ kind: 'primitive', href: '/color' });
     expect(top('noise')).toMatchObject({ kind: 'primitive', href: '/noise', muted: false });
-    // Icon has a planned instrument called Grid; the live primitive wins the tie.
+    // Icon also has an instrument called Grid; the primitive wins the tie.
     expect(top('grid')).toMatchObject({ kind: 'primitive', href: '/grid' });
   });
 

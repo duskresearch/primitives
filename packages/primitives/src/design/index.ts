@@ -11,3 +11,4 @@ export * as random from './random';
 export * as light from './light';
 export * as pattern from './pattern';
 export * as noise from './noise';
+export * as icon from './icon';
