@@ -1,0 +1,10 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/random/range/Tool.svelte';
+import {parse,rangeOwn,serializeWith} from '@/instruments/random/state';
+export const prerender=false;
+const read=(q:URLSearchParams)=>{const state=parse(q),own=rangeOwn(q);return {state,own,query:serializeWith(state,own)};};
+const {state,own,query}=read(Astro.url.searchParams);
+const defaults=read(new URLSearchParams()).query;
+---
+<Instrument primitive="random" slug="range" {query} {defaults}><Tool client:load initial={state} {own}/></Instrument>
