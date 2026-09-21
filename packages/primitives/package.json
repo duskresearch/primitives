@@ -13,7 +13,8 @@
     "./design/grid": "./src/design/grid/index.ts",
     "./design/shape": "./src/design/shape/index.ts",
     "./design/motion": "./src/design/motion/index.ts",
-    "./design/space": "./src/design/space/index.ts"
+    "./design/space": "./src/design/space/index.ts",
+    "./design/ratio": "./src/design/ratio/index.ts"
   },
   "dependencies": {
     "culori": "^4.0.2"

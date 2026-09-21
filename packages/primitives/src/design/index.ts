@@ -6,3 +6,4 @@ export * as grid from './grid';
 export * as shape from './shape';
 export * as motion from './motion';
 export * as space from './space';
+export * as ratio from './ratio';
