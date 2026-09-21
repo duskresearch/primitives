@@ -18,5 +18,7 @@ describe('State URL contract', () => {
   it('uses deterministic defaults with no query', () => {
     expect(parse(new URLSearchParams())).toEqual(defaults);
     expect(exportOwn(new URLSearchParams()).target).toBe('xstate');
+    const custom = JSON.stringify({ states: ['ready'], initial: 'ready', transitions: [] });
+    expect(parse(new URLSearchParams(`schema=${encodeURIComponent(custom)}`)).current).toBe('ready');
   });
 });
