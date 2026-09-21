@@ -19,6 +19,15 @@ read it first, then this.
   passed 131 tests, type checking and build. Amrith has now requested user-selected colors
   across Shape, preserving the existing harness and shared URL state. Do not rebuild Shape
   from scratch. Screenshots and browser-review loops remain waived for this checkpoint.
+- **Remaining-batch build authorized, 21 September 2026:** one GPT-5.6 Sol builder is
+  implementing Motion, Space, Ratio, Random, Light, Pattern, Noise, Icon and State
+  (30 instruments) sequentially, with Astra reviewing the integrated result. The private
+  contract is `~/explorations/primitives-design/REMAINING-BATCH.md`. It supersedes
+  per-primitive user approval rounds and browser/Lighthouse gates for this batch only.
+  No screenshots or browser-review loops. Report unperformed runtime checks honestly.
+  Bounded local PNG/SVG exports described in that brief are approved; new dependencies,
+  shared-harness redesign, storage, arbitrary uploads, push and deployment are not.
+  The builder may make explicit-path local milestone commits after verification.
 - **Ready to build: Motion (5).** This carries a full spec in the
   catalogue: `does`, `pain`, `primaryValue`, `keywords`, the primitive's `intro`, its mark,
   and the shared URL state under `state`.
