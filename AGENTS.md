@@ -9,11 +9,16 @@ read it first, then this.
 - 13 primitives, 50 instruments, all named in `src/data/catalogue.json`.
 - Live: **Color** (Pick, Scale, Contrast, Harmony, Convert, Blend) and **Type** (Scale,
   Specimen, Measure, Units, Fallback). Eleven of fifty.
-- **Ready to build: Grid (4), Shape (5), Motion (5).** These carry a full spec in the
+- **Local review checkpoint, 21 September 2026: Grid (4) is implemented.** Columns,
+  Breakpoints, Baseline, and Layout are built, tested, and locally reviewable. They are
+  not pushed or deployed; Amrith's taste approval is still pending. Do not rebuild them
+  from scratch. The review sheet and execution notes are in the private explorations
+  repo under `primitives-design/grid-review/` and `primitives-design/GRID-EXECUTION.md`.
+- **Ready to build: Shape (5), Motion (5).** These carry a full spec in the
   catalogue: `does`, `pain`, `primaryValue`, `keywords`, the primitive's `intro`, its mark,
   and the shared URL state under `state`.
 - **Copy still to write: Space, Light, Noise, Ratio, Pattern, Icon, Random, State**
-  (23 instruments). They have a name, a mark and one line of `does`. The `pain`,
+  (25 instruments). They have a name, a mark and one line of `does`. The `pain`,
   `primaryValue`, `keywords`, the primitive's `intro` and its shared `state` are yours to
   write, from the pattern the five finished primitives set. See "Writing a primitive's
   copy". Amrith reads it when the primitive is ready and will cut and rewrite; that is the
@@ -212,6 +217,10 @@ scratch directory so the repo stays lean.
 - Anything a tool needs for its first render must come from the page as a prop. Fetching it
   on hydration pushes out the largest paint. Type's pages do this through
   `src/instruments/type/seed.ts`, which is server only by design.
+- Grid's sandboxed preview iframe is keyed by its generated `srcdoc`. Updating an
+  existing frame's document after resize left it blank in the in-app renderer;
+  recreating the frame was verified to restore actual layout and painting. Preserve
+  the key and the script-free sandbox.
 - Never call a Window method detached from `window`. Firefox refuses
   `(window.requestIdleCallback ?? setTimeout)(fn)`.
 - `astro dev` sometimes serves a component's previous stylesheet after an edit. Save again
