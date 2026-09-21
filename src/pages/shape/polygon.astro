@@ -1,0 +1,11 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/shape/polygon/Tool.svelte';
+import { presetPoints } from '@duskresearch/primitives/design/shape';
+import { parse, polygonOwn, pointsString, serializeWith } from '@/instruments/shape/state';
+export const prerender = false;
+const read = (q: URLSearchParams) => { const state = parse(q), parsed = polygonOwn(q), own = { preset: parsed.preset, points: parsed.points ?? presetPoints(state, parsed.preset === 'custom' ? 'hexagon' : parsed.preset) }; return { state, own, query: serializeWith(state, { preset: own.preset, points: pointsString(own.points) }) }; };
+const { state, own, query } = read(Astro.url.searchParams);
+const defaults = read(new URLSearchParams()).query;
+---
+<Instrument primitive="shape" slug="polygon" {query} {defaults}><Tool client:load initial={state} {own}/></Instrument>
