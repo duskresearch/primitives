@@ -1,0 +1,10 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/motion/export/Tool.svelte';
+import {parse,exportOwn,serializeWith} from '@/instruments/motion/state';
+export const prerender=false;
+const read=(q:URLSearchParams)=>{const state=parse(q),own=exportOwn(q);return {state,own,query:serializeWith(state,own)};};
+const {state,own,query}=read(Astro.url.searchParams);
+const defaults=read(new URLSearchParams()).query;
+---
+<Instrument primitive="motion" slug="export" {query} {defaults}><Tool client:load initial={state} {own}/></Instrument>
