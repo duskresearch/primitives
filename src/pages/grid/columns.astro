@@ -1,0 +1,21 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/grid/columns/Tool.svelte';
+import { parse, parseColumnsOwn } from '@/instruments/grid/defaults';
+import { serializeWith } from '@/instruments/grid/state';
+import tokens from '@/data/tokens.json';
+
+export const prerender = false;
+const read = (q: URLSearchParams) => {
+  const state = parse(q);
+  const own = parseColumnsOwn(q);
+  return { state, own, query: serializeWith(state, own) };
+};
+const { state, own, query } = read(Astro.url.searchParams);
+const defaults = read(new URLSearchParams()).query;
+const colors = { paper: tokens.color.paper, ink: tokens.color.ink, line: tokens.color.line3, accent: `oklch(0.65 0.18 ${tokens.accent.hue.grid})` };
+---
+
+<Instrument primitive="grid" slug="columns" {query} {defaults}>
+  <Tool client:load initial={state} {own} {colors} />
+</Instrument>

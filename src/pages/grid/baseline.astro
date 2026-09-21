@@ -1,0 +1,19 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/grid/baseline/Tool.svelte';
+import { parse, parseBaselineOwn } from '@/instruments/grid/defaults';
+import { serializeWith } from '@/instruments/grid/state';
+
+export const prerender = false;
+const read = (q: URLSearchParams) => {
+  const state = parse(q);
+  const own = parseBaselineOwn(q);
+  return { state, own, query: serializeWith(state, { ...own }) };
+};
+const { state, own, query } = read(Astro.url.searchParams);
+const defaults = read(new URLSearchParams()).query;
+---
+
+<Instrument primitive="grid" slug="baseline" {query} {defaults}>
+  <Tool client:load initial={state} {own} />
+</Instrument>

@@ -9,7 +9,13 @@ const names = (q: string) => search(items, q).hits.map((h) => `${h.kind}:${h.gro
 describe('spotlight search', () => {
   it('browses live instruments, then every primitive, then pages', () => {
     const { groups, hits } = search(items, '');
-    expect(groups.map((g) => g.label)).toEqual(['Color', 'Type', 'Primitives', 'Pages']);
+    expect(groups.map((g) => g.label)).toEqual(['Color', 'Type', 'Grid', 'Primitives', 'Pages']);
+    expect(groups.find((g) => g.label === 'Grid')?.rows.map(({ item }) => [item.name, item.href])).toEqual([
+      ['Columns', '/grid/columns'],
+      ['Breakpoints', '/grid/breakpoints'],
+      ['Baseline', '/grid/baseline'],
+      ['Layout', '/grid/layout'],
+    ]);
     expect(hits.filter((h) => h.kind === 'primitive')).toHaveLength(13);
     expect(hits.every((h) => !h.muted || h.kind === 'primitive')).toBe(true);
   });
