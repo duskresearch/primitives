@@ -1,0 +1,10 @@
+---
+import Instrument from '@/layouts/Instrument.astro';
+import Tool from '@/instruments/light/shadow/Tool.svelte';
+import {parse,shadowOwn,serializeWith} from '@/instruments/light/state';
+export const prerender=false;
+const read=(q:URLSearchParams)=>{const state=parse(q),own=shadowOwn(q);return {state,own,query:serializeWith(state,own)};};
+const {state,own,query}=read(Astro.url.searchParams);
+const defaults=read(new URLSearchParams()).query;
+---
+<Instrument primitive="light" slug="shadow" {query} {defaults}><Tool client:load initial={state} {own}/></Instrument>

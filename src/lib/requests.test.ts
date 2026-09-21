@@ -20,7 +20,7 @@ describe('request rules', () => {
   it('knows what is already live or planned', () => {
     expect(findInCatalogue('contrast')).toMatchObject({ kind: 'live', name: 'Contrast', href: '/color/contrast' });
     expect(findInCatalogue('WCAG')).toMatchObject({ kind: 'live', name: 'Contrast' });
-    expect(findInCatalogue('Shadow', 'light')).toMatchObject({ kind: 'planned', primitive: 'Light', href: '/light' });
+    expect(findInCatalogue('Shadow', 'light')).toMatchObject({ kind: 'live', primitive: 'Light', href: '/light/shadow' });
     expect(findInCatalogue('Noise')).toMatchObject({ kind: 'planned', name: 'Noise' });
     expect(findInCatalogue('color scale')).toMatchObject({ primitive: 'Color', name: 'Scale' });
     expect(findInCatalogue('Halftone')).toBeNull();

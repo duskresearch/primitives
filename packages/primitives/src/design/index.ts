@@ -8,3 +8,4 @@ export * as motion from './motion';
 export * as space from './space';
 export * as ratio from './ratio';
 export * as random from './random';
+export * as light from './light';
