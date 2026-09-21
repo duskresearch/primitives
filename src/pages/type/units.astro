@@ -2,6 +2,7 @@
 import Instrument from '@/layouts/Instrument.astro';
 import Tool from '@/instruments/type/units/Tool.svelte';
 import { numberIn, oneOf, parse } from '@/instruments/type/defaults';
+import { seedFont } from '@/instruments/type/seed';
 import { serializeWith } from '@/instruments/type/state';
 import { TRACKING_UNITS, UNITS } from '@duskresearch/primitives/design/type';
 
@@ -25,5 +26,5 @@ const defaults = read(new URLSearchParams()).query;
 ---
 
 <Instrument primitive="type" slug="units" {query} {defaults}>
-  <Tool client:load initial={state} {own} />
+  <Tool client:load initial={state} {own} seed={seedFont(state.font)} />
 </Instrument>

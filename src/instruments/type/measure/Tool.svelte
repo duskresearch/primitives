@@ -58,7 +58,7 @@
   let dragging = false;
   function drag(e: PointerEvent) {
     if (!dragging || !paragraph || !zero) return;
-    const px = e.clientX - paragraph.getBoundingClientRect().left - 14;
+    const px = e.clientX - paragraph.getBoundingClientRect().left - parseFloat(getComputedStyle(paragraph).paddingRight);
     s.width = Math.min(120, Math.max(15, Math.round(px / zero.getBoundingClientRect().width)));
   }
 

@@ -11,11 +11,11 @@ Pin up to four faces to compare them together. Choose one by its name to see who
 
 ## How it is computed
 
-The list and its popularity come from Google Fonts' own metadata. The font files come from Fontsource through jsDelivr, the same fonts under the same open licenses, so browsing sends nothing to Google, and each face loads only as it scrolls into view.
+The list and its popularity come from Google Fonts' own metadata; the files come from Fontsource through jsDelivr, under the same open licenses, so browsing sends nothing to Google, and each face loads as it scrolls into view.
 
-x-height is the height of lowercase letters as a share of the font size; a face with a larger x-height reads larger at the same size. Average width is the width of typical text, weighted by how often each letter occurs. Both come from Capsize.
+x-height is the height of lowercase letters as a share of the font size: a larger one reads larger at the same size. Average width is the width of typical text, weighted by how often each letter occurs. Capsize reads both from the font's OS/2 table, where OpenType defines them as sxHeight and xAvgCharWidth. The embed code sets font-display: swap (CSS Fonts 4), so text is never invisible while the file loads.
 
-Pairings look for a face of a different kind, a serif for a sans or a sans for a serif, with a close x-height, so the two sit together at one size, among faces that are widely used and proven.
+Pairings look for a face of a different kind, a serif for a sans, with a close x-height, so the two sit together at one size, among faces that are widely used.
 
 ## When to use it
 

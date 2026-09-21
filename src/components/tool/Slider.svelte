@@ -40,7 +40,7 @@
     aria-label={`${group} ${label}`}
     aria-valuetext={format(value)}
   />
-  <Copy value={format(value)} label={`${group.toLowerCase()} ${label}`} class="value">{format(value)}</Copy>
+  <Copy value={format(value)} label={group.toLowerCase()} class="value">{format(value)}</Copy>
 </div>
 
 <style>

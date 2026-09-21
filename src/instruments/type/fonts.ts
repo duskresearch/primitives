@@ -79,7 +79,12 @@ export const afterLoad = (): Promise<void> =>
   new Promise((resolve) => (document.readyState === 'complete' ? resolve() : window.addEventListener('load', () => resolve(), { once: true })));
 
 /** The list, once the page has loaded and gone idle. */
-export const loadFontsSoon = (): Promise<Fonts> => afterLoad().then(() => new Promise((resolve) => (window.requestIdleCallback ?? setTimeout)(() => resolve(loadFonts()))));
+export const loadFontsSoon = (): Promise<Fonts> =>
+  afterLoad().then(() => {
+    // Bound to the window: Firefox refuses a Window method called on anything else.
+    const idle = window.requestIdleCallback?.bind(window) ?? setTimeout;
+    return new Promise<Fonts>((resolve) => idle(() => resolve(loadFonts())));
+  });
 
 /** The site already serves Hanken Grotesk; use it instead of fetching a second copy. */
 const SITE_FACE = 'hanken-grotesk';

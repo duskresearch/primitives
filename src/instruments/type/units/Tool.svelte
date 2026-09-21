@@ -18,10 +18,11 @@
   import Select from '@/components/tool/Select.svelte';
   import { setQuery } from '@/lib/client/harness';
   import { convertLength, trackingEm, TRACKING_UNITS, UNITS } from '@duskresearch/primitives/design/type';
-  import { familyFor } from '../fonts';
+  import { familyFor, type Font } from '../fonts';
   import { serializeWith, type TypeState } from '../state';
 
-  let { initial, own }: { initial: TypeState; own: UnitsOwn } = $props();
+  // seed: the chosen face, from the page, so the sample loads without the full list.
+  let { initial, own, seed }: { initial: TypeState; own: UnitsOwn; seed?: Font } = $props();
   // svelte-ignore state_referenced_locally
   const shared = initial;
   // svelte-ignore state_referenced_locally
@@ -36,7 +37,7 @@
   const letterSpacing = $derived(`letter-spacing: ${em}em;`);
 
   let family = $state('var(--font-hanken), sans-serif');
-  $effect(() => void familyFor(shared.font).then((f) => (family = f)));
+  $effect(() => void familyFor(shared.font, seed).then((f) => (family = f)));
 
   let loaded = false;
   $effect(() => {

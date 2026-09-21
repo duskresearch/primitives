@@ -133,7 +133,7 @@
   });
   const code = $derived.by(() => {
     if (!chosen) return '';
-    const e = embeds({ id: chosen.id, family: chosen.family, weights: chosen.weights, italic: chosen.italic, variable: chosen.variable }, [...new Set([400, 700, s.weight])].sort());
+    const e = embeds({ id: chosen.id, family: chosen.family, weights: chosen.weights, italic: chosen.italic, variable: chosen.variable }, [...new Set([400, 700, s.weight])].sort((x, y) => x - y));
     return { google: e.google, self: e.import, npm: `${e.npm}\n${e.import}`, css: `${e.css.slice(0, -1)}, ${genericFor(chosen.category)};` }[s.embed];
   });
   const embedNames = { google: 'Google', self: 'Self-host', npm: 'npm', css: 'CSS' } as const;
@@ -183,8 +183,12 @@
   {:else}
     <section class="group">
       <h2 class="mono">{filtered.length.toLocaleString('en-US')} families · {sortNames[s.sort]}</h2>
-      <ol>{#each filtered.slice(0, limit) as f (f.id)}{@render row(f)}{/each}</ol>
-      {#if limit < filtered.length}<div class="more" use:more></div>{/if}
+      {#if filtered.length}
+        <ol>{#each filtered.slice(0, limit) as f (f.id)}{@render row(f)}{/each}</ol>
+        {#if limit < filtered.length}<div class="more" use:more></div>{/if}
+      {:else}
+        <p class="mono status">No family matches what you are looking for. Try another spelling, or widen the filters.</p>
+      {/if}
     </section>
   {/if}
 </div>
