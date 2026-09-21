@@ -14,7 +14,12 @@ read it first, then this.
   and shared-URL server-rendering checks passed. Do not rebuild it from scratch.
   The earlier review sheet and execution notes are in the private explorations
   repo under `primitives-design/grid-review/` and `primitives-design/GRID-EXECUTION.md`.
-- **Ready to build: Shape (5), Motion (5).** These carry a full spec in the
+- **Shape (5) is implemented locally, not deployed.** Its first review caught and fixed
+  malformed Form SVG and Polygon URL precision/vertex-limit bugs. The corrected baseline
+  passed 131 tests, type checking and build. Amrith has now requested user-selected colors
+  across Shape, preserving the existing harness and shared URL state. Do not rebuild Shape
+  from scratch. Screenshots and browser-review loops remain waived for this checkpoint.
+- **Ready to build: Motion (5).** This carries a full spec in the
   catalogue: `does`, `pain`, `primaryValue`, `keywords`, the primitive's `intro`, its mark,
   and the shared URL state under `state`.
 - **Copy still to write: Space, Light, Noise, Ratio, Pattern, Icon, Random, State**
