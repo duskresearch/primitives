@@ -8,7 +8,7 @@
   function accept(key:'foreground'|'background',raw:string){try{value[key]=hex(parseColor(raw));error='';}catch{error=`Enter a valid ${key} color.`;}}
   function renew(){if(!globalThis.crypto?.getRandomValues){error='Browser entropy is unavailable.';return;}value.seed=crypto.getRandomValues(new Uint32Array(1))[0];error='';}
 </script>
-<div class="seed-control"><NumberField label="S" name="Noise seed" value={value.seed} min={0} max={4294967295} onchange={(v)=>value.seed=v}/><button type="button" onclick={renew}>New seed</button></div>
+<div class="seed-control"><NumberField label="S" name="Noise seed" value={value.seed} min={0} max={4294967295} integer onchange={(v)=>value.seed=v}/><button type="button" onclick={renew}>New seed</button></div>
 <Slider group="Noise intensity" label="Amount" bind:value={value.intensity} min={0} max={1} step={.01} format={(n)=>n.toFixed(2)}/>
 <div class="colors"><label class="mono">Foreground <input type="color" aria-label="Noise foreground" value={value.foreground} oninput={(e)=>accept('foreground',e.currentTarget.value)}/><input type="text" aria-label="Noise foreground CSS color" value={value.foreground} onchange={(e)=>accept('foreground',e.currentTarget.value)}/></label><label class="mono">Background <input type="color" aria-label="Noise background" value={value.background} oninput={(e)=>accept('background',e.currentTarget.value)}/><input type="text" aria-label="Noise background CSS color" value={value.background} onchange={(e)=>accept('background',e.currentTarget.value)}/></label></div>
 {#if error}<p role="alert">{error}</p>{/if}

@@ -1,7 +1,8 @@
 <script lang="ts">
+  import { parseNumberField } from './number-field';
   // One channel of a color as a number box: a letter, then the value. Type a number, or use
   // the arrow keys (Shift for ten steps). Out-of-range input is marked and left alone.
-  let { label, name, value, min, max, places = 0, onchange }: {
+  let { label, name, value, min, max, places = 0, integer = false, onchange }: {
     /** The letter shown, e.g. "R". */
     label: string;
     /** The channel's name, for assistive tech, e.g. "Red". */
@@ -11,6 +12,8 @@
     max: number;
     /** Decimal places shown and stepped by. */
     places?: number;
+    /** Reject fractional drafts when the underlying domain is integer-only. */
+    integer?: boolean;
     onchange: (value: number) => void;
   } = $props();
 
@@ -22,18 +25,20 @@
   const step = 10 ** -places;
 
   function accept(raw: string) {
-    const n = Number(raw.trim().replace(',', '.').replace(/[%°]$/, ''));
-    invalid = raw.trim() === '' || !Number.isFinite(n) || n < min || n > max;
-    if (!invalid) onchange(n);
+    const n = parseNumberField(raw, min, max, integer);
+    invalid = n === null;
+    if (n !== null) onchange(n);
   }
 
   function onkeydown(e: KeyboardEvent & { currentTarget: HTMLInputElement }) {
-    if (e.key === 'Enter' || e.key === 'Escape') return e.currentTarget.blur();
+    if (e.key === 'Escape') { invalid = false; editing = false; return e.currentTarget.blur(); }
+    if (e.key === 'Enter') return e.currentTarget.blur();
     const dir = { ArrowUp: 1, ArrowDown: -1 }[e.key];
     if (!dir) return;
     e.preventDefault();
     const next = Math.min(max, Math.max(min, Number((value + dir * step * (e.shiftKey ? 10 : 1)).toFixed(places))));
     draft = text(next);
+    invalid = false;
     onchange(next);
   }
 </script>
@@ -58,7 +63,7 @@
       editing = true;
       requestAnimationFrame(() => field.select());
     }}
-    onblur={() => ((editing = false), (invalid = false))}
+    onblur={() => { if (!integer || !invalid) { editing = false; invalid = false; } }}
     {onkeydown}
     autocomplete="off"
     spellcheck="false"
