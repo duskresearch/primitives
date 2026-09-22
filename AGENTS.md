@@ -1,10 +1,27 @@
-# Building the rest of Primitives
+# Primitives build and release handover
 
-Color, Type and Grid are live. This file is the handover for whoever builds the other ten
-primitives. `CLAUDE.md` holds the rules that are easy to break and is not repeated here:
+All 13 primitives and 50 instruments are live. This file is the handover for maintaining
+and extending them. `CLAUDE.md` holds the rules that are easy to break and is not repeated here:
 read it first, then this.
 
 ## Where things stand
+
+- **Full catalogue deployed to Cloudflare, 22 September 2026**, with Amrith's explicit
+  approval. Source commit `a944aad`; production Worker version
+  `5d5e7e43-e246-4210-a7c9-7abc87ccab92`, serving https://primitiv.es.
+- Release checks: 208 tests across 37 files passed; Astro check passed (247 files,
+  no errors or warnings, one existing deprecation hint); Cloudflare build and deploy
+  dry-run passed. Live HTTP checks passed for all 50 instrument surfaces and primary
+  answers, all 13 primitive indexes, landing/about, sitemap and llms.txt, four custom
+  shared-URL renders, 55 referenced JS assets, and D1-backed requests board/row reads.
+- No production test writes, migrations, secret changes, DNS cutover, screenshots,
+  browser interaction loops, or new Lighthouse runs were performed for this release.
+  Existing D1 and VOTE_SALT are preserved. Spacefast remains a separate, blocked hosting
+  experiment; its bridge readiness gate is not enabled. Default builds target Cloudflare.
+- Prior Cloudflare version for code rollback: `546a6954-5b21-44bb-ae5b-dc2c193a1b32`.
+  Rolling back code does not roll back database contents.
+
+## Historical build checkpoints (superseded by the release above)
 
 - 13 primitives, 50 instruments, all named in `src/data/catalogue.json`.
 - Live: **Color** (Pick, Scale, Contrast, Harmony, Convert, Blend), **Type** (Scale,
