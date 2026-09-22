@@ -3,8 +3,8 @@
   "runtime": {
     "kind": "functions",
     "entry": "dist-spacefast/server/spacefast-entry.mjs",
-    "database": true,
-    "fetch": false,
+    "database": false,
+    "fetch": true,
     "compatibilityDate": "2026-07-01"
   }
 }

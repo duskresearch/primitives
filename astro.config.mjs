@@ -34,7 +34,10 @@ export default defineConfig({
   session: false,
   adapter: spacefast ? spacefastAstroAdapter() : cloudflare({ imageService: 'passthrough' }),
   integrations: [svelte(), devCache],
-  vite: { resolve: { alias: { '#runtime-bindings': new URL(spacefast ? './src/lib/server/bindings-spacefast.ts' : './src/lib/server/bindings-cloudflare.ts', import.meta.url).pathname } } },
+  vite: { resolve: { alias: {
+    '#runtime-bindings': new URL(spacefast ? './src/lib/server/bindings-spacefast.ts' : './src/lib/server/bindings-cloudflare.ts', import.meta.url).pathname,
+    '#bridge-site': new URL(spacefast ? './src/lib/server/bridge-site.ts' : './src/lib/server/bridge-cloudflare.ts', import.meta.url).pathname,
+  } } },
   ...(spacefast ? { outDir: './dist-spacefast', build: { format: 'file', inlineStylesheets: 'always', server: 'server', client: 'client' } } : {}),
   prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
   markdown: { syntaxHighlight: false },

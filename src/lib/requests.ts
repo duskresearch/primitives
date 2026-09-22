@@ -1,6 +1,6 @@
 // The request board's rules, free of storage: what counts as the same idea, what is
 // already planned or live, and how old a suggestion reads.
-import { primitives } from './catalogue';
+import { primitives } from './server/request-catalogue';
 
 const filler = new Set(['a', 'an', 'the', 'for', 'of', 'and', 'tool', 'tools', 'instrument', 'instruments', 'generator', 'maker', 'checker', 'picker', 'builder', 'editor', 'primitive']);
 

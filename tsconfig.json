@@ -4,6 +4,6 @@
   "exclude": ["dist", "dist-spacefast", "design"],
   "compilerOptions": {
     "resolveJsonModule": true,
-    "paths": { "@/*": ["./src/*"], "#runtime-bindings": ["./src/lib/server/bindings-spacefast.ts"] }
+    "paths": { "@/*": ["./src/*"], "#runtime-bindings": ["./src/lib/server/bindings-spacefast.ts"], "#bridge-site": ["./src/lib/server/bridge-site.ts"] }
   }
 }

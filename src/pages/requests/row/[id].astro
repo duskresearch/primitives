@@ -2,19 +2,20 @@
 // One board row as an HTML fragment, for the page to insert after a new suggestion.
 import { bindings } from '#runtime-bindings';
 import IdeaRow from '@/components/IdeaRow.astro';
-import { idea } from '@/lib/server/ideas';
-import { requireDb, visitor } from '@/lib/server/visitor';
+import { remote, remoteBinding, isIdea } from '#bridge-site';
+import { operate } from '@/lib/server/operations';
 
 export const prerender = false;
 export const partial = true;
 
-let binding;
-try { binding = bindings(Astro.locals, Astro.request); }
-catch { return new Response('Requests are temporarily unavailable.', { status: 503 }); }
 let found;
 try {
-  const who = await visitor(Astro.request, binding);
-  found = await idea(requireDb(binding.db), Astro.params.id ?? '', who.voter);
+  const value = remoteBinding()
+    ? await remote('row', Astro.request, Astro.locals, { id: Astro.params.id ?? '' })
+    : await operate('row', Astro.request, bindings(Astro.locals, Astro.request), { id: Astro.params.id ?? '' }, import.meta.env.DEV);
+  if (value.status === 404) return new Response(null, { status: 404 });
+  if (value.status !== 200 || !isIdea(value.data.idea) || typeof value.data.voted !== 'boolean') throw new Error('Row unavailable');
+  found = { idea: value.data.idea as import('@/lib/server/ideas').Idea, voted: value.data.voted };
 } catch {
   return new Response('Requests are temporarily unavailable.', { status: 503 });
 }

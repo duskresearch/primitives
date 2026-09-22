@@ -2,23 +2,21 @@
 import type { APIRoute } from 'astro';
 import { bindings } from '#runtime-bindings';
 import { site } from '@/lib/catalogue';
-import { vote } from '@/lib/server/ideas';
-import { allow, reply, requireDb, sameOrigin, visitor } from '@/lib/server/visitor';
+import { reply, sameOrigin } from '@/lib/server/visitor';
+import { operate } from '@/lib/server/operations';
+import { remote, remoteBinding } from '#bridge-site';
+import { boundedRequest } from '@/lib/server/body';
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  let binding;
-  try { binding = bindings(locals, request); }
-  catch { return reply({ ok: false, message: 'Requests are temporarily unavailable.' }, 503); }
   if (!sameOrigin(request)) return reply({ ok: false, message: site.errorLine }, 403);
-  const body = (await request.json().catch(() => ({}))) as { id?: unknown; on?: unknown };
-  const id = typeof body.id === 'string' ? body.id.slice(0, 40) : '';
-  const db = requireDb(binding.db);
-  const who = await visitor(request, binding);
-  if (!(await allow(db, `vote:${who.network}`, 60, 60))) return reply({ ok: false, message: 'That is a lot at once. Try again in a minute.' }, 429);
-  const live = await db.prepare("SELECT 1 FROM suggestions WHERE id = ?1 AND status = 'live'").bind(id).first();
-  if (!live) return reply({ ok: false, message: site.errorLine }, 404);
-  const result = await vote(db, id, who.voter, typeof body.on === 'boolean' ? body.on : undefined);
-  return reply({ ok: true, ...result });
+  const bounded = await boundedRequest(request);
+  if (!bounded) return reply({ ok: false, message: 'Request too large.' }, 413);
+  const data = await bounded.json().catch(() => ({}));
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return reply({ ok: false, message: site.errorLine }, 400);
+  try {
+    const value = remoteBinding() ? await remote('vote', request, locals, data) : await operate('vote', request, bindings(locals, request), data, import.meta.env.DEV);
+    return reply(value.data, value.status);
+  } catch { return reply({ ok: false, message: 'Requests are temporarily unavailable.' }, 503); }
 };

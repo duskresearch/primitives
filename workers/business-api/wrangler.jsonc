@@ -1,0 +1,21 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "primitives-business-api",
+  "main": "index.ts",
+  "compatibility_date": "2026-09-22",
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": {
+    "enabled": true,
+    "logs": { "enabled": true, "head_sampling_rate": 1 },
+    "traces": { "enabled": true, "head_sampling_rate": 0.01 }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "primitives",
+      "database_id": "a2f50db2-ba1a-4296-9d35-7af8bfa4eda4",
+      "migrations_dir": "../../migrations"
+    }
+  ]
+}

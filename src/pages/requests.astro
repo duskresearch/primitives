@@ -7,21 +7,21 @@ import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import IdeaRow from '@/components/IdeaRow.astro';
 import { counts, primitives, site } from '@/lib/catalogue';
-import { board, type Idea } from '@/lib/server/ideas';
-import { requireDb, visitor } from '@/lib/server/visitor';
+import type { Idea } from '@/lib/server/ideas';
+import { remote, remoteBinding, isIdea } from '#bridge-site';
+import { operate } from '@/lib/server/operations';
 
 export const prerender = false;
 
 let ideas: Idea[] = [];
 let voted = new Set<string>();
-let binding;
-try { binding = bindings(Astro.locals, Astro.request); }
-catch { return new Response('Requests are temporarily unavailable.', { status: 503 }); }
 try {
-  const who = await visitor(Astro.request, binding);
-  ({ ideas, voted } = await board(requireDb(binding.db), who.voter));
-} catch (error) {
-  console.error('requests board unavailable', error);
+  const value = remoteBinding() ? await remote('board', Astro.request, Astro.locals, {}) : await operate('board', Astro.request, bindings(Astro.locals, Astro.request), {}, import.meta.env.DEV);
+  if (value.status !== 200 || !Array.isArray(value.data.ideas) || !value.data.ideas.every(isIdea) ||
+    !Array.isArray(value.data.voted) || !value.data.voted.every((id: unknown) => typeof id === 'string')) throw new Error('Board unavailable');
+  ideas = value.data.ideas as Idea[];
+  voted = new Set(value.data.voted as string[]);
+} catch {
   return new Response('Requests are temporarily unavailable.', { status: 503 });
 }
 const votes = ideas.reduce((sum, i) => sum + i.votes, 0);

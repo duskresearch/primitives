@@ -34,7 +34,10 @@ export async function visitor(request: Request, binding: { salt?: string; ip?: s
 /** Forms may only be posted from this site. */
 export function sameOrigin(request: Request): boolean {
   const origin = request.headers.get('origin');
-  if (origin) return new URL(origin).host === new URL(request.url).host;
+  if (origin) {
+    try { return new URL(origin).origin === new URL(request.url).origin; }
+    catch { return false; }
+  }
   return request.headers.get('sec-fetch-site') === 'same-origin';
 }
 
