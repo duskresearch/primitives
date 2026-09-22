@@ -1,9 +1,9 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "design"],
+  "exclude": ["dist", "dist-spacefast", "design"],
   "compilerOptions": {
     "resolveJsonModule": true,
-    "paths": { "@/*": ["./src/*"] }
+    "paths": { "@/*": ["./src/*"], "#runtime-bindings": ["./src/lib/server/bindings-spacefast.ts"] }
   }
 }

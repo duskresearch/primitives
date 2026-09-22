@@ -1,15 +1,23 @@
 ---
 // One board row as an HTML fragment, for the page to insert after a new suggestion.
-import { env } from 'cloudflare:workers';
+import { bindings } from '#runtime-bindings';
 import IdeaRow from '@/components/IdeaRow.astro';
 import { idea } from '@/lib/server/ideas';
-import { visitor } from '@/lib/server/visitor';
+import { requireDb, visitor } from '@/lib/server/visitor';
 
 export const prerender = false;
 export const partial = true;
 
-const who = await visitor(Astro.request);
-const found = await idea(env.DB, Astro.params.id ?? '', who.voter);
+let binding;
+try { binding = bindings(Astro.locals, Astro.request); }
+catch { return new Response('Requests are temporarily unavailable.', { status: 503 }); }
+let found;
+try {
+  const who = await visitor(Astro.request, binding);
+  found = await idea(requireDb(binding.db), Astro.params.id ?? '', who.voter);
+} catch {
+  return new Response('Requests are temporarily unavailable.', { status: 503 });
+}
 if (!found) return new Response(null, { status: 404 });
 Astro.response.headers.set('cache-control', 'private, no-store');
 const rank = Number(Astro.url.searchParams.get('rank')) || 0;

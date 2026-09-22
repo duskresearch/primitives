@@ -1,8 +1,15 @@
 // Who is asking, without knowing who: salted hashes stand in for visitors. Nothing that
 // identifies a person is stored, and the salt never leaves the Worker.
-import { env } from 'cloudflare:workers';
+export function requireDb(db: D1Database | undefined): D1Database {
+  if (!db) throw new Error('DB binding missing');
+  return db;
+}
 
-const salt = () => env.VOTE_SALT || 'local-development-salt';
+function salt(value: string | undefined, development: boolean): string {
+  if (value) return value;
+  if (development) return 'local-development-salt';
+  throw new Error('VOTE_SALT binding missing');
+}
 
 async function sha256(text: string): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
@@ -16,10 +23,12 @@ export interface Visitor {
   voter: string;
 }
 
-export async function visitor(request: Request): Promise<Visitor> {
-  const ip = request.headers.get('cf-connecting-ip') ?? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'local';
+export async function visitor(request: Request, binding: { salt?: string; ip?: string | null }, development = import.meta.env.DEV): Promise<Visitor> {
+  const ip = binding.ip || (development ? 'local' : null);
+  if (!ip) throw new Error('Trusted visitor IP missing');
   const agent = request.headers.get('user-agent') ?? '';
-  return { network: await sha256(`${salt()}|${ip}`), voter: await sha256(`${salt()}|${ip}|${agent}`) };
+  const secret = salt(binding.salt, development);
+  return { network: await sha256(`${secret}|${ip}`), voter: await sha256(`${secret}|${ip}|${agent}`) };
 }
 
 /** Forms may only be posted from this site. */

@@ -2,6 +2,7 @@
 import { defineConfig, fontProviders } from 'astro/config';
 import svelte from '@astrojs/svelte';
 import cloudflare from '@astrojs/cloudflare';
+import { spacefastAstroAdapter } from '@spacefast/astro/adapter';
 import tokens from './src/data/tokens.json' with { type: 'json' };
 
 // tokens.json holds full stacks ("'Hanken Grotesk', Helvetica, Arial, sans-serif");
@@ -10,6 +11,7 @@ import tokens from './src/data/tokens.json' with { type: 'json' };
 const stack = (s) => s.split(',').map((/** @type {string} */ f) => f.trim().replace(/^'|'$/g, ''));
 const [sans, ...sansFallbacks] = stack(tokens.font.sans);
 const [mono, ...monoFallbacks] = stack(tokens.font.mono);
+const spacefast = /** @type {{ process?: { env: Record<string, string | undefined> } }} */ (globalThis).process?.env.PRIMITIVES_TARGET === 'spacefast';
 
 // `astro dev` gets its own Vite cache. Builds, checks and previews share node_modules/.vite
 // and re-optimize its dependencies, which deletes files a running dev server still uses.
@@ -30,8 +32,10 @@ export default defineConfig({
   build: { format: 'file', inlineStylesheets: 'always' },
   // No sessions: the URL is the only state.
   session: false,
-  adapter: cloudflare({ imageService: 'passthrough' }),
+  adapter: spacefast ? spacefastAstroAdapter() : cloudflare({ imageService: 'passthrough' }),
   integrations: [svelte(), devCache],
+  vite: { resolve: { alias: { '#runtime-bindings': new URL(spacefast ? './src/lib/server/bindings-spacefast.ts' : './src/lib/server/bindings-cloudflare.ts', import.meta.url).pathname } } },
+  ...(spacefast ? { outDir: './dist-spacefast', build: { format: 'file', inlineStylesheets: 'always', server: 'server', client: 'client' } } : {}),
   prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
   markdown: { syntaxHighlight: false },
   devToolbar: { enabled: false },

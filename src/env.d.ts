@@ -4,6 +4,8 @@ declare namespace App {
   interface Locals {
     /** The field this request is for, from its host (src/middleware.ts). */
     field: import('./lib/fields').Field;
+    /** Present only in the Spacefast Functions adapter; Cloudflare uses a module binding. */
+    runtime?: { env: { DB?: D1Database; VOTE_SALT?: string; PRIMITIVES_SPACEFAST_BACKEND_READY?: string } };
   }
 }
 

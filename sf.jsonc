@@ -1,0 +1,10 @@
+{
+  "$schema": "https://spacefast.com/schemas/sf.json",
+  "runtime": {
+    "kind": "functions",
+    "entry": "dist-spacefast/server/spacefast-entry.mjs",
+    "database": true,
+    "fetch": false,
+    "compatibilityDate": "2026-07-01"
+  }
+}

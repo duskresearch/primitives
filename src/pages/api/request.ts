@@ -1,13 +1,13 @@
 // A suggestion from any request form: the landing tile, a primitive's "Want this sooner?"
 // line, or /requests. Filtered, checked against the catalogue and the board, then stored.
 import type { APIRoute } from 'astro';
-import { env } from 'cloudflare:workers';
+import { bindings } from '#runtime-bindings';
 import { primitives, site } from '@/lib/catalogue';
 import { moderate } from '@/lib/moderation';
 import { findInCatalogue, normalize, sameIdea } from '@/lib/requests';
 import { answer, readBody } from '@/lib/server/body';
 import { insert, log, names, vote } from '@/lib/server/ideas';
-import { allow, sameOrigin, visitor } from '@/lib/server/visitor';
+import { allow, requireDb, sameOrigin, visitor } from '@/lib/server/visitor';
 
 export const prerender = false;
 
@@ -18,9 +18,12 @@ const messages = {
   limited: 'That is a lot at once. Try again in a minute.',
 };
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   const { data, json } = await readBody(request);
   const respond = (body: Record<string, unknown>, status: number) => answer(request, json, body, status);
+  let binding;
+  try { binding = bindings(locals, request); }
+  catch { return new Response(json ? JSON.stringify({ ok: false, message: 'Requests are temporarily unavailable.' }) : 'Requests are temporarily unavailable.', { status: 503, headers: { 'content-type': json ? 'application/json; charset=utf-8' : 'text/plain; charset=utf-8', 'cache-control': 'no-store' } }); }
   if (!sameOrigin(request)) return respond({ ok: false, message: site.errorLine }, 403);
 
   const text = String(data.text ?? '');
@@ -30,8 +33,8 @@ export const POST: APIRoute = async ({ request }) => {
   // Honeypot: people never fill the hidden field. Pretend it worked.
   if (data.website) return respond({ ok: true, outcome: 'new', message: messages.added }, 201);
 
-  const db = env.DB;
-  const who = await visitor(request);
+  const db = requireDb(binding.db);
+  const who = await visitor(request, binding);
   if (!(await allow(db, `suggest:${who.network}`, 5, 60)) || !(await allow(db, `suggest-day:${who.network}`, 30, 86400)))
     return respond({ ok: false, outcome: 'limited', message: messages.limited }, 429);
   const entry = { text, detail, primitive, page, author: who.network };
