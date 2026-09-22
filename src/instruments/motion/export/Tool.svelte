@@ -15,13 +15,13 @@
   $effect(()=>{const q=serializeWith(s,{target});if(loaded)setQuery(q);loaded=true;});
 </script>
 <div class="surface">
-  <div class="block"><p>{target==='css'?'CSS':target==='motion'?'Motion for React':'SwiftUI'} · {s.kind}</p><Copy value={answer.code} label="motion export" primary class="code">{answer.code}</Copy></div>
+  <div class="block"><p>{target==='css'?'CSS':target==='motion'?'Motion for React':'SwiftUI'} · {s.kind}</p>{#if answer.available}<Copy value={answer.code} label="motion export" primary class="code">{answer.code}</Copy>{:else}<p role="status">No complete CSS transition is available for this spring.</p>{/if}</div>
   <p class="mono note">{answer.note}</p>
 </div>
 <div class="panel">
   <Choice label="Export target" options={['css','motion','swiftui'] as const} names={{css:'CSS',motion:'Motion',swiftui:'SwiftUI'}} bind:value={target}/>
   <CurveControls bind:value={s}/>
-  <p class="mono note">CSS spring output uses sampled linear() stops. Motion preserves physics parameters. SwiftUI has no exact parameter mapping here.</p>
+  <p class="mono note">CSS spring output uses sampled linear() stops only when settled within 10s. Motion and SwiftUI receive physical spring parameters; runtime settling may differ.</p>
 </div>
 <style>
   .surface.surface{background:var(--paper-2);border:1px solid var(--line-2);justify-content:flex-start}

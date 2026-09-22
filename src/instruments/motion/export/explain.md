@@ -9,11 +9,11 @@ Export expresses the chosen Motion curve in the selected target’s syntax. The 
 
 ## How it is computed
 
-A Bézier maps its four control points directly to CSS cubic-bezier(), a Motion ease array or SwiftUI timingCurve(); durations become seconds where those APIs require seconds. Motion for React documents its [transition options](https://motion.dev/docs/react-transitions), including cubic arrays and physical spring parameters. Apple documents [SwiftUI timingCurve](https://developer.apple.com/documentation/swiftui/animation/timingcurve(_:duration:)). For a spring, CSS uses a sampled linear() approximation, while Motion receives mass, stiffness, damping and velocity.
+A Bézier maps its four control points directly to CSS cubic-bezier(), a Motion ease array or SwiftUI timingCurve(); durations become seconds where those APIs require seconds. Motion for React documents its [transition options](https://motion.dev/docs/react-transitions), including cubic arrays and physical spring parameters. Apple documents [SwiftUI timingCurve](https://developer.apple.com/documentation/swiftui/animation/timingcurve(_:duration:)) and [interpolatingSpring](https://developer.apple.com/documentation/swiftui/animation/interpolatingspring(mass:stiffness:damping:initialvelocity:)). For a spring, CSS uses a sampled linear() approximation only if it settles within ten seconds. Motion and SwiftUI receive mass, stiffness, damping and velocity parameters.
 
 ## When to use it
 
-Copy a target’s result into a transition declaration and test it in context. Springs do not have identical termination rules across runtimes. No exact SwiftUI export for these four physics parameters is claimed; that selection provides a labeled web approximation instead.
+Copy a target’s result into a transition declaration and test it in context. Springs do not have identical termination rules across runtimes. SwiftUI's initial velocity is normalized to the animated property's change; check the direction and scale of the actual property. If a spring has not settled by the ten-second sampling limit, no complete CSS transition is exported. Approximation error and settling are separate diagnostics.
 
 ## Related
 

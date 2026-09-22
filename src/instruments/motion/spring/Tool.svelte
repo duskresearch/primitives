@@ -16,10 +16,10 @@
   <CurvePreview samples={answer.points} timing={answer.css} duration={answer.duration}/>
   <div class="rows">
     <div class="row"><span>Settling tolerance</span><Copy value="position 0.001; speed 0.001/s" label="spring tolerance">±0.001 position · ±0.001/s</Copy></div>
-    <div class="row"><span>Settling</span><Copy value={`${answer.duration}ms`} label="spring settling">{answer.settled?`${answer.duration}ms`:'Not settled by 10s'}</Copy></div>
+    <div class="row"><span>Settling</span>{#if answer.settled}<Copy value={`${answer.duration}ms`} label="spring settling">{answer.duration}ms</Copy>{:else}<span role="status">Not settled by 10s</span>{/if}</div>
     <div class="row"><span>Approximation</span><Copy value={`${answer.maxError}`} label="approximation error">{answer.maxError.toFixed(4)}{answer.capped?' · target unmet':''}</Copy></div>
   </div>
-  <div class="block"><p>CSS linear() approximation</p><Copy value={answer.css} label="CSS spring" primary class="code">{answer.css}</Copy></div>
+  <div class="block"><p>CSS linear() approximation</p>{#if answer.settled}<Copy value={answer.css} label="CSS spring" primary class="code">{answer.css}</Copy>{:else}<p role="status">Not settled by 10s. Preview is truncated; no complete CSS timing is available.</p>{/if}</div>
 </div>
 <div class="panel">
   <Slider group="Spring mass" label="Mass" bind:value={s.mass} min={.01} max={10} step={.01} format={(n)=>n.toFixed(2)}/>

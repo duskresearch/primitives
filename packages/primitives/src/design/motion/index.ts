@@ -132,11 +132,13 @@ export function exportMotion(input:MotionInput & {target:'css'|'motion'|'swiftui
   if(input.curve.kind==='bezier') {
     const c=input.curve, tuple=`[${fmt(c.x1)}, ${fmt(c.y1)}, ${fmt(c.x2)}, ${fmt(c.y2)}]`;
     const code=input.target==='css'?`transition-timing-function: ${bezierCSS(c)};\ntransition-duration: ${fmt(input.duration)}ms;`:input.target==='motion'?`{ type: "tween", duration: ${fmt(input.duration/1000)}, ease: ${tuple} }`:`.timingCurve(${fmt(c.x1)}, ${fmt(c.y1)}, ${fmt(c.x2)}, ${fmt(c.y2)}, duration: ${fmt(input.duration/1000)})`;
-    return {code,note:'Cubic Bézier control points and duration are preserved.'};
+    return {code,note:'Cubic Bézier control points and duration are preserved.',available:true};
   }
+  if(input.target==='motion')return {code:`{ type: "spring", mass: ${fmt(input.curve.mass)}, stiffness: ${fmt(input.curve.stiffness)}, damping: ${fmt(input.curve.damping)}, velocity: ${fmt(input.curve.velocity)} }`,note:'Motion spring parameters map directly; runtime termination may differ.',available:true};
+  if(input.target==='swiftui')return {code:`.interpolatingSpring(mass: ${fmt(input.curve.mass)}, stiffness: ${fmt(input.curve.stiffness)}, damping: ${fmt(input.curve.damping)}, initialVelocity: ${fmt(input.curve.velocity)})`,note:'SwiftUI receives the four spring parameters. Initial velocity is normalized to the animated property change; runtime settling may differ from this preview.',available:true};
   const sampled=spring({curve:input.curve});
-  if(input.target==='css')return {code:`transition-timing-function: ${sampled.css};\ntransition-duration: ${sampled.duration}ms;`,note:`Sampled spring, max sampled error ${fmt(sampled.maxError)}; ${sampled.capped?'approximation target unmet':'within .002 target'}.`};
-  if(input.target==='motion')return {code:`{ type: "spring", mass: ${fmt(input.curve.mass)}, stiffness: ${fmt(input.curve.stiffness)}, damping: ${fmt(input.curve.damping)}, velocity: ${fmt(input.curve.velocity)} }`,note:'Motion spring parameters map directly; runtime termination may differ.'};
-  return {code:`// No exact mass/stiffness/damping/velocity mapping to SwiftUI spring.\n// Use this sampled CSS linear() timing in web content:\n${sampled.css}`,note:'SwiftUI spring semantics are not equivalent; no exact export is claimed.'};
+  const approximation=`max sampled error ${fmt(sampled.maxError)}; ${sampled.capped?'approximation target unmet':'within .002 approximation target'}`;
+  if(!sampled.settled)return {code:'',note:`Spring not settled by 10s (position ${fmt(springAt(input.curve,10).position)}); ${approximation}. No complete CSS transition is available.`,available:false};
+  return {code:`transition-timing-function: ${sampled.css};\ntransition-duration: ${sampled.duration}ms;`,note:`Sampled spring, ${approximation}; settled within position and speed tolerance.`,available:true};
 }
 export const operations={ease,duration,spring,stagger,export:exportMotion};

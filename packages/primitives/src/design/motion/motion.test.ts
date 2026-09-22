@@ -34,11 +34,26 @@ describe('Motion operations',()=>{
     expect(stagger({count:3,interval:50,duration:300,order:'end'})).toMatchObject({starts:[100,50,0],total:400});
     expect(stagger({count:5,interval:20,duration:300,order:'center'}).starts).toEqual([60,20,0,40,80]);
   });
-  it('maps supported exports and marks unsupported spring equivalence',()=>{
+  it('maps supported exports while noting runtime spring differences',()=>{
     expect(exportMotion({curve:bezier,duration:300,target:'motion'}).code).toContain('duration: 0.3');
     expect(exportMotion({curve:bezier,duration:300,target:'swiftui'}).code).toContain('.timingCurve(0.25, 0.1, 0.25, 1');
     const c:Extract<Curve,{kind:'spring'}>={kind:'spring',mass:1,stiffness:170,damping:26,velocity:0};
-    expect(exportMotion({curve:c,duration:300,target:'swiftui'}).note).toContain('not equivalent');
+    expect(exportMotion({curve:c,duration:300,target:'swiftui'}).note).toContain('runtime settling may differ');
+  });
+  it('marks a 10-second CSS sample that has not settled, without conflating approximation error',()=>{
+    const c:Extract<Curve,{kind:'spring'}>={kind:'spring',mass:1,stiffness:1,damping:100,velocity:0};
+    const result=exportMotion({curve:c,duration:300,target:'css'});
+    expect(springAt(c,10).position).toBeLessThan(.1);
+    expect(result.note).toMatch(/not settled|unsettled/i);
+    expect(result.code).not.toContain('transition-timing-function');
+    expect(result.available).toBe(false);
+    expect(result.note).toContain('approximation target');
+  });
+  it('emits the documented SwiftUI spring initializer',()=>{
+    const c:Extract<Curve,{kind:'spring'}>={kind:'spring',mass:1,stiffness:170,damping:26,velocity:2};
+    const result=exportMotion({curve:c,duration:300,target:'swiftui'});
+    expect(result.code).toContain('.interpolatingSpring(mass: 1, stiffness: 170, damping: 26, initialVelocity: 2)');
+    expect(result.code).not.toContain('linear(');
   });
   it('rejects invalid and nonfinite inputs',()=>{
     expect(()=>bezierAt({...bezier,x1:NaN},.5)).toThrow(InputError);
