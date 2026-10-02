@@ -143,22 +143,23 @@ async function emit(path, image) {
   const children = [];
   const shipped = primitives.filter((p) => p.shipped);
   const center = W / 2;
-  const supportSize = 66;
+  const supportSize = 60;
   const supportY = 260;
-  // Six mirrored pairs, art-directed so the four colored marks split evenly across
-  // both sides. State occupies slot zero behind the opaque active tile.
+  // Four curated mirrored pairs. The colored marks split evenly across both sides;
+  // the nearest pair has comparable rounded geometry. A wide empty moat around the
+  // active tile keeps every supporting mark wholly visible rather than clipping it.
   const dockSlots = new Map([
-    ['color', -6], ['shape', 6],
-    ['space', -5], ['type', 5],
-    ['grid', -4], ['motion', 4],
-    ['light', -3], ['pattern', 3],
-    ['icon', -2], ['random', 2],
-    ['ratio', -1], ['noise', 1],
-    ['state', 0],
+    ['color', -4], ['shape', 4],
+    ['space', -3], ['type', 3],
+    ['grid', -2], ['motion', 2],
+    ['icon', -1], ['random', 1],
   ]);
   shipped.forEach((p) => {
     const slot = dockSlots.get(p.slug);
-    if (slot !== undefined) placeMark(p, center + slot * 75, supportY, supportSize, overlays, children, 'center', 0.15);
+    if (slot === undefined) return;
+    const distance = 190 + (Math.abs(slot) - 1) * 95;
+    const x = center + Math.sign(slot) * distance;
+    placeMark(p, x, supportY, supportSize, overlays, children, 'center', 0.14);
   });
   children.push(
     el({ position: 'absolute', left: 498, top: 132, width: 204, height: 204, borderRadius: 42, background: c.paper2, border: `1px solid ${c.line1}`, boxShadow: '0 18px 44px rgba(26,26,23,0.12)' }),
