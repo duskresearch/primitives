@@ -102,17 +102,17 @@ const mono = (text, style = {}) => el({ fontFamily: 'Departure Mono', fontSize: 
  * `align` positions by what the mark covers rather than its box: 'left' puts its drawn
  * left edge at x, 'center' centers it on (x, y).
  */
-function placeMark(p, x, y, size, overlays, children, align = 'box') {
+function placeMark(p, x, y, size, overlays, children, align = 'box', opacity = 1) {
   const m = markSvg(p, size);
   const { x0, y0, x1, y1 } = m.bounds;
   if (align === 'left') x -= x0;
   if (align === 'top-right') [x, y] = [x - x1, y - y0];
   if (align === 'center') [x, y] = [x - (x0 + x1) / 2, y - (y0 + y1) / 2];
-  overlays.push(`<g transform="translate(${x} ${y})">${m.svg}</g>`);
+  overlays.push(`<g opacity="${opacity}" transform="translate(${x} ${y})">${m.svg}</g>`);
   if (m.letter) {
     children.push(
       el(
-        { position: 'absolute', left: x, top: y, width: size, height: size, alignItems: 'center', justifyContent: 'center', opacity: p.shipped ? 1 : 0.6 },
+        { position: 'absolute', left: x, top: y, width: size, height: size, alignItems: 'center', justifyContent: 'center', opacity: opacity * (p.shipped ? 1 : 0.6) },
         el({ fontFamily: 'Hanken Grotesk', fontWeight: 400, fontSize: size * 1.15, lineHeight: 1, letterSpacing: -0.05 * size * 1.15, color: m.letter.color }, m.letter.text),
       ),
     );
@@ -136,32 +136,29 @@ async function emit(path, image) {
   og[path] = createHash('sha256').update(image).digest('hex').slice(0, 10);
 }
 
-// Landing: a row of the shipped primitive marks at 200 with the Primitives mark in the
-// middle slot (the only mark on this image), the name, the domain and the maker along the bottom.
+// Landing: the catalogue recedes like a dock behind the active Primitives app. The
+// central tile is deliberately opaque so no supporting mark ghosts through the logo.
 {
   const overlays = [];
   const children = [];
   const shipped = primitives.filter((p) => p.shipped);
-  const middle = Math.floor(shipped.length / 2);
-  const size = 200;
-  // The mark's square fills its whole box; at 0.9 of the slot it matches the height of the
-  // primitive marks around it (Grid's bars, the mark it replaces, are 0.9em).
-  const markSize = size * 0.9;
-  const gap = 20; // with Color's and Motion's overhang, the drawn row spans exactly inset to inset
-  const rowY = 175;
-  // Space the boxes evenly, then center the row on what the marks actually cover.
-  const first = markSvg(shipped[0], size).bounds;
-  const last = markSvg(shipped.at(-1), size).bounds;
-  const span = (shipped.length - 1) * (size + gap) + last.x1 - first.x0;
-  const rowX = (W - span) / 2 - first.x0;
+  const center = W / 2;
+  const supportSize = 66;
+  const supportY = 260;
   shipped.forEach((p, i) => {
-    const x = rowX + i * (size + gap);
-    if (i === middle) overlays.push(logo.logoGroup(x + (size - markSize) / 2, rowY + (size - markSize) / 2, markSize, logo.INK));
-    else placeMark(p, x, rowY, size, overlays, children);
+    const slot = i < 7 ? i - 7 : i - 6;
+    placeMark(p, center + slot * 75, supportY, supportSize, overlays, children, 'center', 0.15);
   });
   children.push(
-    el({ position: 'absolute', left: 0, top: rowY + size + 40, width: W, justifyContent: 'center', fontSize: 40, fontWeight: 500, letterSpacing: -0.8 }, site.name),
+    el({ position: 'absolute', left: 498, top: 132, width: 204, height: 204, borderRadius: 42, background: c.paper2, border: `1px solid ${c.line1}`, boxShadow: '0 18px 44px rgba(26,26,23,0.12)' }),
+    el({ position: 'absolute', left: 0, top: 372, width: W, justifyContent: 'center', fontSize: 42, fontWeight: 400, letterSpacing: -1.1 }, site.name),
     el({ position: 'absolute', left: INSET, right: INSET, bottom: INSET, justifyContent: 'space-between' }, mono(site.domain), mono(site.maker)),
+  );
+  // Satori's tile carries the shadow, while this SVG layer makes the face truly opaque
+  // above the primitive marks. The logo is the last layer and stays full-strength ink.
+  overlays.push(
+    `<rect x="498" y="132" width="204" height="204" rx="42" fill="${c.paper2}" stroke="${c.line1}"/>`,
+    logo.logoGroup(526, 160, 148, logo.INK),
   );
   await emit('/', await render(children, overlays));
 }
