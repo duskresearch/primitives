@@ -145,9 +145,20 @@ async function emit(path, image) {
   const center = W / 2;
   const supportSize = 66;
   const supportY = 260;
-  shipped.forEach((p, i) => {
-    const slot = i < 7 ? i - 7 : i - 6;
-    placeMark(p, center + slot * 75, supportY, supportSize, overlays, children, 'center', 0.15);
+  // Six mirrored pairs, art-directed so the four colored marks split evenly across
+  // both sides. State occupies slot zero behind the opaque active tile.
+  const dockSlots = new Map([
+    ['color', -6], ['shape', 6],
+    ['space', -5], ['type', 5],
+    ['grid', -4], ['motion', 4],
+    ['light', -3], ['pattern', 3],
+    ['icon', -2], ['random', 2],
+    ['ratio', -1], ['noise', 1],
+    ['state', 0],
+  ]);
+  shipped.forEach((p) => {
+    const slot = dockSlots.get(p.slug);
+    if (slot !== undefined) placeMark(p, center + slot * 75, supportY, supportSize, overlays, children, 'center', 0.15);
   });
   children.push(
     el({ position: 'absolute', left: 498, top: 132, width: 204, height: 204, borderRadius: 42, background: c.paper2, border: `1px solid ${c.line1}`, boxShadow: '0 18px 44px rgba(26,26,23,0.12)' }),
